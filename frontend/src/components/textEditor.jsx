@@ -195,6 +195,7 @@ export default function TextEditor({ text, setText, extraTools, ...props }) {
         value={text}
         onChange={(evt) => setText(evt.target.value)}
         className="ring-1 ring-gray-300 px-4 py-2 rounded-b-sm flex-auto"
+        rows={6}
         {...props}
       ></textarea>
     </div>

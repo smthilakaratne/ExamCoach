@@ -3,7 +3,6 @@ import remarkPlugin from "remark-gfm"
 import "./styles.css"
 
 export default function MarkdownContent({ content }) {
-  console.log(content)
   return (
     <div className="markdown-content">
       <Markdown remarkPlugins={remarkPlugin}>{content}</Markdown>
