@@ -9,7 +9,10 @@ export default function ForumThread(data) {
       <h4 className="text-xl font-bold my-2">{data.title}</h4>
       <div className="flex gap-2">
         {(data?.tags || []).map((tag, index) => (
-          <ForumTag key={`thread-${data.title}-tag-${index}`} name={tag}></ForumTag>
+          <ForumTag
+            key={`thread-${data.title}-tag-${index}`}
+            name={tag}
+          ></ForumTag>
         ))}
       </div>
       <div className="flex justify-between items-end mt-4">

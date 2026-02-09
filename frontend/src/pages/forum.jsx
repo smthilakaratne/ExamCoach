@@ -134,7 +134,7 @@ export default function Forum() {
                 />
               ))}
             </div>
-            <a>Explore more tags</a>
+            <a href="./tags">Explore more tags</a>
           </section>
         </section>
       </div>

@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom"
 import Home from "./pages/home"
 import Forum from "./pages/forum"
+import ForumTags from "./pages/forumTags"
 
 function App() {
   return (
@@ -8,7 +9,10 @@ function App() {
       <Routes>
         <Route index element={<Home />} />
         <Route path="community">
-          <Route path="forum" element={<Forum />} />
+          <Route path="forum">
+            <Route index element={<Forum />} />
+            <Route path="tags" element={<ForumTags />} />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>
