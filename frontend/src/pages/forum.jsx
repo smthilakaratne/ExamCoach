@@ -1,5 +1,5 @@
 import { Flame, MessageSquare, Search, Tag } from "lucide-react"
-import {Link} from "react-router-dom"
+import { Link } from "react-router-dom"
 import Button from "../components/button"
 import ForumThread from "../components/forumThread"
 import ForumTag from "../components/tag"
