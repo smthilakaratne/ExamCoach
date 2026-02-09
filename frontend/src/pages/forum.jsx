@@ -1,0 +1,143 @@
+import { Flame, MessageSquare, Search, Tag } from "lucide-react"
+import Button from "../components/button"
+import ForumThread from "../components/forumThread"
+import ForumTag from "../components/tag"
+import Container from "../components/container"
+
+const dummyThread = {
+  createdBy: {
+    name: "Seniru Pasan",
+  },
+  date: Date.now(),
+  title: "Sample thread",
+  tags: ["tag1", "tag2", "tag3", "tag4"],
+  reactions: {
+    up: 69,
+    down: 42,
+  },
+  replies: 16,
+  views: 999,
+}
+
+export default function Forum() {
+  const hotTodayQuestions = [dummyThread, dummyThread, dummyThread]
+  const threads = [
+    dummyThread,
+    dummyThread,
+    dummyThread,
+    dummyThread,
+    dummyThread,
+    dummyThread,
+  ]
+  const tags = [
+    "tag1",
+    "tag2",
+    "tag3",
+    "random-tag",
+    "python",
+    "tag4",
+    "tag5",
+    "javascript",
+    "tag6",
+    "tag7",
+  ]
+
+  return (
+    <main className="m-4">
+      <section className="flex gap-2 justify-between items-center">
+        <input
+          type="search"
+          className="ring-1 ring-gray-300 px-4 py-2 rounded-sm flex-auto"
+        />
+        <Button className="flex gap-2 items-center">
+          <Search className="size-5" />
+          <span>Search</span>
+        </Button>
+      </section>
+
+      <div className="flex gap-3 justify-between my-3">
+        <section className="flex-auto">
+          <div className="flex justify-between items-center">
+            <h3 className="text-xl my-3">999 questions</h3>
+            <div className="flex gap-1 border border-gray-300 rounded-sm p-1">
+              <Button kind="primary" className="text-sm">
+                Trending
+              </Button>
+              <Button kind="secondary" className="border-0 text-sm">
+                Latest
+              </Button>
+              <Button kind="secondary" className="border-0 text-sm">
+                Unanswered
+              </Button>
+              <Button kind="secondary" className="border-0 text-sm">
+                My Questions
+              </Button>
+              <Button kind="secondary" className="border-0 text-sm">
+                My Answers
+              </Button>
+            </div>
+          </div>
+
+          <section>
+            {threads.length === 0 ? (
+              <p className="font-light text-sm text-gray-500">
+                It's quite here... <a>Start a new question</a> and shake things
+                up
+              </p>
+            ) : (
+              <>
+                {threads.map((thread, index) => (
+                  <ForumThread key={`thread-${index}`} {...thread} />
+                ))}
+              </>
+            )}
+          </section>
+        </section>
+
+        <section className="border-l border-l-gray-300 pl-6 py-5 max-w-md">
+          <Button className="w-full">Ask question</Button>
+          <section>
+            <h3 className="text-xl my-3 font-bold flex gap-2 items-center">
+              <Flame className="text-orange-400" />
+              <span>Hot today</span>
+            </h3>
+            {hotTodayQuestions.length <= 0 ? (
+              <p className="font-light text-sm text-gray-500">
+                No sparks flying today. <a>Start a new topic</a> and light it
+                up.
+              </p>
+            ) : (
+              <>
+                {hotTodayQuestions.slice(0, 3).map((thread) => (
+                  <Container>
+                    <h5 className="font-bold">{thread.title}</h5>
+                    <div className="flex gap-1 items-center text-xs text-gray-500 mt-3">
+                      <MessageSquare className="size-4" />
+                      <span>{thread?.replies ?? 0}</span>
+                    </div>
+                  </Container>
+                ))}
+              </>
+            )}
+          </section>
+          <section className="pt-3 mt-6 border-t border-t-gray-300">
+            <h3 className="text-xl my-3 font-bold flex gap-2 items-center">
+              <Tag className="text-gray-400" />
+              <span>Explore tags</span>
+            </h3>
+            <div className="flex flex-wrap gap-2 my-4">
+              {tags.slice(0, 10).map((tag, index) => (
+                <ForumTag
+                  key={`tag-${index}`}
+                  name={tag}
+                  className="cursor-pointer hover:bg-gray-400"
+                />
+              ))}
+            </div>
+            <a>Explore more tags</a>
+          </section>
+        </section>
+      </div>
+    </main>
+  )
+}
