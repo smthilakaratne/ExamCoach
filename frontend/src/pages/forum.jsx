@@ -1,4 +1,5 @@
 import { Flame, MessageSquare, Search, Tag } from "lucide-react"
+import {Link} from "react-router-dom"
 import Button from "../components/button"
 import ForumThread from "../components/forumThread"
 import ForumTag from "../components/tag"
@@ -134,7 +135,7 @@ export default function Forum() {
                 />
               ))}
             </div>
-            <a href="./tags">Explore more tags</a>
+            <Link to="./tags">Explore more tags</Link>
           </section>
         </section>
       </div>
