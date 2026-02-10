@@ -4,10 +4,14 @@ const os = require("os")
 const express = require("express")
 const cors = require("cors")
 const mongoose = require("mongoose")
+const swaggerUi = require("swagger-ui-express")
+const swaggerJSDoc = require("swagger-jsdoc")
 const { StatusCodes } = require("http-status-codes")
+
 const createResponse = require("./lib/createResponse")
 
-const usersRoute = require("./routes/usersRoute")
+const routes = require("./routes")
+const swaggerOptions = require("../config/swagger")
 
 const app = express()
 
@@ -15,11 +19,13 @@ const app = express()
 app.use(cors())
 app.use(express.json({ limit: "4mb" }))
 
-app.use("/api/user", usersRoute)
+const swaggerDocs = swaggerJSDoc(swaggerOptions)
+app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs))
 
-app.get("/", (req, res) => {
-    createResponse(res, StatusCodes.OK, { version: "1.0.0" })
-})
+// routers
+app.use("/api/user", routes.users)
+
+app.use("/", routes.root)
 
 app.use((req, res) => createResponse(res, StatusCodes.NOT_FOUND, "Requested route not found"))
 
