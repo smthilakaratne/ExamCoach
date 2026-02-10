@@ -1,8 +1,9 @@
 import { Flame, MessageSquare, Search, Tag } from "lucide-react"
-import Button from "../components/button"
-import ForumThread from "../components/forumThread"
-import ForumTag from "../components/tag"
-import Container from "../components/container"
+import { Link } from "react-router-dom"
+import Button from "../../components/button"
+import ForumThread from "../../components/forumThread"
+import ForumTag from "../../components/tag"
+import Container from "../../components/container"
 
 const dummyThread = {
   createdBy: {
@@ -134,7 +135,7 @@ export default function Forum() {
                 />
               ))}
             </div>
-            <a>Explore more tags</a>
+            <Link to="./tags">Explore more tags</Link>
           </section>
         </section>
       </div>
