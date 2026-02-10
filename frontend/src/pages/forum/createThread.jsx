@@ -1,8 +1,8 @@
 import { useState } from "react"
-import Button from "../components/button"
-import Container from "../components/container"
-import MarkdownContent from "../components/markdownContent"
-import TextEditor from "../components/textEditor"
+import Button from "../../components/button"
+import Container from "../../components/container"
+import MarkdownContent from "../../components/markdownContent"
+import TextEditor from "../../components/textEditor"
 
 export default function CreateThread() {
   const [body, setBody] = useState("")

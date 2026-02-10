@@ -1,12 +1,12 @@
 import { ChevronDown, ChevronUp, Eye } from "lucide-react"
-import MarkdownContent from "../components/markdownContent"
-import ForumTag from "../components/tag"
-import { relativeTime } from "../utils/relativeTime"
-import Button from "../components/button"
-import TextEditor from "../components/textEditor"
+import MarkdownContent from "../../components/markdownContent"
+import ForumTag from "../../components/tag"
+import { relativeTime } from "../../utils/relativeTime"
+import Button from "../../components/button"
+import TextEditor from "../../components/textEditor"
 import { useState } from "react"
-import Container from "../components/container"
-import ThreadReply from "../components/threadReply"
+import Container from "../../components/container"
+import ThreadReply from "../../components/threadReply"
 
 const dummyReply = {
   createdBy: {

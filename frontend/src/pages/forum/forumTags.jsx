@@ -1,7 +1,7 @@
 import { Flame, Search } from "lucide-react"
-import Button from "../components/button"
-import ForumTag from "../components/tag"
-import DetailedTagContainer from "../components/detailedTagContainer"
+import Button from "../../components/button"
+import ForumTag from "../../components/tag"
+import DetailedTagContainer from "../../components/detailedTagContainer"
 
 const dummyDetailedTag = {
   name: "sample-tag",

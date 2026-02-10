@@ -1,9 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom"
 import Home from "./pages/home"
 import Forum from "./pages/forum"
-import ForumTags from "./pages/forumTags"
-import CreateThread from "./pages/createThread"
-import Thread from "./pages/thread"
 
 function App() {
   return (
@@ -12,10 +9,10 @@ function App() {
         <Route index element={<Home />} />
         <Route path="community">
           <Route path="forum">
-            <Route index element={<Forum />} />
-            <Route path="tags" element={<ForumTags />} />
-            <Route path="new" element={<CreateThread />} />
-            <Route path=":id" element={<Thread />} />
+            <Route index element={<Forum.Forum />} />
+            <Route path="tags" element={<Forum.Tags />} />
+            <Route path="new" element={<Forum.CreateThread />} />
+            <Route path=":id" element={<Forum.Thread />} />
           </Route>
         </Route>
       </Routes>

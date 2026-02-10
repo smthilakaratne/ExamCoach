@@ -1,9 +1,9 @@
 import { Flame, MessageSquare, Search, Tag } from "lucide-react"
 import { Link } from "react-router-dom"
-import Button from "../components/button"
-import ForumThread from "../components/forumThread"
-import ForumTag from "../components/tag"
-import Container from "../components/container"
+import Button from "../../components/button"
+import ForumThread from "../../components/forumThread"
+import ForumTag from "../../components/tag"
+import Container from "../../components/container"
 
 const dummyThread = {
   createdBy: {
