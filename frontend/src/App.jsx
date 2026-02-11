@@ -13,7 +13,12 @@ function App() {
         {/* Public Routes */}
         <Route index element={<Home />} />
         <Route path="community">
-          <Route path="forum" element={<Forum />} />
+          <Route path="forum">
+            <Route index element={<Forum.Forum />} />
+            <Route path="tags" element={<Forum.Tags />} />
+            <Route path="new" element={<Forum.CreateThread />} />
+            <Route path=":id" element={<Forum.Thread />} />
+          </Route>
         </Route>
 
         {/* Admin Routes */}

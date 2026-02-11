@@ -23,3 +23,9 @@ a {
 a:hover {
   color: #535bf2;
 }
+
+hr {
+  border: none;
+  border-top: 1px solid var(--color-gray-400);
+  margin: 1.5rem 0;
+}
