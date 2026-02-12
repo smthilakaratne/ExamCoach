@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react';
-import getProgress from "../services/getProgress";
+import {getProgress} from "../../services/mockExamApi";
 
 export default function MockLevels() {
     const [progress, setProgress] = useState(null);
