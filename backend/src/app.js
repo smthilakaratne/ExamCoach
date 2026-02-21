@@ -6,8 +6,14 @@ const cors = require("cors")
 const mongoose = require("mongoose")
 const { StatusCodes } = require("http-status-codes")
 const createResponse = require("./lib/createResponse")
+const { initGridFS } = require("./config/gridfs")
 
+// Import routes
 const usersRoute = require("./routes/usersRoute")
+const examLevelRoute = require("./routes/examLevelRoute")
+const subjectRoute = require("./routes/subjectRoute")
+const contentRoute = require("./routes/contentRoute")
+const fileRoute = require("./routes/fileRoute")
 
 const app = express()
 
@@ -15,7 +21,12 @@ const app = express()
 app.use(cors())
 app.use(express.json({ limit: "4mb" }))
 
+// API routes
 app.use("/api/user", usersRoute)
+app.use("/api/exam-levels", examLevelRoute)
+app.use("/api/subjects", subjectRoute)
+app.use("/api/contents", contentRoute)
+app.use("/api/files", fileRoute)
 
 app.get("/", (req, res) => {
     createResponse(res, StatusCodes.OK, { version: "1.0.0" })
@@ -31,7 +42,12 @@ app.use((err, req, res, next) => {
 const start = async () => {
     const { MONGO_URI } = process.env
     const SERVER_PORT = process.env.SERVER_PORT || 8888
+    
     await mongoose.connect(MONGO_URI)
+    console.log("MongoDB connected")
+    
+    // Initialize GridFS after MongoDB connection
+    initGridFS()
 
     app.listen(SERVER_PORT, () => {
         let networkInterfaces = os.networkInterfaces()
@@ -44,4 +60,4 @@ const start = async () => {
 
 start()
 
-module.exports = app
+module.exports = app;
