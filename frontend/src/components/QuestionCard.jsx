@@ -2,9 +2,9 @@
 export default function Question({ question, selectedAnswer, onSelect }) {
   return (
     <div>
-      <p>{question.question}</p>
+      <p>{question.questionText}</p>
       {question.options.map((option, index) => (
-        <div key={index}>
+        <div key={question._id + index}>
           <input
             type="radio"
             name={question._id}

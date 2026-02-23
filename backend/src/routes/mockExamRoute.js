@@ -1,16 +1,31 @@
-const express = require("express")
-const router = express.Router()
+const express = require("express");
+const router = express.Router();
 
-router.post("/start", async (req, res) => {
-  // fetch random questions from DB
-})
+const { submitExam } = require("../controllers/submissionController");
+const { getUserProgress } = require("../controllers/progressController");
+const { startExam} = require("../controllers/examController");
 
-router.post("/submit", async (req, res) => {
-  // calculate score, update progress
-})
+// Start exam
+/*router.post("/start", async (req, res) => {
+  const { level } = req.body;
+  console.log("Received start request for level:", level);
 
-router.get("/progress", async (req, res) => {
-  // return user_level_progress
-})
+  // 20 fake questions
+  const questions = Array.from({ length: 20 }, (_, i) => ({
+    _id: i + 1,
+    questionText: `Sample question ${i + 1}? (Level: ${level})`,
+    options: ["A", "B", "C", "D"]
+  }));
 
-module.exports = router
+  res.json({ questions }); // <-- must send response
+});
+*/
+router.post("/start", startExam);
+
+// Submit exam
+router.post("/submit", submitExam);
+
+// Get progress
+router.get("/progress/:userId", getUserProgress);
+
+module.exports = router;

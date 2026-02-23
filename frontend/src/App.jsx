@@ -6,7 +6,7 @@ import ExamLevels from "./pages/admin/ExamLevels"
 import Subjects from "./pages/admin/Subjects"
 import ContentManagement from "./pages/admin/ContentManagement"
 import MockExam from "./pages/mockExam/MockExam"
-import ExamLevels from "./pages/mockExam/MockLevels"
+import ExamSummary from "./pages/mockExam/MockLevels"
 import ExamAnswers from "./pages/mockExam/Answers"
 import ExamResult from "./pages/mockExam/MockResult"
 
@@ -25,16 +25,19 @@ function App() {
           </Route>
         </Route>
 
+        <Route path="mock-exam">
+          <Route path="exam" element={<MockExam />} />
+          <Route path="exam-summary" element={<ExamSummary />} />
+          <Route path="exam-answers" element={<ExamAnswers />} />
+          <Route path="exam-result" element={<ExamResult />} />
+        </Route>
+
         {/* Admin Routes */}
         <Route path="admin">
           <Route index element={<AdminDashboard />} />
           <Route path="exam-levels" element={<ExamLevels />} />
           <Route path="subjects" element={<Subjects />} />
           <Route path="content" element={<ContentManagement />} />
-          <Route path="exam" element={<MockExam />} />
-          <Route path="exam-level" element={<ExamLevels />} />
-          <Route path="exam-answers" element={<ExamAnswers />} />
-          <Route path="exam-result" element={<ExamResult />} />
         </Route>
       </Routes>
     </BrowserRouter>
