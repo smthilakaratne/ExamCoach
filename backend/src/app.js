@@ -9,9 +9,16 @@ const swaggerJSDoc = require("swagger-jsdoc")
 const { StatusCodes } = require("http-status-codes")
 
 const createResponse = require("./lib/createResponse")
+const { initGridFS } = require("./config/gridfs")
 
 const routes = require("./routes")
 const swaggerOptions = require("../config/swagger")
+// Import routes
+const usersRoute = require("./routes/usersRoute")
+const examLevelRoute = require("./routes/examLevelRoute")
+const subjectRoute = require("./routes/subjectRoute")
+const contentRoute = require("./routes/contentRoute")
+const fileRoute = require("./routes/fileRoute")
 
 const app = express()
 
@@ -21,6 +28,12 @@ app.use(express.json({ limit: "4mb" }))
 
 const swaggerDocs = swaggerJSDoc(swaggerOptions)
 app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs))
+// API routes
+app.use("/api/user", usersRoute)
+app.use("/api/exam-levels", examLevelRoute)
+app.use("/api/subjects", subjectRoute)
+app.use("/api/contents", contentRoute)
+app.use("/api/files", fileRoute)
 
 // routers
 app.use("/api/user", routes.users)
@@ -37,7 +50,12 @@ app.use((err, req, res, next) => {
 const start = async () => {
     const { MONGO_URI } = process.env
     const SERVER_PORT = process.env.SERVER_PORT || 8888
+    
     await mongoose.connect(MONGO_URI)
+    console.log("MongoDB connected")
+    
+    // Initialize GridFS after MongoDB connection
+    initGridFS()
 
     app.listen(SERVER_PORT, () => {
         let networkInterfaces = os.networkInterfaces()
@@ -50,4 +68,4 @@ const start = async () => {
 
 start()
 
-module.exports = app
+module.exports = app;
