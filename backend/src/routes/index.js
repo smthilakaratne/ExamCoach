@@ -1,5 +1,5 @@
-const root = require("./root.route")
-const users = require("./users.route")
+const root = require("./rootRoute")
+const users = require("./usersRoute")
 
 module.exports = {
     root,

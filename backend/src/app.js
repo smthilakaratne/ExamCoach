@@ -11,9 +11,9 @@ const { StatusCodes } = require("http-status-codes")
 const createResponse = require("./lib/createResponse")
 const { initGridFS } = require("./config/gridfs")
 
-const routes = require("./routes")
 const swaggerOptions = require("../config/swagger")
 // Import routes
+const rootRoute = require("./routes/rootRoute")
 const usersRoute = require("./routes/usersRoute")
 const examLevelRoute = require("./routes/examLevelRoute")
 const subjectRoute = require("./routes/subjectRoute")
@@ -35,10 +35,7 @@ app.use("/api/subjects", subjectRoute)
 app.use("/api/contents", contentRoute)
 app.use("/api/files", fileRoute)
 
-// routers
-app.use("/api/user", routes.users)
-
-app.use("/", routes.root)
+app.use("/api", rootRoute)
 
 app.use((req, res) => createResponse(res, StatusCodes.NOT_FOUND, "Requested route not found"))
 
