@@ -4,11 +4,16 @@ const os = require("os")
 const express = require("express")
 const cors = require("cors")
 const mongoose = require("mongoose")
+const swaggerUi = require("swagger-ui-express")
+const swaggerJSDoc = require("swagger-jsdoc")
 const { StatusCodes } = require("http-status-codes")
+
 const createResponse = require("./lib/createResponse")
 const { initGridFS } = require("./config/gridfs")
 
+const swaggerOptions = require("../config/swagger")
 // Import routes
+const rootRoute = require("./routes/rootRoute")
 const usersRoute = require("./routes/usersRoute")
 const examLevelRoute = require("./routes/examLevelRoute")
 const subjectRoute = require("./routes/subjectRoute")
@@ -21,6 +26,8 @@ const app = express()
 app.use(cors())
 app.use(express.json({ limit: "4mb" }))
 
+const swaggerDocs = swaggerJSDoc(swaggerOptions)
+app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs))
 // API routes
 app.use("/api/user", usersRoute)
 app.use("/api/exam-levels", examLevelRoute)
@@ -28,9 +35,7 @@ app.use("/api/subjects", subjectRoute)
 app.use("/api/contents", contentRoute)
 app.use("/api/files", fileRoute)
 
-app.get("/", (req, res) => {
-    createResponse(res, StatusCodes.OK, { version: "1.0.0" })
-})
+app.use("/api", rootRoute)
 
 app.use((req, res) => createResponse(res, StatusCodes.NOT_FOUND, "Requested route not found"))
 
