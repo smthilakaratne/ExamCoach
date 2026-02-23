@@ -38,7 +38,7 @@ async function submitExam(req, res) {
       { upsert: true, new: true }
     );
 
-    res.json({ success: true, score });
+    res.json({ success: true, score, questions });
   } catch (err) {
     res.status(500).json({ success: false });
   }

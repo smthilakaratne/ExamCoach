@@ -17,53 +17,78 @@ export default function MockAnswers() {
       <h1>Exam Review</h1>
 
       {questions.map((q, idx) => {
-        const userAnswerIndex = answers[q._id];
-        const correctIndex = q.correctAnswer;
+          const qId = q._id.toString();
 
-        return (
-          <div
-            key={q._id}
-            style={{
-              border: "1px solid #ccc",
-              padding: 10,
-              marginBottom: 10,
-              backgroundColor:
-                userAnswerIndex === correctIndex
-                  ? "#d4edda" // green if correct
-                  : "#f8d7da", // red if wrong
-            }}
-          >
-            <h3>
-              {idx + 1}. {q.questionText}
-            </h3>
+  const rawUserAnswer = answers[qId];
 
-            <ul style={{ listStyle: "none", paddingLeft: 0 }}>
-              {q.options.map((opt, i) => {
-                const isUserChoice = i === userAnswerIndex;
-                const isCorrect = i === correctIndex;
+  const userAnswerIndex =
+    rawUserAnswer !== undefined ? Number(rawUserAnswer) : undefined;
+        console.log("User Answer Index:", userAnswerIndex);
+        console.log("Correct Answer Index:", q.correctAnswer);
+  const correctIndex = Number(q.correctAnswer);
 
-                return (
-                  <li
-                    key={i}
-                    style={{
-                      padding: 5,
-                      fontWeight: isCorrect ? "bold" : "normal",
-                      color: isUserChoice
-                        ? isCorrect
-                          ? "green"
-                          : "red"
-                        : "black",
-                    }}
-                  >
-                    {opt} {isCorrect ? "(Correct)" : ""}
-                    {isUserChoice && !isCorrect ? " (Your Choice)" : ""}
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        );
-      })}
+  const isCorrectAnswer = userAnswerIndex === correctIndex;
+  const isUnanswered = userAnswerIndex === undefined;
+
+  return (
+    <div
+      key={q._id}
+      style={{
+        border: "1px solid #ccc",
+        padding: 10,
+        marginBottom: 10,
+        backgroundColor: isUnanswered
+          ? "#fff3cd"      // yellow
+          : isCorrectAnswer
+          ? "#d4edda"      // green
+          : "#f8d7da",     // red
+      }}
+    >
+      <h3>
+        {idx + 1}. {q.questionText}
+      </h3>
+
+      <ul style={{ listStyle: "none", paddingLeft: 0 }}>
+          {q.options.map((opt, i) => {
+  const isUserChoice = i === userAnswerIndex;
+  const isCorrect = i === correctIndex;
+
+  return (
+    <li
+      key={i}
+      style={{
+        padding: 5,
+        fontWeight: isCorrect ? "bold" : "normal",
+        color: isCorrect
+          ? "green"
+          : isUserChoice
+          ? "red"
+          : "black",
+      }}
+    >
+      {opt}
+      {isUserChoice && " (Your Answer)"}
+      {isCorrect && " (Correct Answer)"}
+    </li>
+
+
+          );
+        })}
+      </ul>
+      {!isUnanswered && !isCorrectAnswer && (
+  <p style={{ color: "red", fontWeight: "bold" }}>
+    Your answer is incorrect.
+  </p>
+)}
+
+{isCorrectAnswer && (
+  <p style={{ color: "green", fontWeight: "bold" }}>
+    Your answer is correct.
+  </p>
+)}
+    </div>
+  );
+})}
 
       <button onClick={() => navigate("/mock-levels")}>Back to Levels</button>
     </div>

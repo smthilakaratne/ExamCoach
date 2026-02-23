@@ -82,7 +82,7 @@ export default function MockExam() {
 
       // Navigate to result page with score and answers
       navigate("/mock-exam/exam-result", {
-      state: { fixedUserId, level, questions, answers, score },
+      state: { fixedUserId, level, questions:res.data.questions, answers, score },
     });
     } catch (err) {
       console.error(err);
