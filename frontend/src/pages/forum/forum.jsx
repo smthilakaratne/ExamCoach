@@ -26,10 +26,10 @@ export default function Forum() {
   ]
 
   useEffect(() => {
-    (async () => {
+    ;(async () => {
       const response = await fetch(`${VITE_API_URL}/api/forum`)
       const result = await response.json()
-      console.log((result?.body ?? []))
+      console.log(result?.body ?? [])
       setThreads(result?.body ?? [])
     })()
   }, [])
@@ -87,7 +87,9 @@ export default function Forum() {
         </section>
 
         <section className="border-l border-l-gray-300 pl-6 py-5 max-w-md">
-          <Button className="w-full">Ask question</Button>
+          <Link to="new">
+            <Button className="w-full">Ask question</Button>
+          </Link>
           <section>
             <h3 className="text-xl my-3 font-bold flex gap-2 items-center">
               <Flame className="text-orange-400" />
@@ -109,7 +111,6 @@ export default function Forum() {
                         <span>{thread?.answers?.length ?? 0}</span>
                       </div>
                     </Container>
-
                   </Link>
                 ))}
               </>

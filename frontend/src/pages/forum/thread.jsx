@@ -17,8 +17,6 @@ export default function Thread() {
   const [replyBody, setReplyBody] = useState("")
   const params = useParams()
 
-  console.log(params.id)
-
   useEffect(() => {
     (async () => {
       const response = await fetch(`${VITE_API_URL}/api/forum/${params.id}`)
