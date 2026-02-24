@@ -37,4 +37,4 @@ const subjectSchema = new mongoose.Schema(
 // Compound index to ensure unique subject per exam level
 subjectSchema.index({ name: 1, examLevel: 1 }, { unique: true })
 
-module.exports = mongoose.model("Subject", subjectSchema)
+module.exports = mongoose.model("subjects", subjectSchema)

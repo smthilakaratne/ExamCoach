@@ -5,6 +5,10 @@ import AdminDashboard from "./pages/admin/Admindashboard"
 import ExamLevels from "./pages/admin/ExamLevels"
 import Subjects from "./pages/admin/Subjects"
 import ContentManagement from "./pages/admin/ContentManagement"
+import MockExam from "./pages/mockExam/MockExam"
+import ExamSummary from "./pages/mockExam/MockLevels"
+import ExamAnswers from "./pages/mockExam/Answers"
+import ExamResult from "./pages/mockExam/MockResult"
 
 function App() {
   return (
@@ -19,6 +23,13 @@ function App() {
             <Route path="new" element={<Forum.CreateThread />} />
             <Route path=":id" element={<Forum.Thread />} />
           </Route>
+        </Route>
+
+        <Route path="mock-exam">
+          <Route path="exam" element={<MockExam />} />
+          <Route path="exam-summary" element={<ExamSummary />} />
+          <Route path="exam-answers" element={<ExamAnswers />} />
+          <Route path="exam-result" element={<ExamResult />} />
         </Route>
 
         {/* Admin Routes */}

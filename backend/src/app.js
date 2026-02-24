@@ -19,6 +19,7 @@ const examLevelRoute = require("./routes/examLevelRoute")
 const subjectRoute = require("./routes/subjectRoute")
 const contentRoute = require("./routes/contentRoute")
 const fileRoute = require("./routes/fileRoute")
+const mockExamRoute = require("./routes/mockExamRoute")
 
 const app = express()
 
@@ -34,6 +35,7 @@ app.use("/api/exam-levels", examLevelRoute)
 app.use("/api/subjects", subjectRoute)
 app.use("/api/contents", contentRoute)
 app.use("/api/files", fileRoute)
+app.use("/api/mock-exams", mockExamRoute)
 
 app.use("/api", rootRoute)
 
@@ -48,7 +50,7 @@ const start = async () => {
     const { MONGO_URI } = process.env
     const SERVER_PORT = process.env.SERVER_PORT || 8888
     
-    await mongoose.connect(MONGO_URI)
+    await mongoose.connect(MONGO_URI, {dbName: "ExamCoach"})
     console.log("MongoDB connected")
     
     // Initialize GridFS after MongoDB connection
@@ -59,6 +61,8 @@ const start = async () => {
         let address = networkInterfaces.wlo1 && networkInterfaces.wlo1[0].address
         console.log("Server listening on")
         console.log(`\tLocal:\thttp://127.0.0.1:${SERVER_PORT}`)
+        console.log("Connected to DB:", mongoose.connection.name)
+        console.log("ENV URI:", process.env.MONGO_URI);
         address && console.log(`\tIP:\thttp://${address}:${SERVER_PORT}`)
     })
 }
