@@ -1,0 +1,72 @@
+const mongoose = require("mongoose")
+
+/**
+ * A forum thread
+ * @typedef {object} ForumThread
+ * @property {string} title.required - The title
+ * @property {string} body.required - Body content
+ * @property {[]string} tags - List of strings
+ */
+
+const answerSchema = new mongoose.Schema(
+    {
+        body: {
+            type: String,
+            required: [true, "body is required"],
+            trim: true,
+        },
+        createdBy: {
+            name: {
+                type: String,
+                required: [true, "creator name is required"],
+                trim: true,
+            },
+        },
+        reactions: {
+            up: { type: Number, default: 0 },
+            down: { type: Number, default: 0 },
+        },
+    },
+    { timestamps: true },
+)
+
+const forumThreadSchema = new mongoose.Schema(
+    {
+        title: {
+            type: String,
+            required: [true, "title is required"],
+            trim: true,
+        },
+        body: {
+            type: String,
+            required: [true, "body is required"],
+            trim: true,
+        },
+        tags: {
+            type: [String],
+            default: [],
+        },
+        createdBy: {
+            name: {
+                type: String,
+                required: [true, "creator name is required"],
+                trim: true,
+            },
+        },
+        reactions: {
+            up: { type: Number, default: 0 },
+            down: { type: Number, default: 0 },
+        },
+        views: {
+            type: Number,
+            default: 0,
+        },
+        answers: {
+            type: [answerSchema],
+            default: [],
+        },
+    },
+    { timestamps: true },
+)
+
+module.exports = mongoose.model("ForumThread", forumThreadSchema)

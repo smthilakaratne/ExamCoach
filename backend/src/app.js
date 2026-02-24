@@ -4,14 +4,13 @@ const os = require("os")
 const express = require("express")
 const cors = require("cors")
 const mongoose = require("mongoose")
-const swaggerUi = require("swagger-ui-express")
-const swaggerJSDoc = require("swagger-jsdoc")
 const { StatusCodes } = require("http-status-codes")
+const expressJSDocSwagger = require('express-jsdoc-swagger');
 
 const createResponse = require("./lib/createResponse")
 const { initGridFS } = require("./config/gridfs")
+const swaggerOptions = require("./config/swagger")
 
-const swaggerOptions = require("../config/swagger")
 // Import routes
 const rootRoute = require("./routes/rootRoute")
 const usersRoute = require("./routes/usersRoute")
@@ -19,6 +18,7 @@ const examLevelRoute = require("./routes/examLevelRoute")
 const subjectRoute = require("./routes/subjectRoute")
 const contentRoute = require("./routes/contentRoute")
 const fileRoute = require("./routes/fileRoute")
+const forumRoute = require("./routes/forumRoute")
 
 const app = express()
 
@@ -26,14 +26,15 @@ const app = express()
 app.use(cors())
 app.use(express.json({ limit: "4mb" }))
 
-const swaggerDocs = swaggerJSDoc(swaggerOptions)
-app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs))
+expressJSDocSwagger(app)(swaggerOptions);
+
 // API routes
 app.use("/api/user", usersRoute)
 app.use("/api/exam-levels", examLevelRoute)
 app.use("/api/subjects", subjectRoute)
 app.use("/api/contents", contentRoute)
 app.use("/api/files", fileRoute)
+app.use("/api/forum", forumRoute)
 
 app.use("/api", rootRoute)
 

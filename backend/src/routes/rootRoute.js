@@ -4,14 +4,9 @@ const { StatusCodes } = require("http-status-codes")
 const router = express.Router()
 
 /**
- * @openapi
- * /:
- *   get:
- *     summary: API Root
- *     responses:
- *         200:
- *            description: OK
- *
+ * GET /
+ * @summary API Root
+ * @return {object} 200 - success response
  */
 router.get("/", (req, res) => {
     createResponse(res, StatusCodes.OK, { version: "1.0.0" })
