@@ -4,32 +4,14 @@ import Button from "../../components/button"
 import ForumThread from "../../components/forumThread"
 import ForumTag from "../../components/tag"
 import Container from "../../components/container"
+import { useState } from "react"
+import { useEffect } from "react"
 
-const dummyThread = {
-  createdBy: {
-    name: "Seniru Pasan",
-  },
-  date: Date.now(),
-  title: "Sample thread",
-  tags: ["tag1", "tag2", "tag3", "tag4"],
-  reactions: {
-    up: 69,
-    down: 42,
-  },
-  replies: 16,
-  views: 999,
-}
+const { VITE_API_URL } = import.meta.env
 
 export default function Forum() {
-  const hotTodayQuestions = [dummyThread, dummyThread, dummyThread]
-  const threads = [
-    dummyThread,
-    dummyThread,
-    dummyThread,
-    dummyThread,
-    dummyThread,
-    dummyThread,
-  ]
+  const [threads, setThreads] = useState([])
+  const hotTodayQuestions = threads?.slice(0, 3) ?? []
   const tags = [
     "tag1",
     "tag2",
@@ -42,6 +24,15 @@ export default function Forum() {
     "tag6",
     "tag7",
   ]
+
+  useEffect(() => {
+    (async () => {
+      const response = await fetch(`${VITE_API_URL}/api/forum`)
+      const result = await response.json()
+      console.log((result?.body ?? []))
+      setThreads(result?.body ?? [])
+    })()
+  }, [])
 
   return (
     <main className="m-4">
@@ -59,7 +50,7 @@ export default function Forum() {
       <div className="flex gap-3 justify-between my-3">
         <section className="flex-auto">
           <div className="flex justify-between items-center">
-            <h3 className="text-xl my-3">999 questions</h3>
+            <h3 className="text-xl my-3">{threads.length} questions</h3>
             <div className="flex gap-1 border border-gray-300 rounded-sm p-1">
               <Button kind="primary" className="text-sm">
                 Trending
@@ -110,13 +101,16 @@ export default function Forum() {
             ) : (
               <>
                 {hotTodayQuestions.slice(0, 3).map((thread) => (
-                  <Container>
-                    <h5 className="font-bold">{thread.title}</h5>
-                    <div className="flex gap-1 items-center text-xs text-gray-500 mt-3">
-                      <MessageSquare className="size-4" />
-                      <span>{thread?.replies ?? 0}</span>
-                    </div>
-                  </Container>
+                  <Link to={``}>
+                    <Container className="cursor-pointer hover:bg-gray-200 transition-colors">
+                      <h5 className="font-bold">{thread.title}</h5>
+                      <div className="flex gap-1 items-center text-xs text-gray-500 mt-3">
+                        <MessageSquare className="size-4" />
+                        <span>{thread?.replies ?? 0}</span>
+                      </div>
+                    </Container>
+
+                  </Link>
                 ))}
               </>
             )}
