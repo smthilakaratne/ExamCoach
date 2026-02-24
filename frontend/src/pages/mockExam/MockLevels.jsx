@@ -13,7 +13,7 @@ export default function MockLevels() {
     intermediate: { attempted: false, bestScore: 0 },
     advanced: { attempted: false, bestScore: 0 },
   });
-
+  
   useEffect(() => {
   getProgress(fixedUserId, subject).then((res) => {
     console.log(res.data);
