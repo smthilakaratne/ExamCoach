@@ -15,6 +15,10 @@ const answerSchema = new mongoose.Schema(
             required: [true, "body is required"],
             trim: true,
         },
+        isCorrectAnswer: {
+            type: Boolean,
+            default: false
+        },
         createdBy: {
             name: {
                 type: String,

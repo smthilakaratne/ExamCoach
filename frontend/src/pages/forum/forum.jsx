@@ -101,12 +101,12 @@ export default function Forum() {
             ) : (
               <>
                 {hotTodayQuestions.slice(0, 3).map((thread) => (
-                  <Link to={``}>
+                  <Link to={`./${thread._id}`}>
                     <Container className="cursor-pointer hover:bg-gray-200 transition-colors">
                       <h5 className="font-bold">{thread.title}</h5>
                       <div className="flex gap-1 items-center text-xs text-gray-500 mt-3">
                         <MessageSquare className="size-4" />
-                        <span>{thread?.replies ?? 0}</span>
+                        <span>{thread?.answers?.length ?? 0}</span>
                       </div>
                     </Container>
 

@@ -33,7 +33,7 @@ export default function ForumThread(data) {
             </div>
             <div className="flex gap-1 items-center text-sm text-gray-500">
               <MessageSquare className="size-5" />
-              <span>{data?.replies ?? 0}</span>
+              <span>{data?.answers?.length ?? 0}</span>
             </div>
           </div>
           <div className="flex gap-2 items-center text-sm text-gray-500">
