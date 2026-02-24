@@ -9,7 +9,7 @@ export default function MockResult() {
   if (!level || score === undefined) {
     return <p>No exam result found.</p>;
   }
-
+  
   return (
     <div>
       <h1>Congratulations!</h1>

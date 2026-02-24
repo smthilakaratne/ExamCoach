@@ -79,7 +79,7 @@ export default function MockExam() {
       answers
     }); // backend calculates score
       const score = res.data.score; // backend returns score in percentage
-
+      
       // Navigate to result page with score and answers
       navigate("/mock-exam/exam-result", {
       state: { fixedUserId, level, questions:res.data.questions, answers, score },

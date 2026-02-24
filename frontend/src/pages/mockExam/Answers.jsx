@@ -5,7 +5,6 @@ export default function MockAnswers() {
   const navigate = useNavigate();
   const fixedUserId = "64f1c5a2f9a0b123456789ab"; // fixed userId
 
-
   const { questions, answers } = location.state || {};
 
   if (!questions || !answers) {
