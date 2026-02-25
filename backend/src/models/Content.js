@@ -105,7 +105,7 @@ const contentSchema = new mongoose.Schema(
     },
     {
         timestamps: true,
-    }
+    },
 )
 
 // Indexes for faster queries

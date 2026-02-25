@@ -15,10 +15,10 @@ router.post("/", async (req, res) => {
         }
 
         // Check if already exists
-        const existingLevel = await ExamLevel.findOne({ 
-            $or: [{ code: code.toUpperCase() }, { name }] 
+        const existingLevel = await ExamLevel.findOne({
+            $or: [{ code: code.toUpperCase() }, { name }],
         })
-        
+
         if (existingLevel) {
             return createResponse(res, StatusCodes.CONFLICT, "Exam level already exists")
         }
@@ -52,7 +52,7 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
     try {
         const examLevel = await ExamLevel.findById(req.params.id)
-        
+
         if (!examLevel) {
             return createResponse(res, StatusCodes.NOT_FOUND, "Exam level not found")
         }
@@ -71,13 +71,13 @@ router.put("/:id", async (req, res) => {
 
         const examLevel = await ExamLevel.findByIdAndUpdate(
             req.params.id,
-            { 
-                name, 
-                code: code?.toUpperCase(), 
-                description, 
-                isActive 
+            {
+                name,
+                code: code?.toUpperCase(),
+                description,
+                isActive,
             },
-            { new: true, runValidators: true }
+            { new: true, runValidators: true },
         )
 
         if (!examLevel) {
@@ -97,7 +97,7 @@ router.delete("/:id", async (req, res) => {
         const examLevel = await ExamLevel.findByIdAndUpdate(
             req.params.id,
             { isActive: false },
-            { new: true }
+            { new: true },
         )
 
         if (!examLevel) {

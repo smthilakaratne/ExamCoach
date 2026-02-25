@@ -7,7 +7,7 @@ const {
     getThread,
     createThreadComment,
 } = require("../controllers/forumController")
-const ForumThread= require("../models/ForumThread")
+const ForumThread = require("../models/ForumThread")
 
 /**
  * GET /api/forum

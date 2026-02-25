@@ -15,5 +15,5 @@ export default function Question({ question, selectedAnswer, onSelect }) {
         </div>
       ))}
     </div>
-  );
+  )
 }

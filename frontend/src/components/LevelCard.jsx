@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom"
 
 export default function Level({ name, score, unlocked, onStart }) {
   return (
@@ -9,5 +9,5 @@ export default function Level({ name, score, unlocked, onStart }) {
         Start
       </button>
     </div>
-  );
+  )
 }

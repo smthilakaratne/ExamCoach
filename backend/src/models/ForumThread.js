@@ -22,7 +22,7 @@ const answerSchema = new mongoose.Schema(
         },
         isCorrectAnswer: {
             type: Boolean,
-            default: false
+            default: false,
         },
         createdBy: {
             name: {

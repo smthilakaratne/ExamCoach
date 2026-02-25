@@ -1,13 +1,12 @@
-
-const mongoose = require("mongoose");
+const mongoose = require("mongoose")
 
 const questionSchema = new mongoose.Schema({
-  level: { type: String, required: true }, // e.g., "easy", "medium", "hard"
-  questionText: { type: String, required: true },
-  subjectId: { type: String, required: true },
-  options: { type: [String], required: true },
-  correctAnswer: { type: String, required: true },
-});
+    level: { type: String, required: true }, // e.g., "easy", "medium", "hard"
+    questionText: { type: String, required: true },
+    subjectId: { type: String, required: true },
+    options: { type: [String], required: true },
+    correctAnswer: { type: String, required: true },
+})
 
-const Question = mongoose.model("questions", questionSchema);
-module.exports= Question;
+const Question = mongoose.model("questions", questionSchema)
+module.exports = Question

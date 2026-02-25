@@ -1,9 +1,9 @@
-const express = require("express");
-const router = express.Router();
+const express = require("express")
+const router = express.Router()
 
-const { submitExam } = require("../controllers/submissionController");
-const { getUserProgress } = require("../controllers/progressController");
-const { startExam} = require("../controllers/examController");
+const { submitExam } = require("../controllers/submissionController")
+const { getUserProgress } = require("../controllers/progressController")
+const { startExam } = require("../controllers/examController")
 
 // Start exam
 /*router.post("/start", async (req, res) => {
@@ -20,12 +20,12 @@ const { startExam} = require("../controllers/examController");
   res.json({ questions }); // <-- must send response
 });
 */
-router.post("/start", startExam);
+router.post("/start", startExam)
 
 // Submit exam
-router.post("/submit", submitExam);
+router.post("/submit", submitExam)
 
 // Get progress
-router.get("/progress/:userId", getUserProgress);
+router.get("/progress/:userId", getUserProgress)
 
-module.exports = router;
+module.exports = router

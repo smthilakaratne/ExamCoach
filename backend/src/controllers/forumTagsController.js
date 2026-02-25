@@ -4,7 +4,9 @@ const ForumTag = require("../models/ForumTag")
 
 const getTags = async (req, res, next) => {
     try {
-        const tags = await ForumTag.find({})
+        const tags = await ForumTag.find({
+            name: { $regex: req.query.q || "", $options: "i" },
+        })
         return createResponse(res, StatusCodes.OK, { tags })
     } catch (error) {
         console.error(error)

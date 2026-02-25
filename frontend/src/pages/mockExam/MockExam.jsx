@@ -1,17 +1,17 @@
-import { useEffect, useState } from "react";
-import Question from "../../components/QuestionCard";
-import { useLocation, useNavigate } from "react-router-dom";
-import { startExam, submitExam } from "../../services/mockExamApi";
+import { useEffect, useState } from "react"
+import Question from "../../components/QuestionCard"
+import { useLocation, useNavigate } from "react-router-dom"
+import { startExam, submitExam } from "../../services/mockExamApi"
 
 export default function MockExam() {
-  const [questions, setQuestions] = useState([]);
-  const [answers, setAnswers] = useState({});
-  const [loading, setLoading] = useState(true);
-   const fixedUserId = "64f1c5a2f9a0b123456789ab"; // fixed userId
+  const [questions, setQuestions] = useState([])
+  const [answers, setAnswers] = useState({})
+  const [loading, setLoading] = useState(true)
+  const fixedUserId = "64f1c5a2f9a0b123456789ab" // fixed userId
 
-  const location = useLocation();
-  const navigate = useNavigate();
-  const level = location.state?.level;
+  const location = useLocation()
+  const navigate = useNavigate()
+  const level = location.state?.level
   //var q_id=0;
 
   /* 
@@ -57,59 +57,65 @@ export default function MockExam() {
     if (level) {
       startExam(level)
         .then((res) => {
-          setQuestions(res.data.questions);
-          setLoading(false);
+          setQuestions(res.data.questions)
+          setLoading(false)
         })
         .catch((err) => {
-          console.error(err);
-          setLoading(false);
-        });
+          console.error(err)
+          setLoading(false)
+        })
     }
-  }, [level]);
+  }, [level])
 
   const selectAnswer = (qId, index) => {
-    setAnswers({ ...answers, [qId]: index });
-  };
+    setAnswers({ ...answers, [qId]: index })
+  }
 
   const handleSubmit = async () => {
     try {
       const res = await submitExam({
-       userId: fixedUserId,
-       level,
-      answers
-    }); // backend calculates score
-      const score = res.data.score; // backend returns score in percentage
-      
+        userId: fixedUserId,
+        level,
+        answers,
+      }) // backend calculates score
+      const score = res.data.score // backend returns score in percentage
+
       // Navigate to result page with score and answers
       navigate("/mock-exam/exam-result", {
-      state: { fixedUserId, level, questions:res.data.questions, answers, score },
-    });
+        state: {
+          fixedUserId,
+          level,
+          questions: res.data.questions,
+          answers,
+          score,
+        },
+      })
     } catch (err) {
-      console.error(err);
-      alert("Error submitting exam");
+      console.error(err)
+      alert("Error submitting exam")
     }
-  };
+  }
 
-  if (!level) return <p>No level selected</p>;
-  if (loading) return <p>Loading questions...</p>;
+  if (!level) return <p>No level selected</p>
+  if (loading) return <p>Loading questions...</p>
 
   return (
     <div>
       <h1>{level} Exam</h1>
 
       {questions.map((q, index) => (
-        <div  key={q._id + index}>
-        <h3>Question {index + 1}</h3>
-        <Question
-          key={q._id}
-          question={q}
-          selectedAnswer={answers[q._id]}
-          onSelect={selectAnswer}
-        />
+        <div key={q._id + index}>
+          <h3>Question {index + 1}</h3>
+          <Question
+            key={q._id}
+            question={q}
+            selectedAnswer={answers[q._id]}
+            onSelect={selectAnswer}
+          />
         </div>
       ))}
 
       <button onClick={handleSubmit}>Submit Exam</button>
     </div>
-  );
+  )
 }

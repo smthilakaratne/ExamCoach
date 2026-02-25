@@ -37,7 +37,7 @@ export default function AdminDashboard() {
         totalContents: contentsData.body?.length || 0,
         totalDownloads: contentsData.body?.reduce(
           (sum, content) => sum + (content.downloads || 0),
-          0
+          0,
         ),
       })
 
@@ -161,8 +161,6 @@ export default function AdminDashboard() {
             </div>
           </div>
         </div>
-
-        
 
         {/* Recent Content */}
         <div className="bg-white rounded-lg shadow p-6">
