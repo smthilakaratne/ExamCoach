@@ -6,32 +6,25 @@ import ForumTag from "../../components/tag"
 import Container from "../../components/container"
 import { useState } from "react"
 import { useEffect } from "react"
+import { getForumTags } from "../../services/forumApi"
 
 const { VITE_API_URL } = import.meta.env
 
 export default function Forum() {
   const [threads, setThreads] = useState([])
   const hotTodayQuestions = threads?.slice(0, 3) ?? []
-  const tags = [
-    "tag1",
-    "tag2",
-    "tag3",
-    "random-tag",
-    "python",
-    "tag4",
-    "tag5",
-    "javascript",
-    "tag6",
-    "tag7",
-  ]
+  const [tags, setTags] = useState([])
 
   useEffect(() => {
     ;(async () => {
       const response = await fetch(`${VITE_API_URL}/api/forum`)
       const result = await response.json()
-      console.log(result?.body ?? [])
       setThreads(result?.body ?? [])
     })()
+  }, [])
+
+  useEffect(() => {
+    getForumTags().then(setTags)
   }, [])
 
   return (
@@ -122,13 +115,16 @@ export default function Forum() {
               <span>Explore tags</span>
             </h3>
             <div className="flex flex-wrap gap-2 my-4">
-              {tags.slice(0, 10).map((tag, index) => (
-                <ForumTag
-                  key={`tag-${index}`}
-                  name={tag}
-                  className="cursor-pointer hover:bg-gray-400"
-                />
-              ))}
+              {tags
+                .map((tag) => tag.name)
+                .slice(0, 10)
+                .map((tag, index) => (
+                  <ForumTag
+                    key={`tag-${index}`}
+                    name={tag}
+                    className="cursor-pointer hover:bg-gray-400"
+                  />
+                ))}
             </div>
             <Link to="./tags">Explore more tags</Link>
           </section>

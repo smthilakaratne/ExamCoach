@@ -1,78 +1,85 @@
-import { Flame, Search } from "lucide-react"
+import { Flame, Plus, Search } from "lucide-react"
 import Button from "../../components/button"
 import ForumTag from "../../components/tag"
 import DetailedTagContainer from "../../components/detailedTagContainer"
-
-const dummyDetailedTag = {
-  name: "sample-tag",
-  description:
-    "Lorem ipsum dolor sit amet consectetur adipisicing elit. Explicabo voluptates facere natus officiis sunt sequi debitis laudantium repudiandae nemo facilis, unde, quisquam ratione, non ipsam molestias ea illo qui vero!",
-  relatedTopics: 999,
-}
+import { getForumTags } from "../../services/forumApi"
+import { useState } from "react"
+import { useEffect } from "react"
+import CreateTagModel from "./models/createTagModel"
 
 export default function ForumTags() {
-  const tags = [
-    "tag1",
-    "tag2",
-    "tag3",
-    "random-tag",
-    "python",
-    "tag4",
-    "tag5",
-    "javascript",
-    "tag6",
-    "tag7",
-  ]
+  const [tags, setTags] = useState([])
+  const [refreshTags, setRefreshTags] = useState(false)
+  const [searchValue, setSearhcValue] = useState("")
+  const [createTagModelOpen, setCreateModelOpen] = useState(false)
+  const filteredTags = tags.filter((tag) =>
+    tag.name.match(new RegExp(".*" + searchValue + ".*")),
+  )
 
-  const detailedTags = [
-    dummyDetailedTag,
-    dummyDetailedTag,
-    dummyDetailedTag,
-    dummyDetailedTag,
-    dummyDetailedTag,
-  ]
+  useEffect(() => {
+    getForumTags().then(setTags)
+  }, [refreshTags])
 
   return (
-    <main className="m-4">
-      <section className="flex gap-2 justify-between items-center">
-        <input
-          type="search"
-          className="ring-1 ring-gray-300 px-4 py-2 rounded-sm flex-auto"
-        />
-        <Button className="flex gap-2 items-center">
-          <Search className="size-5" />
-          <span>Search</span>
-        </Button>
-      </section>
-
-      <div className="flex gap-3 justify-between my-3">
-        <section className="flex-auto">
-          <h3 className="text-xl my-3">999 tags</h3>
-          <section>
-            {detailedTags.map((thread, index) => (
-              <DetailedTagContainer key={`thread-${index}`} {...thread} />
-            ))}
-          </section>
+    <>
+      <CreateTagModel
+        isOpen={createTagModelOpen}
+        setIsOpen={setCreateModelOpen}
+        setRefreshTags={setRefreshTags}
+      />
+      <main className="m-4">
+        <section className="flex gap-2 justify-between items-center">
+          <input
+            type="search"
+            className="ring-1 ring-gray-300 px-4 py-2 rounded-sm flex-auto"
+            value={searchValue}
+            onChange={(evt) => setSearhcValue(evt.target.value)}
+          />
+          <Button className="flex gap-2 items-center">
+            <Search className="size-5" />
+            <span>Search</span>
+          </Button>
         </section>
 
-        <section className="border-l border-l-gray-300 pl-6 py-5 max-w-md">
-          <h3 className="text-xl my-3 font-bold flex gap-2 items-center">
-            <Flame className="text-orange-400" />
-            <span>Popular tags</span>
-          </h3>
-          <div className="flex flex-wrap gap-2 my-4">
-            {[...tags, ...tags, ...tags, ...tags, ...tags, ...tags]
-              .slice(0, 100)
-              .map((tag, index) => (
-                <ForumTag
-                  key={`tag-${index}`}
-                  name={tag}
-                  className="cursor-pointer hover:bg-gray-400"
-                />
+        <div className="flex gap-3 justify-between my-3">
+          <section className="flex-auto">
+            <div className="flex justify-between items-center">
+              <h3 className="text-xl my-3">{filteredTags?.length ?? 0} tags</h3>
+              <Button
+                className="flex gap-2 items-center"
+                onClick={() => setCreateModelOpen(true)}
+              >
+                <Plus />
+                <span>Create new tag</span>
+              </Button>
+            </div>
+            <section>
+              {filteredTags.map((tag, index) => (
+                <DetailedTagContainer key={`tag-${index}`} {...tag} />
               ))}
-          </div>
-        </section>
-      </div>
-    </main>
+            </section>
+          </section>
+
+          <section className="border-l border-l-gray-300 pl-6 py-5 max-w-md">
+            <h3 className="text-xl my-3 font-bold flex gap-2 items-center">
+              <Flame className="text-orange-400" />
+              <span>Popular tags</span>
+            </h3>
+            <div className="flex flex-wrap gap-2 my-4">
+              {tags
+                .map((tag) => tag.name)
+                .slice(0, 100)
+                .map((tag, index) => (
+                  <ForumTag
+                    key={`tag-${index}`}
+                    name={tag}
+                    className="cursor-pointer hover:bg-gray-400"
+                  />
+                ))}
+            </div>
+          </section>
+        </div>
+      </main>
+    </>
   )
 }
