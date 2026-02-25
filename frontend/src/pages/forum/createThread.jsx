@@ -4,11 +4,26 @@ import Container from "../../components/container"
 import MarkdownContent from "../../components/markdownContent"
 import TextEditor from "../../components/textEditor"
 
+const { VITE_API_URL } = import.meta.env
+
 export default function CreateThread() {
+  const [title, setTitle] = useState("")
   const [body, setBody] = useState("")
+  const [tags, setTags] = useState([])
 
   const handleSubmit = async (evt) => {
     evt.preventDefault()
+    const response = await fetch(`${VITE_API_URL}/api/forum`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ title, body, tags }),
+    })
+    const result = await response.json()
+    if (response.ok)
+      window.location.href = `/community/forum/${result?.body?.thread?._id ?? ""}`
+    else console.error(result)
   }
 
   return (
@@ -27,6 +42,8 @@ export default function CreateThread() {
             id="title"
             className="ring-1 ring-gray-300 px-4 py-2 my-2 rounded-sm flex-auto"
             placeholder="Enter your topic's title here"
+            value={title}
+            onChange={(evt) => setTitle(evt.target.value)}
             required
           />
         </fieldset>
@@ -57,7 +74,6 @@ export default function CreateThread() {
             id="tags"
             className="ring-1 ring-gray-300 px-4 py-2 my-2 rounded-sm flex-auto"
             placeholder="Add up to 5 tags. Type a tag and select it from the list."
-            required
           />
         </fieldset>
         <Button type="submit">Create</Button>
