@@ -1,28 +1,25 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom"
 
 export default function AnswerCard({ question, userAnswer }) {
-const location = useLocation();
-  const { questions, answers } = location.state || {};
-  
+  const location = useLocation()
+  const { questions, answers } = location.state || {}
+
   return (
     <div style={{ marginBottom: "25px" }}>
       <h3>{question.question}</h3>
 
       <ul style={{ listStyle: "none", padding: 0 }}>
         {question.options.map((option, idx) => {
-          let bgColor = "white";
+          let bgColor = "white"
 
           // correct answer
           if (idx === question.correctAnswer) {
-            bgColor = "#c8f7c5"; // light green
+            bgColor = "#c8f7c5" // light green
           }
 
           // wrong selected answer
-          if (
-            userAnswer === idx &&
-            idx !== question.correctAnswer
-          ) {
-            bgColor = "#f7c5c5"; // light red
+          if (userAnswer === idx && idx !== question.correctAnswer) {
+            bgColor = "#f7c5c5" // light red
           }
 
           return (
@@ -38,7 +35,7 @@ const location = useLocation();
             >
               {option}
             </li>
-          );
+          )
         })}
       </ul>
 
@@ -48,5 +45,5 @@ const location = useLocation();
         </p>
       )}
     </div>
-  );
+  )
 }

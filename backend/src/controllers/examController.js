@@ -1,43 +1,41 @@
-const Exam = require("../models/Exam");
-const Question = require("../models/Questions");
+const Exam = require("../models/Exam")
+const Question = require("../models/Questions")
 
 async function startExam(req, res) {
-  try {
-    const { level } = req.body;
+    try {
+        const { level } = req.body
 
-    if (!level) {
-      return res.status(400).json({ message: "Level is required" });
-    }
-
-    const questions = await Question.aggregate([
-      { $match: { level } },
-      { $sample: { size: 20 } },
-      {
-        $project: {
-          _id:1,
-          questionText: 1,
-          options: 1
-          // do NOT send correctAnswer
+        if (!level) {
+            return res.status(400).json({ message: "Level is required" })
         }
-      }
-    ]);
 
-    if (questions.length === 0) {
-      return res.status(404).json({
-        message: "No questions found for this level"
-      });
+        const questions = await Question.aggregate([
+            { $match: { level } },
+            { $sample: { size: 20 } },
+            {
+                $project: {
+                    _id: 1,
+                    questionText: 1,
+                    options: 1,
+                    // do NOT send correctAnswer
+                },
+            },
+        ])
+
+        if (questions.length === 0) {
+            return res.status(404).json({
+                message: "No questions found for this level",
+            })
+        }
+
+        res.status(200).json({ questions })
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ message: "Server error" })
     }
+}
 
-    res.status(200).json({ questions });
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error" });
-  }
-};
-
-module.exports = { startExam};
-
+module.exports = { startExam }
 
 /* Example answer key for scoring
 const answerKey = {

@@ -31,7 +31,7 @@ const subjectSchema = new mongoose.Schema(
     },
     {
         timestamps: true,
-    }
+    },
 )
 
 // Compound index to ensure unique subject per exam level

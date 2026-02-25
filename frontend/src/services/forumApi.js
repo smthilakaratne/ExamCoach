@@ -15,8 +15,10 @@ export const postComment = async (threadId, body) => {
   return response
 }
 
-export const getForumTags = async () => {
-  const response = await axios.get(`${VITE_API_URL}/api/forum/tags`)
+export const getForumTags = async (query) => {
+  const response = await axios.get(`${VITE_API_URL}/api/forum/tags`, {
+    params: query ? { q: query } : {},
+  })
   return response?.data?.body?.tags ?? []
 }
 

@@ -7,6 +7,7 @@ const router = express.Router()
  * GET /api/forum/tags
  * @summary Get all forum tags
  * @tags forum
+ * @param {String} q.query
  * @return {ForumTag[]} 200 - OK - application/json
  * @return {object} 500 - Internal Server Error - applicatiosn/json
  */
