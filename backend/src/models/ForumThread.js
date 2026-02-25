@@ -8,12 +8,17 @@ const mongoose = require("mongoose")
  * @property {[]string} tags - List of strings
  */
 
+/**
+ * A forum thread answer/comment
+ * @typedef {object} ForumThreadAnswer
+ * @property {string} body.required - Body content
+ */
+
 const answerSchema = new mongoose.Schema(
     {
         body: {
             type: String,
             required: [true, "body is required"],
-            trim: true,
         },
         isCorrectAnswer: {
             type: Boolean,

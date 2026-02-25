@@ -9,21 +9,33 @@ import Container from "../../components/container"
 import ThreadReply from "../../components/threadReply"
 import { useEffect } from "react"
 import { useParams } from "react-router-dom"
+import { postComment } from "../../services/forumApi"
+import axios from "axios"
 
 const { VITE_API_URL } = import.meta.env
 
 export default function Thread() {
   const [thread, setThread] = useState({})
+  const [refreshThread, setRefreshThread] = useState(false)
   const [replyBody, setReplyBody] = useState("")
   const params = useParams()
 
   useEffect(() => {
-    (async () => {
+    ;(async () => {
       const response = await fetch(`${VITE_API_URL}/api/forum/${params.id}`)
       const result = await response.json()
       setThread(result?.body?.thread || {})
     })()
-  }, [])
+  }, [refreshThread])
+
+  const handlePostComment = async (event) => {
+    event.preventDefault()
+    const result = await postComment(params.id, { body: replyBody })
+    if (result.status === axios.HttpStatusCode.Created) {
+      setRefreshThread((prev) => !prev)
+      setReplyBody("")
+    }
+  }
 
   return (
     <main className="m-4 mx-28">
@@ -92,7 +104,7 @@ export default function Thread() {
             This thread hasn’t been answered yet. Be the first to reply!
           </p>
         ) : (
-          (thread?.replies || []).map((reply, index) => (
+          (thread?.answers || []).map((reply, index) => (
             <ThreadReply key={`reply-${index}`} {...reply} />
           ))
         )}
@@ -100,7 +112,7 @@ export default function Thread() {
       <br />
       <section>
         <h3 className="text-xl my-3">Your Answer</h3>
-        <form>
+        <form onSubmit={handlePostComment}>
           <TextEditor text={replyBody} setText={setReplyBody} />
           <h5 className="text-base font-bold my-3">Preview</h5>
           <Container className="px-8 mb-5">

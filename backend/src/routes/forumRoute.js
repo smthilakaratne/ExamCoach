@@ -1,14 +1,19 @@
 const express = require("express")
 const router = express.Router()
 
-const { getThreads, createThread, getThread } = require("../controllers/forumController")
-const ForumThread = require("../models/ForumThread")
+const {
+    getThreads,
+    createThread,
+    getThread,
+    createThreadComment,
+} = require("../controllers/forumController")
+const ForumThread= require("../models/ForumThread")
 
 /**
  * GET /api/forum
  * @summary Get all forum threads
  * @tags forum
- * @return {ForumThread[]} 200 - Forum threads - application/json 
+ * @return {ForumThread[]} 200 - Forum threads - application/json
  * @return {object} 500 - Internal Server Error - application/json
  */
 router.get("/", getThreads)
@@ -42,5 +47,17 @@ router.post("/", createThread)
  * @return {object} 500 - Internal Server Error - application/json
  */
 router.get("/:id", getThread)
+
+/**
+ * POST /api/forum/{id}/comments
+ * @summary Post a comment on a thread
+ * @tags forum
+ * @param {string} id.path Thread id
+ * @param {ForumThreadAnswer} request.body
+ * @return {ForumThread} 201 - OK - application/json
+ * @return {object} 400 - Bad Request - application/json
+ * @return {object} 500 - Internal Server Error - applicatiosn/json
+ */
+router.post("/:id/comments", createThreadComment)
 
 module.exports = router
