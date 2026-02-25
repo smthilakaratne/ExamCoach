@@ -45,3 +45,27 @@ async function submitExam(req, res) {
 }
 
 module.exports = { submitExam };
+
+/*// backend/controllers/submissionController.js
+
+const submissionService = require("../services/submissionService");
+
+async function submitExam(req, res) {
+  try {
+    const result = await submissionService.submit(req.body);
+
+    return res.json({
+      success: true,
+      score: result.score,
+      questions: result.questions
+    });
+
+  } catch (error) {
+    return res.status(error.status || 500).json({
+      success: false,
+      message: error.message
+    });
+  }
+}
+
+module.exports = { submitExam }; */

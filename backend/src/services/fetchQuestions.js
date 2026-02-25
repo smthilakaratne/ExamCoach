@@ -16,4 +16,5 @@ const fetchQuestionsFromAPI = async (level) => {
   return response.data.results;
 };
 
+
 module.exports = { fetchQuestionsFromAPI };

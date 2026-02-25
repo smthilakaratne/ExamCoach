@@ -6,7 +6,6 @@ export default function PreviewQuestions() {
   const [questions, setQuestions] = useState([]);
   const [level, setLevel] = useState("easy");
   const [subject, setSubject] = useState("math");
-  const [selectedQuestions, setSelectedQuestions] = useState([]);
   const navigate = useNavigate();
 
   const fetchQuestions = async () => {
@@ -21,25 +20,8 @@ export default function PreviewQuestions() {
       */
   };
 
-  const handleAdd = (question) => {
-  setSelectedQuestions((prev) => [...prev, question]);
-};
-
-const handleImport = async () => {
-  try {
-    await axios.post(
-      "http://localhost:8888/api/questions/import",
-      {
-        questions: selectedQuestions,
-        subjectId: "12345", 
-      }
-    );
-
-    alert("Questions imported successfully");
-  } catch (error) {
-    console.error("Import failed:", error);
-  }
-};
+  if (questions.length === 0) {
+    return (<p>No questions available for the selected level.</p>); }
 
   return (
     <div>
@@ -58,8 +40,7 @@ const handleImport = async () => {
       </select>
 
       <button onClick={fetchQuestions}>Fetch Questions</button>
-      
-        {questions.length === 0 && <p>No questions available</p>}
+
       <div>
         {questions.map((q, index) => (
           <div key={index}>
@@ -69,10 +50,10 @@ const handleImport = async () => {
                 <li key={i}>{opt}</li>
               ))}
             </ul>
-            <button onClick={() => {}}>Add Question</button>
+            <button onClick={() => {}}>Remove Question</button>
+            <button onClick={() => {}}>Edit Question</button>
           </div>
         ))}
-        <button onClick={handleImport}>Import Selected</button>
         <button>View More</button>
       </div>
     </div>
