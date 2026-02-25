@@ -30,6 +30,7 @@ const createThread = async (req, res, next) => {
                     message: error.errors[key].message,
                 })),
             )
+        console.error(error)
         next(err)
     }
 }
@@ -48,4 +49,35 @@ const getThread = async (req, res, next) => {
     }
 }
 
-module.exports = { getThreads, createThread, getThread }
+const createThreadComment = async (req, res, next) => {
+    try {
+        const threadId = req.params.id
+        if (!mongoose.isValidObjectId(threadId))
+            return createResponse(res, StatusCodes.BAD_REQUEST, "Invalid thread ID")
+        const thread = await ForumThread.findByIdAndUpdate(
+            threadId,
+            {
+                $push: {
+                    answers: { ...req.body, createdBy: { name: "Sample user" } },
+                },
+            },
+            { new: true, runValidators: true },
+        )
+        if (!thread) return createResponse(res, StatusCodes.NOT_FOUND, "Thread not found")
+        return createResponse(res, StatusCodes.CREATED, { thread })
+    } catch (error) {
+        if (error instanceof mongoose.Error.ValidationError)
+            return createResponse(
+                res,
+                StatusCodes.BAD_REQUEST,
+                Object.keys(error.errors).map((key) => ({
+                    field: key,
+                    message: error.errors[key].message,
+                })),
+            )
+        console.error(error)
+        next(error)
+    }
+}
+
+module.exports = { getThreads, createThread, getThread, createThreadComment }
