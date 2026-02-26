@@ -20,7 +20,7 @@ function App() {
         {/* Public Routes */}
         <Route index element={<Home />} />
         <Route path="community">
-          <Route path="forum">
+          <Route path="forum" element={<Forum.Layout />}>
             <Route index element={<Forum.Forum />} />
             <Route path="tags" element={<Forum.Tags />} />
             <Route path="new" element={<Forum.CreateThread />} />
@@ -31,8 +31,14 @@ function App() {
         {/* Student Browse Routes - NEW */}
         <Route path="browse">
           <Route path=":levelId" element={<BrowseSubjects />} />
-          <Route path=":levelId/subject/:subjectId" element={<ContentCategories />} />
-          <Route path=":levelId/subject/:subjectId/content/:contentType" element={<ContentList />} />
+          <Route
+            path=":levelId/subject/:subjectId"
+            element={<ContentCategories />}
+          />
+          <Route
+            path=":levelId/subject/:subjectId/content/:contentType"
+            element={<ContentList />}
+          />
         </Route>
 
         <Route path="mock-exam">
@@ -48,7 +54,6 @@ function App() {
           <Route path="exam-levels" element={<ExamLevels />} />
           <Route path="subjects" element={<Subjects />} />
           <Route path="content" element={<ContentManagement />} />
-          
         </Route>
       </Routes>
     </BrowserRouter>
