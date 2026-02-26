@@ -58,6 +58,20 @@ export const postComment = async (threadId, body) => {
   return response
 }
 
+export const updateComment = async (threadId, commentId, body) => {
+  const response = await axios.patch(
+    `${VITE_API_URL}/api/forum/${threadId}/comments/${commentId}`,
+    JSON.stringify({ body }),
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    },
+  )
+  if (response.status !== axios.HttpStatusCode.Ok)
+    throw new Error(response?.data?.body || response.statusText)
+}
+
 export const deleteComment = async (threadId, commentId) => {
   const response = await axios.delete(
     `${VITE_API_URL}/api/forum/${threadId}/comments/${commentId}`,
