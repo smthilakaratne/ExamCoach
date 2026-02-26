@@ -40,7 +40,14 @@ const getThread = async (req, res, next) => {
         const threadId = req.params.id
         if (!mongoose.isValidObjectId(threadId))
             return createResponse(res, StatusCodes.BAD_REQUEST, "Invalid thread ID")
-        const thread = await ForumThread.findById(threadId)
+        // requires an update for the view counter
+        const thread = await ForumThread.findByIdAndUpdate(
+            threadId,
+            {
+                $inc: { views: 1 },
+            },
+            { new: true },
+        )
         if (!thread) return createResponse(res, StatusCodes.NOT_FOUND, "Thread not found")
         return createResponse(res, StatusCodes.OK, { thread })
     } catch (error) {
