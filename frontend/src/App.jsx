@@ -20,7 +20,7 @@ function App() {
         {/* Public Routes */}
         <Route index element={<Home />} />
         <Route path="community">
-          <Route path="forum">
+          <Route path="forum" element={<Forum.Layout />}>
             <Route index element={<Forum.Forum />} />
             <Route path="tags" element={<Forum.Tags />} />
             <Route path="new" element={<Forum.CreateUpdateThread />} />

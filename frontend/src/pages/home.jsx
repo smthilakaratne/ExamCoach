@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
-import { GraduationCap, BookOpen, Search, TrendingUp } from "lucide-react"
+import { BookOpen, Search, TrendingUp } from "lucide-react"
+import Navbar from "../components/navbar"
+import Footer from "../components/footer"
 
 export default function Home() {
   const [examLevels, setExamLevels] = useState([])
@@ -46,36 +48,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      {/* Navigation Bar */}
-      <nav className="bg-white shadow-md sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
-            <GraduationCap className="w-8 h-8 text-indigo-600" />
-            <h1 className="text-2xl font-bold text-gray-900">ExamCoach</h1>
-          </Link>
-          <div className="flex items-center gap-6">
-            <Link
-              to="/about"
-              className="text-gray-700 hover:text-indigo-600 font-medium"
-            >
-              About
-            </Link>
-            <Link
-              to="/community/forum"
-              className="text-gray-700 hover:text-indigo-600 font-medium"
-            >
-              Forum
-            </Link>
-            <Link
-              to="/contact"
-              className="text-gray-700 hover:text-indigo-600 font-medium"
-            >
-              Contact
-            </Link>
-          </div>
-        </div>
-      </nav>
-
+      <Navbar />
       {/* Hero Section */}
       <div className="max-w-7xl mx-auto px-4 py-16">
         <div className="text-center mb-16">
@@ -150,9 +123,7 @@ export default function Home() {
                     <div className="mt-6 text-center">
                       <span
                         className={`${
-                          index % 2 === 0
-                            ? "text-blue-600"
-                            : "text-green-600"
+                          index % 2 === 0 ? "text-blue-600" : "text-green-600"
                         } font-semibold text-lg group-hover:underline`}
                       >
                         Explore Subjects →
@@ -239,7 +210,7 @@ export default function Home() {
                   <div className="flex items-start justify-between mb-3">
                     <span
                       className={`text-xs font-semibold px-3 py-1 rounded-full ${getContentTypeColor(
-                        content.contentType
+                        content.contentType,
                       )}`}
                     >
                       {content.contentType.replace("_", " ")}
@@ -275,77 +246,9 @@ export default function Home() {
             Join thousands of students who are achieving their exam goals with
             ExamCoach
           </p>
-          
         </div>
       </div>
-
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12 mt-20">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-            <div>
-              <div className="flex items-center gap-2 mb-4">
-                <GraduationCap className="w-8 h-8 text-indigo-400" />
-                <h3 className="text-xl font-bold">ExamCoach</h3>
-              </div>
-              <p className="text-gray-400 text-sm">
-                Your comprehensive exam preparation platform for A/L and O/L
-                students in Sri Lanka.
-              </p>
-            </div>
-            <div>
-              <h4 className="font-bold mb-4">Quick Links</h4>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li>
-                  <Link to="/" className="hover:text-white">
-                    Home
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/about" className="hover:text-white">
-                    About Us
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/community/forum" className="hover:text-white">
-                    Forum
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-bold mb-4">Resources</h4>
-              <ul className="space-y-2 text-sm text-gray-400">
-                {examLevels.map((level) => (
-                  <li key={level._id}>
-                    <Link
-                      to={`/browse/${level._id}`}
-                      className="hover:text-white"
-                    >
-                      {level.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-bold mb-4">Contact</h4>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li>Email: info@examcoach.lk</li>
-                <li>Phone: +94 11 234 5678</li>
-                <li>
-                  <Link to="/contact" className="hover:text-white">
-                    Contact Form
-                  </Link>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-gray-800 pt-8 text-center text-gray-400 text-sm">
-            <p>© 2026 ExamCoach. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }

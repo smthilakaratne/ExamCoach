@@ -41,7 +41,7 @@ export default function Thread() {
         setIsOpen={setDeleteThreadModelOpen}
         threadId={thread?._id}
       />
-      <main className="m-4 mx-28">
+      <main>
         <div className="flex justify-between items-center">
           <h1 className="text-4xl font-bold my-5">{thread?.title}</h1>
           <div className="flex gap-1 items-center">

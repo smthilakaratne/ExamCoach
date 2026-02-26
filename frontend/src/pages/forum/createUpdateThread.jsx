@@ -130,7 +130,7 @@ export default function CreateUpdateThread() {
   }, [isCreating])
 
   return (
-    <main className="m-6 mx-28">
+    <main>
       <h2 className="text-2xl my-6 font-bold">
         {isCreating ? "Ask a new question" : "Edit thread"}
       </h2>
