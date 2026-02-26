@@ -64,7 +64,7 @@ export default function Subjects() {
         alert(
           editingSubject
             ? "Subject updated successfully!"
-            : "Subject created successfully!"
+            : "Subject created successfully!",
         )
         setShowForm(false)
         setEditingSubject(null)

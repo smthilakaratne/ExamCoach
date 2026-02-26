@@ -12,7 +12,11 @@ router.post("/", async (req, res) => {
 
         // Validation
         if (!name || !code || !examLevel) {
-            return createResponse(res, StatusCodes.BAD_REQUEST, "Name, code, and exam level are required")
+            return createResponse(
+                res,
+                StatusCodes.BAD_REQUEST,
+                "Name, code, and exam level are required",
+            )
         }
 
         // Check if exam level exists
@@ -24,7 +28,11 @@ router.post("/", async (req, res) => {
         // Check if subject already exists for this exam level
         const existingSubject = await Subject.findOne({ name, examLevel })
         if (existingSubject) {
-            return createResponse(res, StatusCodes.CONFLICT, "Subject already exists for this exam level")
+            return createResponse(
+                res,
+                StatusCodes.CONFLICT,
+                "Subject already exists for this exam level",
+            )
         }
 
         // Create new subject
@@ -49,15 +57,13 @@ router.post("/", async (req, res) => {
 router.get("/", async (req, res) => {
     try {
         const { examLevel } = req.query
-        
+
         const filter = { isActive: true }
         if (examLevel) {
             filter.examLevel = examLevel
         }
 
-        const subjects = await Subject.find(filter)
-            .populate("examLevel")
-            .sort({ name: 1 })
+        const subjects = await Subject.find(filter).populate("examLevel").sort({ name: 1 })
 
         createResponse(res, StatusCodes.OK, subjects)
     } catch (error) {
@@ -70,7 +76,7 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
     try {
         const subject = await Subject.findById(req.params.id).populate("examLevel")
-        
+
         if (!subject) {
             return createResponse(res, StatusCodes.NOT_FOUND, "Subject not found")
         }
@@ -89,14 +95,14 @@ router.put("/:id", async (req, res) => {
 
         const subject = await Subject.findByIdAndUpdate(
             req.params.id,
-            { 
-                name, 
-                code: code?.toUpperCase(), 
+            {
+                name,
+                code: code?.toUpperCase(),
                 examLevel,
-                description, 
-                isActive 
+                description,
+                isActive,
             },
-            { new: true, runValidators: true }
+            { new: true, runValidators: true },
         ).populate("examLevel")
 
         if (!subject) {
@@ -116,7 +122,7 @@ router.delete("/:id", async (req, res) => {
         const subject = await Subject.findByIdAndUpdate(
             req.params.id,
             { isActive: false },
-            { new: true }
+            { new: true },
         )
 
         if (!subject) {

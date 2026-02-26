@@ -1,5 +1,13 @@
 import { useEffect, useState } from "react"
-import { Plus, Edit2, Trash2, Download, Eye, FileText, AlertCircle } from "lucide-react"
+import {
+  Plus,
+  Edit2,
+  Trash2,
+  Download,
+  Eye,
+  FileText,
+  AlertCircle,
+} from "lucide-react"
 
 export default function ContentManagement() {
   const [contents, setContents] = useState([])
@@ -11,7 +19,7 @@ export default function ContentManagement() {
   const [editingContent, setEditingContent] = useState(null)
   const [submitting, setSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState("")
-  
+
   // Filters
   const [filterLevel, setFilterLevel] = useState("all")
   const [filterSubject, setFilterSubject] = useState("all")
@@ -43,7 +51,7 @@ export default function ContentManagement() {
     // Filter subjects when exam level changes in form
     if (formData.examLevel) {
       const filtered = subjects.filter(
-        (s) => s.examLevel._id === formData.examLevel
+        (s) => s.examLevel._id === formData.examLevel,
       )
       setFilteredSubjects(filtered)
       console.log("Filtered subjects:", filtered)
@@ -55,7 +63,7 @@ export default function ContentManagement() {
   const fetchData = async () => {
     try {
       console.log("Fetching data...")
-      
+
       // Fetch all data
       const [levelsRes, subjectsRes, contentsRes] = await Promise.all([
         fetch("http://localhost:8888/api/exam-levels"),
@@ -78,7 +86,9 @@ export default function ContentManagement() {
       setLoading(false)
     } catch (error) {
       console.error("Failed to fetch data:", error)
-      setErrorMessage("Failed to load data. Make sure backend is running on port 8888.")
+      setErrorMessage(
+        "Failed to load data. Make sure backend is running on port 8888.",
+      )
       setLoading(false)
     }
   }
@@ -99,8 +109,14 @@ export default function ContentManagement() {
         throw new Error("Please select a subject")
       }
 
-      if (formData.contentType !== "lecture_video" && !questionFile && !editingContent) {
-        throw new Error("Please upload a file (PDF required for this content type)")
+      if (
+        formData.contentType !== "lecture_video" &&
+        !questionFile &&
+        !editingContent
+      ) {
+        throw new Error(
+          "Please upload a file (PDF required for this content type)",
+        )
       }
 
       const formDataToSend = new FormData()
@@ -109,21 +125,33 @@ export default function ContentManagement() {
       formDataToSend.append("title", formData.title)
       formDataToSend.append("subject", formData.subject)
       formDataToSend.append("contentType", formData.contentType)
-      
-      if (formData.description) formDataToSend.append("description", formData.description)
+
+      if (formData.description)
+        formDataToSend.append("description", formData.description)
       if (formData.year) formDataToSend.append("year", formData.year)
       if (formData.term) formDataToSend.append("term", formData.term)
       if (formData.unit) formDataToSend.append("unit", formData.unit)
       if (formData.tags) formDataToSend.append("tags", formData.tags)
-      if (formData.videoUrl) formDataToSend.append("videoUrl", formData.videoUrl)
+      if (formData.videoUrl)
+        formDataToSend.append("videoUrl", formData.videoUrl)
 
       // Add files
       if (questionFile) {
-        console.log("Appending question file:", questionFile.name, questionFile.size, "bytes")
+        console.log(
+          "Appending question file:",
+          questionFile.name,
+          questionFile.size,
+          "bytes",
+        )
         formDataToSend.append("file", questionFile)
       }
       if (answerFile) {
-        console.log("Appending answer file:", answerFile.name, answerFile.size, "bytes")
+        console.log(
+          "Appending answer file:",
+          answerFile.name,
+          answerFile.size,
+          "bytes",
+        )
         formDataToSend.append("answerSheet", answerFile)
       }
 
@@ -159,23 +187,25 @@ export default function ContentManagement() {
         alert(
           editingContent
             ? "Content updated successfully!"
-            : "Content created successfully!"
+            : "Content created successfully!",
         )
         handleCancel()
         fetchData()
       } else {
         // Show detailed error from backend
-        const errorMsg = typeof data.body === 'string' 
-          ? data.body 
-          : data.statusMessage || "Operation failed"
-        
+        const errorMsg =
+          typeof data.body === "string"
+            ? data.body
+            : data.statusMessage || "Operation failed"
+
         console.error("Backend error:", errorMsg)
         setErrorMessage(errorMsg)
         alert(`Error: ${errorMsg}`)
       }
     } catch (error) {
       console.error("Submit error:", error)
-      const errorMsg = error.message || "Operation failed. Check console for details."
+      const errorMsg =
+        error.message || "Operation failed. Check console for details."
       setErrorMessage(errorMsg)
       alert(errorMsg)
     } finally {
@@ -243,10 +273,7 @@ export default function ContentManagement() {
   }
 
   const handleDownload = (fileId, fileName) => {
-    window.open(
-      `http://localhost:8888/api/files/download/${fileId}`,
-      "_blank"
-    )
+    window.open(`http://localhost:8888/api/files/download/${fileId}`, "_blank")
   }
 
   const handleView = (fileId) => {
@@ -317,7 +344,8 @@ export default function ContentManagement() {
         {examLevels.length === 0 && (
           <div className="bg-yellow-50 border-2 border-yellow-200 rounded-lg p-4 mb-6">
             <p className="text-yellow-800 font-medium">
-              ⚠️ No exam levels found. Please create exam levels first in the Exam Levels page.
+              ⚠️ No exam levels found. Please create exam levels first in the
+              Exam Levels page.
             </p>
           </div>
         )}
@@ -325,7 +353,8 @@ export default function ContentManagement() {
         {subjects.length === 0 && examLevels.length > 0 && (
           <div className="bg-yellow-50 border-2 border-yellow-200 rounded-lg p-4 mb-6">
             <p className="text-yellow-800 font-medium">
-              ⚠️ No subjects found. Please create subjects first in the Subjects page.
+              ⚠️ No subjects found. Please create subjects first in the Subjects
+              page.
             </p>
           </div>
         )}
@@ -373,7 +402,8 @@ export default function ContentManagement() {
                   </h3>
                   {filteredSubjects.length === 0 ? (
                     <p className="text-red-600 bg-red-50 p-3 rounded">
-                      No subjects found for this exam level. Please create a subject first.
+                      No subjects found for this exam level. Please create a
+                      subject first.
                     </p>
                   ) : (
                     <select
@@ -399,7 +429,7 @@ export default function ContentManagement() {
               {/* Rest of the form... (Step 3 and 4 - same as before) */}
               {/* I'll keep the rest of the form the same to keep the file manageable */}
               {/* Copy steps 3 and 4 from the previous ContentManagement.jsx */}
-              
+
               {formData.subject && (
                 <>
                   {/* Step 3 content type selection */}
@@ -428,7 +458,10 @@ export default function ContentManagement() {
                             value={type.value}
                             checked={formData.contentType === type.value}
                             onChange={(e) => {
-                              console.log("Content type selected:", e.target.value)
+                              console.log(
+                                "Content type selected:",
+                                e.target.value,
+                              )
                               setFormData({
                                 ...formData,
                                 contentType: e.target.value,
@@ -467,31 +500,38 @@ export default function ContentManagement() {
                   )}
 
                   {/* File upload for non-video content */}
-                  {formData.contentType && formData.contentType !== "lecture_video" && (
-                    <div className="mb-4">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        {formData.contentType === "past_paper"
-                          ? "Upload Question Paper (PDF) *"
-                          : "Upload File (PDF) *"}
-                      </label>
-                      <input
-                        type="file"
-                        accept=".pdf"
-                        onChange={(e) => {
-                          const file = e.target.files[0]
-                          console.log("File selected:", file?.name, file?.size, "bytes")
-                          setQuestionFile(file)
-                        }}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                        required={!editingContent}
-                      />
-                      {questionFile && (
-                        <p className="text-sm text-green-600 mt-2">
-                          ✓ {questionFile.name} ({(questionFile.size / 1024 / 1024).toFixed(2)} MB)
-                        </p>
-                      )}
-                    </div>
-                  )}
+                  {formData.contentType &&
+                    formData.contentType !== "lecture_video" && (
+                      <div className="mb-4">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          {formData.contentType === "past_paper"
+                            ? "Upload Question Paper (PDF) *"
+                            : "Upload File (PDF) *"}
+                        </label>
+                        <input
+                          type="file"
+                          accept=".pdf"
+                          onChange={(e) => {
+                            const file = e.target.files[0]
+                            console.log(
+                              "File selected:",
+                              file?.name,
+                              file?.size,
+                              "bytes",
+                            )
+                            setQuestionFile(file)
+                          }}
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                          required={!editingContent}
+                        />
+                        {questionFile && (
+                          <p className="text-sm text-green-600 mt-2">
+                            ✓ {questionFile.name} (
+                            {(questionFile.size / 1024 / 1024).toFixed(2)} MB)
+                          </p>
+                        )}
+                      </div>
+                    )}
 
                   {/* Submit buttons */}
                   {formData.contentType && (
@@ -505,7 +545,11 @@ export default function ContentManagement() {
                             : "bg-purple-600 hover:bg-purple-700 text-white"
                         }`}
                       >
-                        {submitting ? "Uploading..." : editingContent ? "Update Content" : "Create Content"}
+                        {submitting
+                          ? "Uploading..."
+                          : editingContent
+                            ? "Update Content"
+                            : "Create Content"}
                       </button>
                       <button
                         type="button"

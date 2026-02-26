@@ -1,34 +1,18 @@
 const mongoose = require("mongoose")
+const Exam = require("./Exam")
 
-const examLevelSchema = new mongoose.Schema(
+const examSchema = new mongoose.Schema(
     {
-        name: {
+        userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+        level: { type: String, required: true }, // e.g., "Easy", "Intermediate"
+        subject: {
             type: String,
-            required: [true, "Exam level name is required"],
-            unique: true,
-            trim: true,
-            // e.g., "Advanced Level", "Ordinary Level"
+            required: true,
+            enum: ["Math", "Science", "English", "History", "Geography"],
         },
-        code: {
-            type: String,
-            required: [true, "Exam level code is required"],
-            unique: true,
-            uppercase: true,
-            trim: true,
-            // e.g., "AL", "OL"
-        },
-        description: {
-            type: String,
-            trim: true,
-        },
-        isActive: {
-            type: Boolean,
-            default: true,
-        },
+        score: { type: Number, required: true },
     },
-    {
-        timestamps: true, // adds createdAt and updatedAt
-    }
+    { timestamps: true },
 )
-
-module.exports = mongoose.model("ExamLevel", examLevelSchema)
+ExamLevel = mongoose.model("ExamLevel", examSchema)
+module.exports = ExamLevel

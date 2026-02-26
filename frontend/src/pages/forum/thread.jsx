@@ -7,39 +7,35 @@ import TextEditor from "../../components/textEditor"
 import { useState } from "react"
 import Container from "../../components/container"
 import ThreadReply from "../../components/threadReply"
+import { useEffect } from "react"
+import { useParams } from "react-router-dom"
+import { postComment } from "../../services/forumApi"
+import axios from "axios"
 
-const dummyReply = {
-  createdBy: {
-    name: "Seniru Pasan",
-  },
-  date: Date.now(),
-  body: "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Autem beatae molestias eius vero nam! Magni ut accusantium atque, excepturi quis libero dolores, laboriosam doloremque doloribus voluptas provident optio facilis id?",
-  reactions: {
-    up: 69,
-    down: 42,
-  },
-  isCorrectAnswer: false,
-}
-
-const dummyThread = {
-  createdBy: {
-    name: "Seniru Pasan",
-  },
-  date: Date.now(),
-  title: "Sample thread",
-  body: "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Autem beatae molestias eius vero nam! Magni ut accusantium atque, excepturi quis libero dolores, laboriosam doloremque doloribus voluptas provident optio facilis id?",
-  tags: ["tag1", "tag2", "tag3", "tag4"],
-  reactions: {
-    up: 69,
-    down: 42,
-  },
-  replies: [dummyReply],
-  views: 999,
-}
+const { VITE_API_URL } = import.meta.env
 
 export default function Thread() {
-  const thread = dummyThread
+  const [thread, setThread] = useState({})
+  const [refreshThread, setRefreshThread] = useState(false)
   const [replyBody, setReplyBody] = useState("")
+  const params = useParams()
+
+  useEffect(() => {
+    ;(async () => {
+      const response = await fetch(`${VITE_API_URL}/api/forum/${params.id}`)
+      const result = await response.json()
+      setThread(result?.body?.thread || {})
+    })()
+  }, [refreshThread])
+
+  const handlePostComment = async (event) => {
+    event.preventDefault()
+    const result = await postComment(params.id, { body: replyBody })
+    if (result.status === axios.HttpStatusCode.Created) {
+      setRefreshThread((prev) => !prev)
+      setReplyBody("")
+    }
+  }
 
   return (
     <main className="m-4 mx-28">
@@ -78,8 +74,8 @@ export default function Thread() {
                 </div>
                 <div>
                   <a>{thread?.createdBy?.name}</a> asked{" "}
-                  <abbr title={new Date(thread?.date)?.toString()}>
-                    {relativeTime(thread?.date)}
+                  <abbr title={new Date(thread?.createdAt)?.toString()}>
+                    {relativeTime(new Date(thread?.createdAt).getTime())}
                   </abbr>
                 </div>
               </div>
@@ -93,7 +89,7 @@ export default function Thread() {
       </section>
       <hr />
       <section className="flex justify-between items-center">
-        <h3 className="text-xl my-3">999 Answers</h3>
+        <h3 className="text-xl my-3">{thread?.answers?.length ?? 0} Answers</h3>
         <div className="flex gap-2 items-center">
           <select className="ring-1 ring-gray-300 px-4 py-2 rounded-sm flex-auto">
             <option>Sort by: Votes</option>
@@ -103,12 +99,12 @@ export default function Thread() {
         </div>
       </section>
       <section>
-        {(thread?.replies?.length ?? 0) === 0 ? (
+        {(thread?.answers?.length ?? 0) === 0 ? (
           <p className="font-light text-sm text-gray-500 my-5">
             This thread hasn’t been answered yet. Be the first to reply!
           </p>
         ) : (
-          (thread?.replies || []).map((reply, index) => (
+          (thread?.answers || []).map((reply, index) => (
             <ThreadReply key={`reply-${index}`} {...reply} />
           ))
         )}
@@ -116,7 +112,7 @@ export default function Thread() {
       <br />
       <section>
         <h3 className="text-xl my-3">Your Answer</h3>
-        <form>
+        <form onSubmit={handlePostComment}>
           <TextEditor text={replyBody} setText={setReplyBody} />
           <h5 className="text-base font-bold my-3">Preview</h5>
           <Container className="px-8 mb-5">

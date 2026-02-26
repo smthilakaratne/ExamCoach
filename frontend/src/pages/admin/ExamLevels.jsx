@@ -52,7 +52,7 @@ export default function ExamLevels() {
         alert(
           editingLevel
             ? "Exam level updated successfully!"
-            : "Exam level created successfully!"
+            : "Exam level created successfully!",
         )
         setShowForm(false)
         setEditingLevel(null)
@@ -85,7 +85,7 @@ export default function ExamLevels() {
         `http://localhost:8888/api/exam-levels/${id}`,
         {
           method: "DELETE",
-        }
+        },
       )
 
       const data = await response.json()

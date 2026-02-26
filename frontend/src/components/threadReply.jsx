@@ -33,8 +33,8 @@ export default function ThreadReply(props) {
           </div>
           <div>
             <a>{props?.createdBy?.name}</a> replied{" "}
-            <abbr title={new Date(props?.date)?.toString()}>
-              {relativeTime(props.date)}
+            <abbr title={new Date(props?.createdAt).toString()}>
+              {relativeTime(new Date(props.createdAt).getTime())}
             </abbr>
           </div>
         </div>
