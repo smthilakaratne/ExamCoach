@@ -1,4 +1,4 @@
-import CreateThread from "./createThread"
+import CreateUpdateThread from "./createUpdateThread"
 import Forum from "./forum"
 import ForumTags from "./forumTags"
 import ForumLayout from "./layout"
@@ -7,7 +7,7 @@ import Thread from "./thread"
 export default {
   Forum,
   Thread,
-  CreateThread,
+  CreateUpdateThread,
   Tags: ForumTags,
   Layout: ForumLayout,
 }

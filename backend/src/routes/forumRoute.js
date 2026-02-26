@@ -6,6 +6,10 @@ const {
     createThread,
     getThread,
     createThreadComment,
+    deleteThread,
+    updateThread,
+    deleteThreadComment,
+    editThreadComment,
 } = require("../controllers/forumController")
 const ForumThread = require("../models/ForumThread")
 
@@ -49,6 +53,29 @@ router.post("/", createThread)
 router.get("/:id", getThread)
 
 /**
+ * PUT /api/forum/{id}
+ * @summary Update a forum thread by id
+ * @tags forum
+ * @param {string} id.path.required Thread id
+ * @param {ForumThread} request.body
+ * @return {ForumThread} 200 - Forum thread - application/json
+ * @return {object} 400 - Bad Request - application/json
+ * @return {object} 500 - Internal Server Error - application/json
+ */
+router.put("/:id", updateThread)
+
+/**
+ * DELETE /api/forum/{id}
+ * @summary Delete a forum thread by id
+ * @tags forum
+ * @param {string} id.path Thread id
+ * @return {object} 200 - Thread deleted - application/json
+ * @return {object} 400 - Bad Request - application/json
+ * @return {object} 500 - Internal Server Error - application/json
+ */
+router.delete("/:id", deleteThread)
+
+/**
  * POST /api/forum/{id}/comments
  * @summary Post a comment on a thread
  * @tags forum
@@ -59,5 +86,31 @@ router.get("/:id", getThread)
  * @return {object} 500 - Internal Server Error - applicatiosn/json
  */
 router.post("/:id/comments", createThreadComment)
+
+/**
+ * PATCH /api/forum/{id}/comments/{comment}
+ * @summary Edit a comment from a thread
+ * @tags forum
+ * @param {string} id.path.required Thread id
+ * @param {string} comment.path.required Comment id
+ * @param {ForumThreadAnswer} request.body
+ * @return {ForumThreadAnswer} 200 - OK - application/json
+ * @return {object} 400 - Bad Request - application/json
+ * @return {object} 500 - Internal Server Error - applicatiosn/json
+
+ */
+router.patch("/:id/comments/:comment", editThreadComment)
+
+/**
+ * DELETE /api/forum/{id}/comments/{comment}
+ * @summary Delete a comment from a thread
+ * @tags forum
+ * @param {string} id.path.required Thread id
+ * @param {number} comment.path.required Comment id
+ * @return {object} 200 - OK - application/json
+ * @return {object} 400 - Bad Request - application/json
+ * @return {object} 500 - Internal Server Error - applicatiosn/json
+ */
+router.delete("/:id/comments/:comment", deleteThreadComment)
 
 module.exports = router

@@ -16,9 +16,12 @@ export default function Button({
   return (
     <button
       className={
-        (kind === "primary"
-          ? "bg-blue-500 hover:bg-blue-600 text-white "
-          : "bg-white border border-blue-600 hover:border-blue-600 ") +
+        {
+          primary: "bg-blue-500 hover:bg-blue-600 text-white ",
+          secondary: "bg-white border border-blue-600 hover:bg-gray-100 ",
+          danger: "bg-red-500 hover:bg-red-600 text-white ",
+          dangerSecondary: "bg-white border border-red-600 hover:bg-gray-100 ",
+        }[kind] +
         "rounded-sm px-4 py-2 cursor-pointer transition-all " +
         (className ?? "")
       }
