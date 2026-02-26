@@ -1,4 +1,4 @@
-import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom"
+import { BrowserRouter, Route, Routes } from "react-router-dom"
 import Home from "./pages/home"
 import Forum from "./pages/forum"
 import AdminDashboard from "./pages/admin/Admindashboard"
@@ -12,8 +12,6 @@ import ExamResult from "./pages/mockExam/MockResult"
 import BrowseSubjects from "./pages/student/BrowseSubjects"
 import ContentCategories from "./pages/student/ContentCategories"
 import ContentList from "./pages/student/ContentList"
-import Navbar from "./components/navbar"
-import Footer from "./components/footer"
 
 function App() {
   return (
@@ -22,16 +20,7 @@ function App() {
         {/* Public Routes */}
         <Route index element={<Home />} />
         <Route path="community">
-          <Route
-            path="forum"
-            element={
-              <>
-                <Navbar />
-                <Outlet />
-                <Footer />
-              </>
-            }
-          >
+          <Route path="forum" element={<Forum.Layout />}>
             <Route index element={<Forum.Forum />} />
             <Route path="tags" element={<Forum.Tags />} />
             <Route path="new" element={<Forum.CreateThread />} />

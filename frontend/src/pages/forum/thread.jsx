@@ -38,7 +38,7 @@ export default function Thread() {
   }
 
   return (
-    <main className="m-4 mx-28">
+    <main>
       <h1 className="text-4xl font-bold my-5">{thread?.title}</h1>
       <section className="flex gap-10 content-start my-8">
         <div>

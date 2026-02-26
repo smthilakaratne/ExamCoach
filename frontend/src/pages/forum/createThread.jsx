@@ -109,7 +109,7 @@ export default function CreateThread() {
   }
 
   return (
-    <main className="m-6 mx-28">
+    <main>
       <h2 className="text-2xl my-6 font-bold">Ask a new question</h2>
       <form
         onSubmit={handleSubmit}
