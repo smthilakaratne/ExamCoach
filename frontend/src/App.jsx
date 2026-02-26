@@ -9,6 +9,9 @@ import MockExam from "./pages/mockExam/MockExam"
 import ExamSummary from "./pages/mockExam/MockLevels"
 import ExamAnswers from "./pages/mockExam/Answers"
 import ExamResult from "./pages/mockExam/MockResult"
+import BrowseSubjects from "./pages/student/BrowseSubjects"
+import ContentCategories from "./pages/student/ContentCategories"
+import ContentList from "./pages/student/ContentList"
 
 function App() {
   return (
@@ -25,6 +28,13 @@ function App() {
           </Route>
         </Route>
 
+        {/* Student Browse Routes - NEW */}
+        <Route path="browse">
+          <Route path=":levelId" element={<BrowseSubjects />} />
+          <Route path=":levelId/subject/:subjectId" element={<ContentCategories />} />
+          <Route path=":levelId/subject/:subjectId/content/:contentType" element={<ContentList />} />
+        </Route>
+
         <Route path="mock-exam">
           <Route path="exam" element={<MockExam />} />
           <Route path="exam-summary" element={<ExamSummary />} />
@@ -38,6 +48,7 @@ function App() {
           <Route path="exam-levels" element={<ExamLevels />} />
           <Route path="subjects" element={<Subjects />} />
           <Route path="content" element={<ContentManagement />} />
+          
         </Route>
       </Routes>
     </BrowserRouter>
