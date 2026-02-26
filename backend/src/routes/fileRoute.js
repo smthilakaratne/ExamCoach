@@ -7,10 +7,10 @@ const createResponse = require("../lib/createResponse")
 // IMPORT FROM config/gridfs (matches exactly what we created)
 const { upload, getGridFsBucket, uploadToGridFS, deleteFromGridFS } = require("../config/gridfs")
 
-/* =====================================================
+ /* 
    UPLOAD SINGLE FILE
    POST /api/files/upload
-===================================================== */
+ */
 router.post("/upload", upload.single("file"), async (req, res) => {
     try {
         if (!req.file) {
@@ -36,10 +36,10 @@ router.post("/upload", upload.single("file"), async (req, res) => {
     }
 })
 
-/* =====================================================
+/*
    UPLOAD MULTIPLE FILES
    POST /api/files/upload-multiple
-===================================================== */
+    */
 router.post("/upload-multiple", upload.array("files", 2), async (req, res) => {
     try {
         if (!req.files || req.files.length === 0) {
@@ -65,10 +65,10 @@ router.post("/upload-multiple", upload.array("files", 2), async (req, res) => {
     }
 })
 
-/* =====================================================
+/* 
    DOWNLOAD FILE
    GET /api/files/download/:fileId
-===================================================== */
+ */
 router.get("/download/:fileId", async (req, res) => {
     try {
         const fileId = new mongoose.Types.ObjectId(req.params.fileId)
@@ -112,10 +112,10 @@ router.get("/download/:fileId", async (req, res) => {
     }
 })
 
-/* =====================================================
+/* 
    VIEW / STREAM FILE (INLINE)
    GET /api/files/view/:fileId
-===================================================== */
+ */
 router.get("/view/:fileId", async (req, res) => {
     try {
         const fileId = new mongoose.Types.ObjectId(req.params.fileId)
@@ -159,10 +159,10 @@ router.get("/view/:fileId", async (req, res) => {
     }
 })
 
-/* =====================================================
+/* 
    DELETE FILE
    DELETE /api/files/delete/:fileId
-===================================================== */
+ */
 router.delete("/delete/:fileId", async (req, res) => {
     try {
         await deleteFromGridFS(req.params.fileId)
@@ -179,10 +179,10 @@ router.delete("/delete/:fileId", async (req, res) => {
     }
 })
 
-/* =====================================================
+/* 
    FILE METADATA
    GET /api/files/metadata/:fileId
-===================================================== */
+ */
 router.get("/metadata/:fileId", async (req, res) => {
     try {
         const fileId = new mongoose.Types.ObjectId(req.params.fileId)
