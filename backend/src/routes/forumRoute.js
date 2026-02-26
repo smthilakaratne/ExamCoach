@@ -8,6 +8,7 @@ const {
     createThreadComment,
     deleteThread,
     updateThread,
+    deleteThreadComment,
 } = require("../controllers/forumController")
 const ForumThread = require("../models/ForumThread")
 
@@ -84,5 +85,17 @@ router.delete("/:id", deleteThread)
  * @return {object} 500 - Internal Server Error - applicatiosn/json
  */
 router.post("/:id/comments", createThreadComment)
+
+/**
+ * DELETE /api/forum/{id}/comments/{comment}
+ * @summary Delete a comment from a thread
+ * @tags forum
+ * @param {string} id.path.required Thread id
+ * @param {number} comment.path.required Comment id
+ * @return {object} 200 - OK - application/json
+ * @return {object} 400 - Bad Request - application/json
+ * @return {object} 500 - Internal Server Error - applicatiosn/json
+ */
+router.delete("/:id/comments/:comment", deleteThreadComment)
 
 module.exports = router

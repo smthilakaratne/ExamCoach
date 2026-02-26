@@ -58,6 +58,14 @@ export const postComment = async (threadId, body) => {
   return response
 }
 
+export const deleteComment = async (threadId, commentId) => {
+  const response = await axios.delete(
+    `${VITE_API_URL}/api/forum/${threadId}/comments/${commentId}`,
+  )
+  if (response.status !== axios.HttpStatusCode.Ok)
+    throw new Error(response?.data?.body || response.statusText)
+}
+
 export const getForumTags = async (query) => {
   const response = await axios.get(`${VITE_API_URL}/api/forum/tags`, {
     params: query ? { q: query } : {},

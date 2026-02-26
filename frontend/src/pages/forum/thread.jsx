@@ -73,7 +73,7 @@ export default function Thread() {
               </div>
             </div>
           </div>
-          <div className="flex-auto">
+          <div className="flex-auto mt-10">
             <MarkdownContent content={thread?.body} />
             <div className="flex content-center justify-between mt-10">
               <div className="flex flex-wrap gap-2">
@@ -125,7 +125,13 @@ export default function Thread() {
             </p>
           ) : (
             (thread?.answers || []).map((reply, index) => (
-              <ThreadReply key={`reply-${index}`} {...reply} />
+              <ThreadReply
+                index={index}
+                key={`reply-${index}`}
+                threadId={thread?._id}
+                {...reply}
+                setRefreshThread={setRefreshThread}
+              />
             ))
           )}
         </section>

@@ -127,6 +127,34 @@ const createThreadComment = async (req, res, next) => {
     }
 }
 
+const deleteThreadComment = async (req, res, next) => {
+    try {
+        const threadId = req.params.id
+        const commentId = req.params.comment
+
+        console.log({ threadId, commentId })
+        if (!mongoose.isValidObjectId(threadId))
+            return createResponse(res, StatusCodes.BAD_REQUEST, "Invalid thread ID")
+        if (!mongoose.isValidObjectId(commentId))
+            return createResponse(res, StatusCodes.BAD_REQUEST, "Invalid thread ID")
+
+        const thread = await ForumThread.findById(threadId)
+        if (!thread) return createResponse(res, StatusCodes.NOT_FOUND, "Thread not found")
+        const result = await ForumThread.updateOne(
+            { _id: threadId, "answers._id": commentId },
+            { $pull: { answers: { _id: commentId } } },
+        )
+
+        if (result.modifiedCount === 0)
+            return createResponse(res, StatusCodes.NOT_FOUND, "Comment not found")
+
+        return createResponse(res, StatusCodes.OK, "Comment deleted")
+    } catch (error) {
+        console.error(error)
+        next(error)
+    }
+}
+
 module.exports = {
     getThreads,
     createThread,
@@ -134,4 +162,5 @@ module.exports = {
     updateThread,
     deleteThread,
     createThreadComment,
+    deleteThreadComment,
 }
