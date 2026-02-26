@@ -2,6 +2,12 @@ import axios from "axios"
 
 const { VITE_API_URL } = import.meta.env
 
+export const deleteThread = async (threadId) => {
+  const response = await axios.delete(`${VITE_API_URL}/api/forum/${threadId}`)
+  if (response.status !== axios.HttpStatusCode.Ok)
+    throw new Error(response?.data?.body || response.statusText)
+}
+
 export const postComment = async (threadId, body) => {
   const response = await axios.post(
     `${VITE_API_URL}/api/forum/${threadId}/comments`,

@@ -49,6 +49,20 @@ const getThread = async (req, res, next) => {
     }
 }
 
+const deleteThread = async (req, res, next) => {
+    try {
+        const threadId = req.params.id
+        if (!mongoose.isValidObjectId(threadId))
+            return createResponse(res, StatusCodes.BAD_REQUEST, "Invalid thread ID")
+        const thread = await ForumThread.findByIdAndDelete(threadId)
+        if (!thread) return createResponse(res, StatusCodes.NOT_FOUND, "Thread not found")
+        return createResponse(res, StatusCodes.OK, "Thread deleted")
+    } catch (error) {
+        console.error(error)
+        next(error)
+    }
+}
+
 const createThreadComment = async (req, res, next) => {
     try {
         const threadId = req.params.id
@@ -80,4 +94,4 @@ const createThreadComment = async (req, res, next) => {
     }
 }
 
-module.exports = { getThreads, createThread, getThread, createThreadComment }
+module.exports = { getThreads, createThread, getThread, deleteThread, createThreadComment }
