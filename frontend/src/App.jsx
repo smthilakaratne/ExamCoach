@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom"
+import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom"
 import Home from "./pages/home"
 import Forum from "./pages/forum"
 import AdminDashboard from "./pages/admin/Admindashboard"
@@ -12,6 +12,8 @@ import ExamResult from "./pages/mockExam/MockResult"
 import BrowseSubjects from "./pages/student/BrowseSubjects"
 import ContentCategories from "./pages/student/ContentCategories"
 import ContentList from "./pages/student/ContentList"
+import Navbar from "./components/navbar"
+import Footer from "./components/footer"
 
 function App() {
   return (
@@ -20,7 +22,16 @@ function App() {
         {/* Public Routes */}
         <Route index element={<Home />} />
         <Route path="community">
-          <Route path="forum">
+          <Route
+            path="forum"
+            element={
+              <>
+                <Navbar />
+                <Outlet />
+                <Footer />
+              </>
+            }
+          >
             <Route index element={<Forum.Forum />} />
             <Route path="tags" element={<Forum.Tags />} />
             <Route path="new" element={<Forum.CreateThread />} />
@@ -31,8 +42,14 @@ function App() {
         {/* Student Browse Routes - NEW */}
         <Route path="browse">
           <Route path=":levelId" element={<BrowseSubjects />} />
-          <Route path=":levelId/subject/:subjectId" element={<ContentCategories />} />
-          <Route path=":levelId/subject/:subjectId/content/:contentType" element={<ContentList />} />
+          <Route
+            path=":levelId/subject/:subjectId"
+            element={<ContentCategories />}
+          />
+          <Route
+            path=":levelId/subject/:subjectId/content/:contentType"
+            element={<ContentList />}
+          />
         </Route>
 
         <Route path="mock-exam">
@@ -48,7 +65,6 @@ function App() {
           <Route path="exam-levels" element={<ExamLevels />} />
           <Route path="subjects" element={<Subjects />} />
           <Route path="content" element={<ContentManagement />} />
-          
         </Route>
       </Routes>
     </BrowserRouter>
