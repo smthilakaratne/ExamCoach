@@ -1,12 +1,5 @@
-import {
-  ChevronDown,
-  ChevronUp,
-  Eye,
-  Pen,
-  Pencil,
-  SquarePen,
-  Trash,
-} from "lucide-react"
+import { ChevronDown, ChevronUp, Eye, SquarePen, Trash } from "lucide-react"
+import { Link } from "react-router-dom"
 import MarkdownContent from "../../components/markdownContent"
 import ForumTag from "../../components/tag"
 import { relativeTime } from "../../utils/relativeTime"
@@ -17,12 +10,9 @@ import Container from "../../components/container"
 import ThreadReply from "../../components/threadReply"
 import { useEffect } from "react"
 import { useParams } from "react-router-dom"
-import { postComment } from "../../services/forumApi"
+import { getThread, postComment } from "../../services/forumApi"
 import axios from "axios"
-import OverlayWindow from "../../components/overlaywindow"
 import DeleteThreadModel from "./models/deleteThreadModel"
-
-const { VITE_API_URL } = import.meta.env
 
 export default function Thread() {
   const [thread, setThread] = useState({})
@@ -32,11 +22,7 @@ export default function Thread() {
   const params = useParams()
 
   useEffect(() => {
-    ;(async () => {
-      const response = await fetch(`${VITE_API_URL}/api/forum/${params.id}`)
-      const result = await response.json()
-      setThread(result?.body?.thread || {})
-    })()
+    getThread(params.id).then(setThread)
   }, [refreshThread])
 
   const handlePostComment = async (event) => {
@@ -65,9 +51,12 @@ export default function Thread() {
             >
               <Trash className="size-5 text-red-400 " />
             </div>
-            <div className="cursor-pointer p-2 rounded-full hover:bg-gray-100 transition-all">
+            <Link
+              to="./edit"
+              className="cursor-pointer p-2 rounded-full hover:bg-gray-100 transition-all"
+            >
               <SquarePen className="size-5 text-gray-400" />
-            </div>
+            </Link>
           </div>
         </div>
         <section className="flex gap-10 content-start my-8">

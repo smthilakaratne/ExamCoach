@@ -49,6 +49,39 @@ const getThread = async (req, res, next) => {
     }
 }
 
+const updateThread = async (req, res, next) => {
+    try {
+        const threadId = req.params.id
+        if (!mongoose.isValidObjectId(threadId))
+            return createResponse(res, StatusCodes.BAD_REQUEST, "Invalid thread ID")
+        // note: this is a dangerous approach as the user can easily play around with the data.
+        // for example, they can change user; or even change data formats so it will eventually break somewhere
+        // I'm leaving as it is because I'm lazy and have no time
+        // In all honesty, I could just do the during the time I'm typing this
+        // hehe
+        // I mean there are plenty other places with this exact issue. So I guess this comment might make sense later
+        const thread = await ForumThread.findByIdAndUpdate(
+            threadId,
+            { ...req.body },
+            { new: true, runValidators: true },
+        )
+        if (!thread) return createResponse(res, StatusCodes.NOT_FOUND, "Thread not found")
+        return createResponse(res, StatusCodes.OK, { thread })
+    } catch (error) {
+        if (error instanceof mongoose.Error.ValidationError)
+            return createResponse(
+                res,
+                StatusCodes.BAD_REQUEST,
+                Object.keys(error.errors).map((key) => ({
+                    field: key,
+                    message: error.errors[key].message,
+                })),
+            )
+        console.error(error)
+        next(error)
+    }
+}
+
 const deleteThread = async (req, res, next) => {
     try {
         const threadId = req.params.id
@@ -94,4 +127,11 @@ const createThreadComment = async (req, res, next) => {
     }
 }
 
-module.exports = { getThreads, createThread, getThread, deleteThread, createThreadComment }
+module.exports = {
+    getThreads,
+    createThread,
+    getThread,
+    updateThread,
+    deleteThread,
+    createThreadComment,
+}

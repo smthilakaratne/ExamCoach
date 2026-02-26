@@ -1,10 +1,15 @@
 import { useEffect, useState } from "react"
-import { Link } from "react-router-dom"
+import { Link, useLocation, useParams } from "react-router-dom"
 import Button from "../../components/button"
 import Container from "../../components/container"
 import MarkdownContent from "../../components/markdownContent"
 import TextEditor from "../../components/textEditor"
-import { getForumTags } from "../../services/forumApi"
+import {
+  createThread,
+  getForumTags,
+  getThread,
+  updateThread,
+} from "../../services/forumApi"
 import ForumTag from "../../components/tag"
 import { X } from "lucide-react"
 
@@ -88,29 +93,47 @@ function TagSelector({ selectedTags, setSelectedTags }) {
   )
 }
 
-export default function CreateThread() {
+export default function CreateUpdateThread() {
   const [title, setTitle] = useState("")
   const [body, setBody] = useState("")
   const [tags, setTags] = useState([])
+  const { pathname } = useLocation()
+  const params = useParams()
+  const isCreating = pathname === "/community/forum/new"
 
   const handleSubmit = async (evt) => {
     evt.preventDefault()
-    const response = await fetch(`${VITE_API_URL}/api/forum`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ title, body, tags }),
-    })
-    const result = await response.json()
-    if (response.ok)
-      window.location.href = `/community/forum/${result?.body?.thread?._id ?? ""}`
-    else console.error(result)
+    try {
+      let thread
+      if (isCreating) thread = await createThread(title, body, tags)
+      else thread = await updateThread(params.id, title, body, tags)
+      window.location.href = `/community/forum/${thread?._id ?? ""}`
+    } catch (error) {
+      console.error(error)
+    }
   }
+
+  useEffect(() => {
+    // only apply this effect if we are in editting mode (not creating)
+    if (isCreating) return
+    ;(async () => {
+      try {
+        const thread = await getThread(params.id)
+        setTitle(thread.title)
+        setBody(thread.body)
+        setTags(thread.tags)
+      } catch (error) {
+        // todo: too lazy to do full error handling yet
+        console.error(error)
+      }
+    })()
+  }, [isCreating])
 
   return (
     <main className="m-6 mx-28">
-      <h2 className="text-2xl my-6 font-bold">Ask a new question</h2>
+      <h2 className="text-2xl my-6 font-bold">
+        {isCreating ? "Ask a new question" : "Edit thread"}
+      </h2>
       <form
         onSubmit={handleSubmit}
         className="border border-gray-300 rounded-sm px-8 py-4"
@@ -153,7 +176,7 @@ export default function CreateThread() {
           </label>
           <TagSelector selectedTags={tags} setSelectedTags={setTags} />
         </fieldset>
-        <Button type="submit">Create</Button>
+        <Button type="submit">{isCreating ? "Create" : "Update"}</Button>
       </form>
     </main>
   )
