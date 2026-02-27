@@ -27,9 +27,9 @@ export default function MockLevels() {
   }
 
   return (
-    <div>
-      <h2>Mock Exams Level</h2>
-
+    <div >
+      <h1 className="text-2xl font-bold text-center my-6 relative">Mock Exams Level</h1>
+      <hr></hr>
       {/* Subject selector */}
       <select value={subject} onChange={(e) => setSubject(e.target.value)}>
         <option value="Math">Math</option>

@@ -1,4 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom"
+import Button from "../../components/Button"
 
 export default function MockAnswers() {
   const location = useLocation()
@@ -87,7 +88,7 @@ export default function MockAnswers() {
         )
       })}
 
-      <button onClick={() => navigate("/mock-levels")}>Back to Levels</button>
+      <Button kind="primary" onClick={() => navigate("/mock-exam/exam-summary")}>Back to Levels</Button>
     </div>
   )
 }

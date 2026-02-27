@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import PreviewQuestionCard from "../../components/PreviewQuestionCard";
+import Button from "../../components/Button"
 
 export default function PreviewQuestions() {
   const [questions, setQuestions] = useState([]);
@@ -72,8 +73,11 @@ const handleImport = async () => {
         </div>
 
         ))}
-        <button onClick={handleImport}>Import Selected</button>
-        <button onClick={() => setVisibleCount(prev => prev + 5)}> View More</button>
+        <Button kind="primary" 
+        className="hover:bg-white hover:border hover:border-blue-600 hover:text-red-600"
+        onClick={handleImport}>Import Selected</Button>
+        <Button kind="secondary" 
+        onClick={() => setVisibleCount(prev => prev + 5)}> View More</Button>
       </div>
     </div>
   );

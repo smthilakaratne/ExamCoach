@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import Question from "../../components/QuestionCard"
 import { useLocation, useNavigate } from "react-router-dom"
 import { startExam, submitExam } from "../../services/mockExamApi"
+import Button from "../../components/Button"
 
 export default function MockExam() {
   const [questions, setQuestions] = useState([])
@@ -101,11 +102,11 @@ export default function MockExam() {
 
   return (
     <div>
-      <h1>{level} Exam</h1>
+      <h1 className="text-2xl font-bold text-center my-6 relative">{level} Exam</h1>
 
       {questions.map((q, index) => (
         <div key={q._id + index}>
-          <h3>Question {index + 1}</h3>
+          <h3 className={`text-lg font-semibold`}>Question {index + 1}</h3>
           <Question
             key={q._id}
             question={q}
@@ -115,7 +116,7 @@ export default function MockExam() {
         </div>
       ))}
 
-      <button onClick={handleSubmit}>Submit Exam</button>
+      <Button kind="danger" onClick={handleSubmit}>Submit Exam</Button>
     </div>
   )
 }
