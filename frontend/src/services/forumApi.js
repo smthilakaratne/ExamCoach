@@ -39,6 +39,30 @@ export const updateThread = async (id, title, body, tags) => {
   return response?.data?.body?.thread || {}
 }
 
+export const voteThread = async (threadId, value) => {
+  const response = await axios.post(
+    `${VITE_API_URL}/api/forum/${threadId}/vote`,
+    JSON.stringify({ value }),
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    },
+  )
+  if (response.status !== axios.HttpStatusCode.Ok)
+    throw new Error(response?.data?.body || response.statusText)
+  return response?.data?.body?.thread
+}
+
+export const unvoteThread = async (threadId) => {
+  const response = await axios.delete(
+    `${VITE_API_URL}/api/forum/${threadId}/vote`,
+  )
+  if (response.status !== axios.HttpStatusCode.Ok)
+    throw new Error(response?.data?.body || response.statusText)
+  return response?.data?.body?.thread
+}
+
 export const deleteThread = async (threadId) => {
   const response = await axios.delete(`${VITE_API_URL}/api/forum/${threadId}`)
   if (response.status !== axios.HttpStatusCode.Ok)

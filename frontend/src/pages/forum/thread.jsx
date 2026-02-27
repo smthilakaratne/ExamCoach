@@ -10,9 +10,17 @@ import Container from "../../components/container"
 import ThreadReply from "../../components/threadReply"
 import { useEffect } from "react"
 import { useParams } from "react-router-dom"
-import { getThread, postComment } from "../../services/forumApi"
+import {
+  getThread,
+  postComment,
+  unvoteThread,
+  voteThread,
+} from "../../services/forumApi"
 import axios from "axios"
 import DeleteThreadModel from "./models/deleteThreadModel"
+
+// temporary user
+const user = "Sample user"
 
 export default function Thread() {
   const [thread, setThread] = useState({})
@@ -20,6 +28,11 @@ export default function Thread() {
   const [refreshThread, setRefreshThread] = useState(false)
   const [replyBody, setReplyBody] = useState("")
   const params = useParams()
+
+  const hasUpvoted =
+    thread?.reactions?.up?.some((u) => u.name === user) || false
+  const hasDownvoted =
+    thread?.reactions?.down?.some((u) => u.name === user) || false
 
   useEffect(() => {
     getThread(params.id).then(setThread)
@@ -31,6 +44,21 @@ export default function Thread() {
     if (result.status === axios.HttpStatusCode.Created) {
       setRefreshThread((prev) => !prev)
       setReplyBody("")
+    }
+  }
+
+  const handleVote = async (value) => {
+    try {
+      if (value === 1) {
+        if (hasUpvoted) await unvoteThread(params.id)
+        else await voteThread(params.id, value)
+      } else {
+        if (hasDownvoted) await unvoteThread(params.id)
+        else await voteThread(params.id, value)
+      }
+      setRefreshThread((prev) => !prev)
+    } catch (error) {
+      console.error(error)
     }
   }
 
@@ -63,17 +91,24 @@ export default function Thread() {
           <div>
             <div className="grid justify-center">
               <div className="grid bg-gray-100 rounded-full p-2 cursor-pointer transition-all hover:bg-gray-200">
-                <ChevronUp className="size-6" />
+                <ChevronUp
+                  className={"size-6" + (hasUpvoted && " text-blue-500")}
+                  onClick={() => handleVote(1)}
+                />
               </div>
               <div className="text-xl text-center my-2">
-                {(thread?.reactions?.up ?? 0) - (thread?.reactions?.down ?? 0)}
+                {(thread?.reactions?.up?.length ?? 0) -
+                  (thread?.reactions?.down?.length ?? 0)}
               </div>
               <div className="grid bg-gray-100 rounded-full p-2 cursor-pointer transition-all hover:bg-gray-200">
-                <ChevronDown className="size-6" />
+                <ChevronDown
+                  className={"size-6" + (hasDownvoted && " text-blue-500")}
+                  onClick={() => handleVote(-1)}
+                />
               </div>
             </div>
           </div>
-          <div className="flex-auto mt-10">
+          <div className="flex-auto">
             <MarkdownContent content={thread?.body} />
             <div className="flex content-center justify-between mt-10">
               <div className="flex flex-wrap gap-2">

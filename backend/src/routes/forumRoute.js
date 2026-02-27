@@ -10,6 +10,8 @@ const {
     updateThread,
     deleteThreadComment,
     editThreadComment,
+    voteThread,
+    unvoteThread,
 } = require("../controllers/forumController")
 const ForumThread = require("../models/ForumThread")
 
@@ -63,6 +65,23 @@ router.get("/:id", getThread)
  * @return {object} 500 - Internal Server Error - application/json
  */
 router.put("/:id", updateThread)
+
+/**
+ * POST /api/forum/{id}/vote
+ * @summary Cast an upvote/downvote on a thread by id
+ * @param {object} request.body
+ * @return {ForumThread} 200 - OK - application/json
+ * @return {object} 500 - Internal Server Error - application/json
+ */
+router.post("/:id/vote", voteThread)
+
+/**
+ * DELETE /api/forum/{id}/vote
+ * @summary Remove an upvote/downvote from a thread
+ * @return {ForumThread} 200 - OK - application/json
+ * @return {object} 500 - Internal Server Error - application/json
+ */
+router.delete("/:id/vote", unvoteThread)
 
 /**
  * DELETE /api/forum/{id}
