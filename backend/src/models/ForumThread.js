@@ -32,8 +32,18 @@ const answerSchema = new mongoose.Schema(
             },
         },
         reactions: {
-            up: { type: Number, default: 0 },
-            down: { type: Number, default: 0 },
+            up: [
+                {
+                    _id: false,
+                    name: { type: String, required: true },
+                },
+            ],
+            down: [
+                {
+                    _id: false,
+                    name: { type: String, required: true },
+                },
+            ],
         },
     },
     { timestamps: true },
@@ -63,8 +73,18 @@ const forumThreadSchema = new mongoose.Schema(
             },
         },
         reactions: {
-            up: { type: Number, default: 0 },
-            down: { type: Number, default: 0 },
+            up: [
+                {
+                    _id: false,
+                    name: { type: String, required: true },
+                },
+            ],
+            down: [
+                {
+                    _id: false,
+                    name: { type: String, required: true },
+                },
+            ],
         },
         views: {
             type: Number,

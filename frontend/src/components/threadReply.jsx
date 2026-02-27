@@ -6,18 +6,44 @@ import { useState } from "react"
 import DeleteThreadReplyModel from "../pages/forum/models/deleteThreadReplyModel"
 import TextEditor from "./textEditor"
 import Button from "./button"
-import { updateComment } from "../services/forumApi"
+import {
+  unvoteThreadComment,
+  updateComment,
+  voteThreadComment,
+} from "../services/forumApi"
+
+// temporary test user
+const user = "Sample user"
 
 export default function ThreadReply(props) {
   const [deleteModelOpen, setDeleteModelOpen] = useState(false)
   const [replyBody, setReplyBody] = useState(props?.body || "")
   const [isEditting, setIsEditting] = useState(false)
+  const hasUpvoted = props?.reactions?.up?.some((u) => u.name === user) || false
+  const hasDownvoted =
+    props?.reactions?.down?.some((u) => u.name === user) || false
 
   const handleEditComment = async (evt) => {
     evt.preventDefault()
     await updateComment(props?.threadId, props?._id, replyBody)
     setIsEditting(false)
     props?.setRefreshThread((prev) => !prev)
+  }
+
+  const handleVote = async (value) => {
+    try {
+      if (value === 1) {
+        if (hasUpvoted) await unvoteThreadComment(props?.threadId, props._id)
+        else await voteThreadComment(props?.threadId, props._id, value)
+      } else {
+        if (hasDownvoted)
+          await unvoteThreadComment(props?.threadId, props._id, value)
+        else await voteThreadComment(props?.threadId, props._id, value)
+      }
+      props?.setRefreshThread((prev) => !prev)
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   return (
@@ -62,13 +88,20 @@ export default function ThreadReply(props) {
           <div>
             <div className="grid justify-center">
               <div className="grid bg-white rounded-full p-2 cursor-pointer transition-all hover:bg-gray-200">
-                <ChevronUp className="size-6" />
+                <ChevronUp
+                  className={"size-6" + (hasUpvoted && " text-blue-500")}
+                  onClick={() => handleVote(1)}
+                />
               </div>
               <div className="text-xl text-center my-2">
-                {(props?.reactions?.up ?? 0) - (props?.reactions?.down ?? 0)}
+                {(props?.reactions?.up?.length ?? 0) -
+                  (props?.reactions?.down?.length ?? 0)}
               </div>
               <div className="grid bg-white rounded-full p-2 cursor-pointer transition-all hover:bg-gray-200">
-                <ChevronDown className="size-6" />
+                <ChevronDown
+                  className={"size-6" + (hasDownvoted && " text-blue-500")}
+                  onClick={() => handleVote(-1)}
+                />
               </div>
               {props.isCorrectAnswer && (
                 <div className="grid justify-center mt-5">

@@ -10,6 +10,10 @@ const {
     updateThread,
     deleteThreadComment,
     editThreadComment,
+    voteThread,
+    unvoteThread,
+    voteThreadComment,
+    unvoteThreadComment,
 } = require("../controllers/forumController")
 const ForumThread = require("../models/ForumThread")
 
@@ -65,6 +69,25 @@ router.get("/:id", getThread)
 router.put("/:id", updateThread)
 
 /**
+ * POST /api/forum/{id}/vote
+ * @summary Cast an upvote/downvote on a thread by id
+ * @tags forum
+ * @param {object} request.body
+ * @return {ForumThread} 200 - OK - application/json
+ * @return {object} 500 - Internal Server Error - application/json
+ */
+router.post("/:id/vote", voteThread)
+
+/**
+ * DELETE /api/forum/{id}/vote
+ * @summary Remove an upvote/downvote from a thread
+ * @tags forum
+ * @return {ForumThread} 200 - OK - application/json
+ * @return {object} 500 - Internal Server Error - application/json
+ */
+router.delete("/:id/vote", unvoteThread)
+
+/**
  * DELETE /api/forum/{id}
  * @summary Delete a forum thread by id
  * @tags forum
@@ -97,9 +120,30 @@ router.post("/:id/comments", createThreadComment)
  * @return {ForumThreadAnswer} 200 - OK - application/json
  * @return {object} 400 - Bad Request - application/json
  * @return {object} 500 - Internal Server Error - applicatiosn/json
-
  */
 router.patch("/:id/comments/:comment", editThreadComment)
+
+/**
+ * POST /api/forum/{id}/comments/{comment}/vote
+ * @summary Cast a vote to a comment from a thread
+ * @tags forum
+ * @param {string} id.path.required Thread id
+ * @param {string} comment.path.required Comment id
+ * @param {object} request.body
+ * @return {ForumThreadAnswer} 200 - OK - application/json
+ * @return {object} 400 - Bad Request - application/json
+ * @return {object} 500 - Internal Server Error - applicatiosn/json
+ */
+router.post("/:id/comments/:comment/vote", voteThreadComment)
+
+/**
+ * DELETE /api/forum/{id}/comments/{comment}/vote
+ * @summary Remove an upvote/downvote from a thread comment
+ * @tags forum
+ * @return {ForumThread} 200 - OK - application/json
+ * @return {object} 500 - Internal Server Error - application/json
+ */
+router.delete("/:id/comments/:comment/vote", unvoteThreadComment)
 
 /**
  * DELETE /api/forum/{id}/comments/{comment}
