@@ -71,6 +71,7 @@ router.put("/:id", updateThread)
 /**
  * POST /api/forum/{id}/vote
  * @summary Cast an upvote/downvote on a thread by id
+ * @tags forum
  * @param {object} request.body
  * @return {ForumThread} 200 - OK - application/json
  * @return {object} 500 - Internal Server Error - application/json
@@ -80,6 +81,7 @@ router.post("/:id/vote", voteThread)
 /**
  * DELETE /api/forum/{id}/vote
  * @summary Remove an upvote/downvote from a thread
+ * @tags forum
  * @return {ForumThread} 200 - OK - application/json
  * @return {object} 500 - Internal Server Error - application/json
  */
@@ -137,6 +139,7 @@ router.post("/:id/comments/:comment/vote", voteThreadComment)
 /**
  * DELETE /api/forum/{id}/comments/{comment}/vote
  * @summary Remove an upvote/downvote from a thread comment
+ * @tags forum
  * @return {ForumThread} 200 - OK - application/json
  * @return {object} 500 - Internal Server Error - application/json
  */
