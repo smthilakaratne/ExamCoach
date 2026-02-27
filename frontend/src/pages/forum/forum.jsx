@@ -10,10 +10,26 @@ import { getForumTags } from "../../services/forumApi"
 
 const { VITE_API_URL } = import.meta.env
 
+const user = { name: "Sample user" }
+
 export default function Forum() {
   const [threads, setThreads] = useState([])
-  const hotTodayQuestions = threads?.slice(0, 3) ?? []
   const [tags, setTags] = useState([])
+  const [viewMode, setViewMode] = useState("trending")
+
+  const views = {
+    trending: () => threads, // return all for now
+    latest: () =>
+      [...threads].sort(
+        (t1, t2) => new Date(t2.createdAt) - new Date(t1.createdAt),
+      ),
+    unanswered: () => threads.filter((thread) => thread.answers.length === 0),
+    "my-questions": () => threads, // everything is sample user for now
+    "my-answers": () => threads, // everything is sample user for now
+  }
+
+  const hotTodayQuestions = threads?.slice(0, 3) ?? []
+  const filteredThreads = views[viewMode]()
 
   useEffect(() => {
     ;(async () => {
@@ -45,33 +61,53 @@ export default function Forum() {
           <div className="flex justify-between items-center">
             <h3 className="text-xl my-3">{threads.length} questions</h3>
             <div className="flex gap-1 border border-gray-300 rounded-sm p-1">
-              <Button kind="primary" className="text-sm">
+              <Button
+                kind={viewMode === "trending" ? "primary" : "secondary"}
+                className="border-0 text-sm"
+                onClick={() => setViewMode("trending")}
+              >
                 Trending
               </Button>
-              <Button kind="secondary" className="border-0 text-sm">
+              <Button
+                kind={viewMode === "latest" ? "primary" : "secondary"}
+                className="border-0 text-sm"
+                onClick={() => setViewMode("latest")}
+              >
                 Latest
               </Button>
-              <Button kind="secondary" className="border-0 text-sm">
+              <Button
+                kind={viewMode === "unanswered" ? "primary" : "secondary"}
+                className="border-0 text-sm"
+                onClick={() => setViewMode("unanswered")}
+              >
                 Unanswered
               </Button>
-              <Button kind="secondary" className="border-0 text-sm">
+              <Button
+                kind={viewMode === "my-questions" ? "primary" : "secondary"}
+                className="border-0 text-sm"
+                onClick={() => setViewMode("my-questions")}
+              >
                 My Questions
               </Button>
-              <Button kind="secondary" className="border-0 text-sm">
+              <Button
+                kind={viewMode === "my-answers" ? "primary" : "secondary"}
+                className="border-0 text-sm"
+                onClick={() => setViewMode("my-answers")}
+              >
                 My Answers
               </Button>
             </div>
           </div>
 
           <section>
-            {threads.length === 0 ? (
-              <p className="font-light text-sm text-gray-500">
-                It's quite here... <a>Start a new question</a> and shake things
-                up
+            {filteredThreads.length === 0 ? (
+              <p className="font-light text-sm text-gray-500 my-5">
+                It's quite here... <Link to="./new">Start a new question</Link>{" "}
+                and shake things up
               </p>
             ) : (
               <>
-                {threads.map((thread, index) => (
+                {filteredThreads.map((thread, index) => (
                   <ForumThread key={`thread-${index}`} {...thread} />
                 ))}
               </>
@@ -90,8 +126,8 @@ export default function Forum() {
             </h3>
             {hotTodayQuestions.length <= 0 ? (
               <p className="font-light text-sm text-gray-500">
-                No sparks flying today. <a>Start a new topic</a> and light it
-                up.
+                No sparks flying today.{" "}
+                <Link to="./new">Start a new topic</Link> and light it up.
               </p>
             ) : (
               <>
