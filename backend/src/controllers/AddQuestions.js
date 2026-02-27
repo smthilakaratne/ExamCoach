@@ -11,7 +11,7 @@ const fetchApiQuestions = async (req, res) => {
       intermediate: "medium",
       advanced: "hard",
     };
-
+//subjects
     const categoryMap = {
   math: 19,
   science: 17,
