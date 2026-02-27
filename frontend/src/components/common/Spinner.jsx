@@ -1,8 +1,7 @@
-export default function Spinner({ size = "md" }) {
-  const s = { sm: "w-4 h-4", md: "w-8 h-8", lg: "w-12 h-12" }
+export default function Spinner({ fullPage }) {
   return (
-    <div className="flex items-center justify-center">
-      <div className={`${s[size]} border-3 border-indigo-100 border-t-indigo-500 rounded-full animate-spin`} />
+    <div className={`flex justify-center items-center ${fullPage ? 'min-h-screen' : 'py-10'}`}>
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
     </div>
-  )
+  );
 }

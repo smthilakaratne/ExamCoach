@@ -1,71 +1,74 @@
-import { useState } from "react"
-import { useParams, useNavigate } from "react-router-dom"
-import { resetPassword } from "../services/authService"
-import { Lock, Eye, EyeOff, ShieldCheck } from "lucide-react"
-import toast from "react-hot-toast"
+// src/pages/ResetPassword.jsx
+import { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { resetPassword } from '../services/authService';
+import toast from 'react-hot-toast';
 
 export default function ResetPassword() {
-  const { token } = useParams()
-  const navigate = useNavigate()
-  const [form, setForm] = useState({ password: "", confirmPassword: "" })
-  const [showPass, setShowPass] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const location = useLocation();
+  const navigate = useNavigate();
+  const resetToken = location.state?.resetToken;
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    if (form.password !== form.confirmPassword) return toast.error("Passwords do not match")
-    setLoading(true)
-    try {
-      await resetPassword(token, form)
-      toast.success("Password reset successfully!")
-      navigate("/login")
-    } catch (err) {
-      toast.error(err.response?.data?.body?.message || "Reset failed. Link may be expired.")
-    }
-    setLoading(false)
+  const [password, setPassword] = useState('');
+  const [confirm, setConfirm] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  if (!resetToken) {
+    navigate('/forgot-password');
+    return null;
   }
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-blue-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md animate-slide-up">
-        <div className="card shadow-soft border border-gray-100">
-          <div className="w-12 h-12 bg-indigo-100 rounded-2xl flex items-center justify-center mb-5">
-            <ShieldCheck className="w-6 h-6 text-indigo-600" />
-          </div>
-          <h1 className="font-display text-xl font-bold text-gray-900 mb-1">Reset your password</h1>
-          <p className="text-gray-500 text-sm mb-6">Choose a strong new password for your account.</p>
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (password !== confirm) {
+      toast.error('Passwords do not match');
+      return;
+    }
+    setLoading(true);
+    try {
+      await resetPassword({ resetToken, password });
+      toast.success('Password reset successfully. Please login.');
+      navigate('/login');
+    } catch (error) {
+      // toast handled
+    } finally {
+      setLoading(false);
+    }
+  };
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {[
-              { key: "password", label: "New Password", ph: "Min 8 chars, upper + lower + number" },
-              { key: "confirmPassword", label: "Confirm Password", ph: "Repeat your new password" },
-            ].map(({ key, label, ph }) => (
-              <div key={key}>
-                <label className="label">{label}</label>
-                <div className="relative">
-                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                  <input
-                    type={showPass ? "text" : "password"} required
-                    value={form[key]}
-                    onChange={e => setForm({ ...form, [key]: e.target.value })}
-                    placeholder={ph}
-                    className="input-field pl-10 pr-10"
-                  />
-                  {key === "password" && (
-                    <button type="button" onClick={() => setShowPass(!showPass)}
-                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
-                      {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
-                  )}
-                </div>
-              </div>
-            ))}
-            <button type="submit" disabled={loading} className="btn-primary w-full py-3 mt-2">
-              {loading ? "Resetting..." : "Reset Password"}
-            </button>
-          </form>
-        </div>
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+      <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full animate-fade-in">
+        <h2 className="text-3xl font-bold text-gray-900 text-center mb-6">Set New Password</h2>
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div>
+            <label className="label">New Password</label>
+            <input
+              type="password"
+              className="input-field"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={8}
+            />
+          </div>
+          <div>
+            <label className="label">Confirm Password</label>
+            <input
+              type="password"
+              className="input-field"
+              placeholder="••••••••"
+              value={confirm}
+              onChange={(e) => setConfirm(e.target.value)}
+              required
+            />
+          </div>
+          <button type="submit" disabled={loading} className="btn-primary w-full">
+            {loading ? 'Resetting...' : 'Reset Password'}
+          </button>
+        </form>
       </div>
     </div>
-  )
+  );
 }
