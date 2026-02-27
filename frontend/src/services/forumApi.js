@@ -120,6 +120,24 @@ export const unvoteThreadComment = async (threadId, commentId) => {
   return response?.data?.body?.thread
 }
 
+export const markThreadComment = async (threadId, commentId) => {
+  const response = await axios.patch(
+    `${VITE_API_URL}/api/forum/${threadId}/comments/${commentId}/mark`,
+  )
+  if (response.status !== axios.HttpStatusCode.Ok)
+    throw new Error(response?.data?.body || response.statusText)
+  return response?.data?.body?.thread
+}
+
+export const unmarkThreadComment = async (threadId, commentId) => {
+  const response = await axios.delete(
+    `${VITE_API_URL}/api/forum/${threadId}/comments/${commentId}/mark`,
+  )
+  if (response.status !== axios.HttpStatusCode.Ok)
+    throw new Error(response?.data?.body || response.statusText)
+  return response?.data?.body?.thread
+}
+
 export const deleteComment = async (threadId, commentId) => {
   const response = await axios.delete(
     `${VITE_API_URL}/api/forum/${threadId}/comments/${commentId}`,

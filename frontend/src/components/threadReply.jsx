@@ -7,6 +7,8 @@ import DeleteThreadReplyModel from "../pages/forum/models/deleteThreadReplyModel
 import TextEditor from "./textEditor"
 import Button from "./button"
 import {
+  markThreadComment,
+  unmarkThreadComment,
   unvoteThreadComment,
   updateComment,
   voteThreadComment,
@@ -40,6 +42,17 @@ export default function ThreadReply(props) {
           await unvoteThreadComment(props?.threadId, props._id, value)
         else await voteThreadComment(props?.threadId, props._id, value)
       }
+      props?.setRefreshThread((prev) => !prev)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const handleMark = async () => {
+    try {
+      if (props?.isCorrectAnswer)
+        await unmarkThreadComment(props?.threadId, props._id)
+      else await markThreadComment(props?.threadId, props._id)
       props?.setRefreshThread((prev) => !prev)
     } catch (error) {
       console.error(error)
@@ -103,11 +116,18 @@ export default function ThreadReply(props) {
                   onClick={() => handleVote(-1)}
                 />
               </div>
-              {props.isCorrectAnswer && (
-                <div className="grid justify-center mt-5">
-                  <Check className="text-lime-500" />
-                </div>
-              )}
+              <div
+                className="grid justify-center mt-5"
+                title="Mark as the correct answer"
+                onClick={handleMark}
+              >
+                <Check
+                  className={
+                    "cursor-pointer size-8 " +
+                    (props?.isCorrectAnswer ? "text-lime-500" : "text-gray-300")
+                  }
+                />
+              </div>
             </div>
           </div>
 
