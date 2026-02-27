@@ -1,5 +1,5 @@
-const express = require("express");
-const router = express.Router();
+const express = require("express")
+const router = express.Router()
 
 const { submitExam } = require("../controllers/submissionController");
 const { getUserProgress } = require("../controllers/progressController");
@@ -27,7 +27,7 @@ const { fetchApiQuestions, importSelectedQuestions,} = require("../controllers/A
 router.post("/start", startExam);
 
 // Submit exam
-router.post("/submit", submitExam);
+router.post("/submit", submitExam)
 
 // Get progress
 router.get("/progress/:userId", getUserProgress);

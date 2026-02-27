@@ -9,6 +9,9 @@ import MockExam from "./pages/mockExam/MockExam"
 import ExamSummary from "./pages/mockExam/MockLevels"
 import ExamAnswers from "./pages/mockExam/Answers"
 import ExamResult from "./pages/mockExam/MockResult"
+import BrowseSubjects from "./pages/student/BrowseSubjects"
+import ContentCategories from "./pages/student/ContentCategories"
+import ContentList from "./pages/student/ContentList"
 import AddQuestions from "./pages/mockExam/AddQuestions"
 
 function App() {
@@ -18,12 +21,28 @@ function App() {
         {/* Public Routes */}
         <Route index element={<Home />} />
         <Route path="community">
-          <Route path="forum">
+          <Route path="forum" element={<Forum.Layout />}>
             <Route index element={<Forum.Forum />} />
             <Route path="tags" element={<Forum.Tags />} />
-            <Route path="new" element={<Forum.CreateThread />} />
-            <Route path=":id" element={<Forum.Thread />} />
+            <Route path="new" element={<Forum.CreateUpdateThread />} />
+            <Route path=":id">
+              <Route index element={<Forum.Thread />} />
+              <Route path="edit" element={<Forum.CreateUpdateThread />} />
+            </Route>
           </Route>
+        </Route>
+
+        {/* Student Browse Routes */}
+        <Route path="browse">
+          <Route path=":levelId" element={<BrowseSubjects />} />
+          <Route
+            path=":levelId/subject/:subjectId"
+            element={<ContentCategories />}
+          />
+          <Route
+            path=":levelId/subject/:subjectId/content/:contentType"
+            element={<ContentList />}
+          />
         </Route>
 
         <Route path="mock-exam">

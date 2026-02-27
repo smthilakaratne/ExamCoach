@@ -8,16 +8,21 @@ const mongoose = require("mongoose")
  * @property {[]string} tags - List of strings
  */
 
+/**
+ * A forum thread answer/comment
+ * @typedef {object} ForumThreadAnswer
+ * @property {string} body.required - Body content
+ */
+
 const answerSchema = new mongoose.Schema(
     {
         body: {
             type: String,
             required: [true, "body is required"],
-            trim: true,
         },
         isCorrectAnswer: {
             type: Boolean,
-            default: false
+            default: false,
         },
         createdBy: {
             name: {
@@ -27,8 +32,18 @@ const answerSchema = new mongoose.Schema(
             },
         },
         reactions: {
-            up: { type: Number, default: 0 },
-            down: { type: Number, default: 0 },
+            up: [
+                {
+                    _id: false,
+                    name: { type: String, required: true },
+                },
+            ],
+            down: [
+                {
+                    _id: false,
+                    name: { type: String, required: true },
+                },
+            ],
         },
     },
     { timestamps: true },
@@ -58,8 +73,18 @@ const forumThreadSchema = new mongoose.Schema(
             },
         },
         reactions: {
-            up: { type: Number, default: 0 },
-            down: { type: Number, default: 0 },
+            up: [
+                {
+                    _id: false,
+                    name: { type: String, required: true },
+                },
+            ],
+            down: [
+                {
+                    _id: false,
+                    name: { type: String, required: true },
+                },
+            ],
         },
         views: {
             type: Number,

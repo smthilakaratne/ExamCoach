@@ -1,5 +1,4 @@
-
-const mongoose = require("mongoose");
+const mongoose = require("mongoose")
 
 const questionSchema = new mongoose.Schema({
   level: { type: String, required: true }, // e.g., "easy", "medium", "hard"
@@ -9,5 +8,5 @@ const questionSchema = new mongoose.Schema({
   correctAnswer: { type: String, required: true },
 });
 
-const Question = mongoose.model("questions", questionSchema);
-module.exports= Question;
+const Question = mongoose.model("questions", questionSchema)
+module.exports = Question

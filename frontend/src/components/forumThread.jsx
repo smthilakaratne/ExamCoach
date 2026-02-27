@@ -21,11 +21,11 @@ export default function ForumThread(data) {
           <div className="flex gap-4 items-center">
             <div className="flex gap-1 items-center text-sm text-gray-500">
               <ArrowBigUp className="size-5" />
-              <span>{data?.reactions?.up ?? 0}</span>
+              <span>{data?.reactions?.up?.length ?? 0}</span>
             </div>
             <div className="flex gap-1 items-center text-sm text-gray-500">
               <ArrowBigDown className="size-5" />
-              <span>{data?.reactions?.down ?? 0}</span>
+              <span>{data?.reactions?.down?.length ?? 0}</span>
             </div>
             <div className="flex gap-1 items-center text-sm text-gray-500">
               <Eye className="size-5" />

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Plus, Edit2, Trash2, Download, Eye, FileText, AlertCircle } from "lucide-react"
+import { Plus, Edit2, Trash2, Download, Eye, FileText } from "lucide-react"
 
 export default function ContentManagement() {
   const [contents, setContents] = useState([])
@@ -9,8 +9,6 @@ export default function ContentManagement() {
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [editingContent, setEditingContent] = useState(null)
-  const [submitting, setSubmitting] = useState(false)
-  const [errorMessage, setErrorMessage] = useState("")
   
   // Filters
   const [filterLevel, setFilterLevel] = useState("all")
@@ -46,7 +44,6 @@ export default function ContentManagement() {
         (s) => s.examLevel._id === formData.examLevel
       )
       setFilteredSubjects(filtered)
-      console.log("Filtered subjects:", filtered)
     } else {
       setFilteredSubjects([])
     }
@@ -54,8 +51,6 @@ export default function ContentManagement() {
 
   const fetchData = async () => {
     try {
-      console.log("Fetching data...")
-      
       // Fetch all data
       const [levelsRes, subjectsRes, contentsRes] = await Promise.all([
         fetch("http://localhost:8888/api/exam-levels"),
@@ -67,10 +62,6 @@ export default function ContentManagement() {
       const subjectsData = await subjectsRes.json()
       const contentsData = await contentsRes.json()
 
-      console.log("Exam Levels:", levelsData)
-      console.log("Subjects:", subjectsData)
-      console.log("Contents:", contentsData)
-
       if (levelsData.success) setExamLevels(levelsData.body)
       if (subjectsData.success) setSubjects(subjectsData.body)
       if (contentsData.success) setContents(contentsData.body)
@@ -78,63 +69,35 @@ export default function ContentManagement() {
       setLoading(false)
     } catch (error) {
       console.error("Failed to fetch data:", error)
-      setErrorMessage("Failed to load data. Make sure backend is running on port 8888.")
       setLoading(false)
     }
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    setSubmitting(true)
-    setErrorMessage("")
 
     try {
-      console.log("=== SUBMITTING FORM ===")
-      console.log("Form Data:", formData)
-      console.log("Question File:", questionFile)
-      console.log("Answer File:", answerFile)
-
-      // Validation
-      if (!formData.subject) {
-        throw new Error("Please select a subject")
-      }
-
-      if (formData.contentType !== "lecture_video" && !questionFile && !editingContent) {
-        throw new Error("Please upload a file (PDF required for this content type)")
-      }
-
       const formDataToSend = new FormData()
 
       // Add all text fields
       formDataToSend.append("title", formData.title)
       formDataToSend.append("subject", formData.subject)
       formDataToSend.append("contentType", formData.contentType)
-      
-      if (formData.description) formDataToSend.append("description", formData.description)
+      if (formData.description)
+        formDataToSend.append("description", formData.description)
       if (formData.year) formDataToSend.append("year", formData.year)
       if (formData.term) formDataToSend.append("term", formData.term)
       if (formData.unit) formDataToSend.append("unit", formData.unit)
       if (formData.tags) formDataToSend.append("tags", formData.tags)
-      if (formData.videoUrl) formDataToSend.append("videoUrl", formData.videoUrl)
+      if (formData.videoUrl)
+        formDataToSend.append("videoUrl", formData.videoUrl)
 
       // Add files
       if (questionFile) {
-        console.log("Appending question file:", questionFile.name, questionFile.size, "bytes")
         formDataToSend.append("file", questionFile)
       }
       if (answerFile) {
-        console.log("Appending answer file:", answerFile.name, answerFile.size, "bytes")
         formDataToSend.append("answerSheet", answerFile)
-      }
-
-      // Log what we're sending
-      console.log("FormData contents:")
-      for (let pair of formDataToSend.entries()) {
-        if (pair[1] instanceof File) {
-          console.log(pair[0], ":", pair[1].name, `(${pair[1].size} bytes)`)
-        } else {
-          console.log(pair[0], ":", pair[1])
-        }
       }
 
       const url = editingContent
@@ -143,17 +106,12 @@ export default function ContentManagement() {
 
       const method = editingContent ? "PUT" : "POST"
 
-      console.log(`Making ${method} request to:`, url)
-
       const response = await fetch(url, {
         method,
         body: formDataToSend,
       })
 
-      console.log("Response status:", response.status)
-
       const data = await response.json()
-      console.log("Response data:", data)
 
       if (data.success) {
         alert(
@@ -164,22 +122,11 @@ export default function ContentManagement() {
         handleCancel()
         fetchData()
       } else {
-        // Show detailed error from backend
-        const errorMsg = typeof data.body === 'string' 
-          ? data.body 
-          : data.statusMessage || "Operation failed"
-        
-        console.error("Backend error:", errorMsg)
-        setErrorMessage(errorMsg)
-        alert(`Error: ${errorMsg}`)
+        alert(data.body || "Operation failed")
       }
     } catch (error) {
-      console.error("Submit error:", error)
-      const errorMsg = error.message || "Operation failed. Check console for details."
-      setErrorMessage(errorMsg)
-      alert(errorMsg)
-    } finally {
-      setSubmitting(false)
+      console.error("Error:", error)
+      alert("Operation failed")
     }
   }
 
@@ -239,7 +186,6 @@ export default function ContentManagement() {
     })
     setQuestionFile(null)
     setAnswerFile(null)
-    setErrorMessage("")
   }
 
   const handleDownload = (fileId, fileName) => {
@@ -293,45 +239,8 @@ export default function ContentManagement() {
           </button>
         </div>
 
-        {/* Error Message */}
-        {errorMessage && (
-          <div className="bg-red-50 border-2 border-red-200 rounded-lg p-4 mb-6 flex items-start gap-3">
-            <AlertCircle className="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" />
-            <div className="flex-1">
-              <h3 className="font-semibold text-red-900 mb-1">Error</h3>
-              <p className="text-red-700">{errorMessage}</p>
-              <p className="text-sm text-red-600 mt-2">
-                Check browser console (F12) for more details
-              </p>
-            </div>
-            <button
-              onClick={() => setErrorMessage("")}
-              className="text-red-600 hover:text-red-800"
-            >
-              ✕
-            </button>
-          </div>
-        )}
-
-        {/* Warning if no data */}
-        {examLevels.length === 0 && (
-          <div className="bg-yellow-50 border-2 border-yellow-200 rounded-lg p-4 mb-6">
-            <p className="text-yellow-800 font-medium">
-              ⚠️ No exam levels found. Please create exam levels first in the Exam Levels page.
-            </p>
-          </div>
-        )}
-
-        {subjects.length === 0 && examLevels.length > 0 && (
-          <div className="bg-yellow-50 border-2 border-yellow-200 rounded-lg p-4 mb-6">
-            <p className="text-yellow-800 font-medium">
-              ⚠️ No subjects found. Please create subjects first in the Subjects page.
-            </p>
-          </div>
-        )}
-
-        {/* Form - Only show if we have levels and subjects */}
-        {showForm && examLevels.length > 0 && subjects.length > 0 && (
+        {/* Form */}
+        {showForm && (
           <div className="bg-white rounded-lg shadow p-6 mb-8">
             <h2 className="text-xl font-bold text-gray-900 mb-6">
               {editingContent ? "Edit Content" : "Add New Content"}
@@ -346,14 +255,13 @@ export default function ContentManagement() {
                 <select
                   required
                   value={formData.examLevel}
-                  onChange={(e) => {
-                    console.log("Exam level selected:", e.target.value)
+                  onChange={(e) =>
                     setFormData({
                       ...formData,
                       examLevel: e.target.value,
                       subject: "", // Reset subject when level changes
                     })
-                  }}
+                  }
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 >
                   <option value="">Select Exam Level</option>
@@ -371,160 +279,436 @@ export default function ContentManagement() {
                   <h3 className="text-lg font-semibold text-gray-800 mb-3">
                     Step 2: Select Subject
                   </h3>
-                  {filteredSubjects.length === 0 ? (
-                    <p className="text-red-600 bg-red-50 p-3 rounded">
-                      No subjects found for this exam level. Please create a subject first.
-                    </p>
-                  ) : (
-                    <select
-                      required
-                      value={formData.subject}
-                      onChange={(e) => {
-                        console.log("Subject selected:", e.target.value)
-                        setFormData({ ...formData, subject: e.target.value })
-                      }}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                    >
-                      <option value="">Select Subject</option>
-                      {filteredSubjects.map((subject) => (
-                        <option key={subject._id} value={subject._id}>
-                          {subject.name} ({subject.code})
-                        </option>
-                      ))}
-                    </select>
-                  )}
+                  <select
+                    required
+                    value={formData.subject}
+                    onChange={(e) =>
+                      setFormData({ ...formData, subject: e.target.value })
+                    }
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  >
+                    <option value="">Select Subject</option>
+                    {filteredSubjects.map((subject) => (
+                      <option key={subject._id} value={subject._id}>
+                        {subject.name} ({subject.code})
+                      </option>
+                    ))}
+                  </select>
                 </div>
               )}
 
-              {/* Rest of the form... (Step 3 and 4 - same as before) */}
-              {/* I'll keep the rest of the form the same to keep the file manageable */}
-              {/* Copy steps 3 and 4 from the previous ContentManagement.jsx */}
-              
+              {/* Step 3: Select Content Type */}
               {formData.subject && (
-                <>
-                  {/* Step 3 content type selection */}
-                  <div className="mb-6">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-3">
-                      Step 3: Select Content Type
-                    </h3>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      {[
-                        { value: "past_paper", label: "Past Paper" },
-                        { value: "lesson", label: "Lesson" },
-                        { value: "short_notes", label: "Short Notes" },
-                        { value: "lecture_video", label: "Lecture Video" },
-                      ].map((type) => (
-                        <label
-                          key={type.value}
-                          className={`border-2 rounded-lg p-4 cursor-pointer transition ${
-                            formData.contentType === type.value
-                              ? "border-purple-600 bg-purple-50"
-                              : "border-gray-300 hover:border-purple-300"
-                          }`}
-                        >
-                          <input
-                            type="radio"
-                            name="contentType"
-                            value={type.value}
-                            checked={formData.contentType === type.value}
-                            onChange={(e) => {
-                              console.log("Content type selected:", e.target.value)
-                              setFormData({
-                                ...formData,
-                                contentType: e.target.value,
-                              })
-                            }}
-                            className="sr-only"
-                          />
-                          <div className="text-center">
-                            <FileText className="w-8 h-8 mx-auto mb-2 text-purple-600" />
-                            <p className="font-medium text-gray-900">
-                              {type.label}
-                            </p>
-                          </div>
-                        </label>
-                      ))}
-                    </div>
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-3">
+                    Step 3: Select Content Type
+                  </h3>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {[
+                      { value: "past_paper", label: "Past Paper" },
+                      { value: "lesson", label: "Lesson" },
+                      { value: "short_notes", label: "Short Notes" },
+                      { value: "lecture_video", label: "Lecture Video" },
+                    ].map((type) => (
+                      <label
+                        key={type.value}
+                        className={`border-2 rounded-lg p-4 cursor-pointer transition ${
+                          formData.contentType === type.value
+                            ? "border-purple-600 bg-purple-50"
+                            : "border-gray-300 hover:border-purple-300"
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="contentType"
+                          value={type.value}
+                          checked={formData.contentType === type.value}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              contentType: e.target.value,
+                            })
+                          }
+                          className="sr-only"
+                        />
+                        <div className="text-center">
+                          <FileText className="w-8 h-8 mx-auto mb-2 text-purple-600" />
+                          <p className="font-medium text-gray-900">
+                            {type.label}
+                          </p>
+                        </div>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Step 4: Fill Details */}
+              {formData.contentType && (
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-3">
+                    Step 4: Fill Content Details
+                  </h3>
+
+                  {/* Title */}
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Title *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g., Physics A/L 2023 - 1st Term"
+                      value={formData.title}
+                      onChange={(e) =>
+                        setFormData({ ...formData, title: e.target.value })
+                      }
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    />
                   </div>
 
-                  {/* Title field */}
-                  {formData.contentType && (
+                  {/* Metadata: Year and Term (for Past Papers) */}
+                  {formData.contentType === "past_paper" && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Year
+                        </label>
+                        <input
+                          type="number"
+                          placeholder="2023"
+                          value={formData.year}
+                          onChange={(e) =>
+                            setFormData({ ...formData, year: e.target.value })
+                          }
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Term
+                        </label>
+                        <select
+                          value={formData.term}
+                          onChange={(e) =>
+                            setFormData({ ...formData, term: e.target.value })
+                          }
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        >
+                          <option value="">Select Term</option>
+                          <option value="1st_term">1st Term</option>
+                          <option value="2nd_term">2nd Term</option>
+                          <option value="3rd_term">3rd Term</option>
+                          <option value="annual">Annual</option>
+                        </select>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Unit/Chapter (for Lessons and Notes) */}
+                  {(formData.contentType === "lesson" ||
+                    formData.contentType === "short_notes") && (
                     <div className="mb-4">
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Title *
+                        Unit/Chapter
                       </label>
                       <input
                         type="text"
-                        required
-                        placeholder="e.g., Physics A/L 2023 - 1st Term"
-                        value={formData.title}
+                        placeholder="e.g., Mechanics, Thermodynamics"
+                        value={formData.unit}
                         onChange={(e) =>
-                          setFormData({ ...formData, title: e.target.value })
+                          setFormData({ ...formData, unit: e.target.value })
                         }
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                       />
                     </div>
                   )}
 
-                  {/* File upload for non-video content */}
-                  {formData.contentType && formData.contentType !== "lecture_video" && (
+                  {/* Description */}
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Description
+                    </label>
+                    <textarea
+                      rows="3"
+                      placeholder="Brief description"
+                      value={formData.description}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          description: e.target.value,
+                        })
+                      }
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    />
+                  </div>
+
+                  {/* Tags */}
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Tags (comma separated)
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g., mechanics, motion, forces"
+                      value={formData.tags}
+                      onChange={(e) =>
+                        setFormData({ ...formData, tags: e.target.value })
+                      }
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    />
+                  </div>
+
+                  {/* File Upload (for PDFs) */}
+                  {formData.contentType !== "lecture_video" && (
                     <div className="mb-4">
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         {formData.contentType === "past_paper"
-                          ? "Upload Question Paper (PDF) *"
-                          : "Upload File (PDF) *"}
+                          ? "Upload Question Paper (PDF)"
+                          : "Upload File (PDF)"}
                       </label>
                       <input
                         type="file"
                         accept=".pdf"
-                        onChange={(e) => {
-                          const file = e.target.files[0]
-                          console.log("File selected:", file?.name, file?.size, "bytes")
-                          setQuestionFile(file)
-                        }}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                        required={!editingContent}
+                        onChange={(e) => setQuestionFile(e.target.files[0])}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                       />
                       {questionFile && (
                         <p className="text-sm text-green-600 mt-2">
-                          ✓ {questionFile.name} ({(questionFile.size / 1024 / 1024).toFixed(2)} MB)
+                          ✓ {questionFile.name}
                         </p>
                       )}
                     </div>
                   )}
 
-                  {/* Submit buttons */}
-                  {formData.contentType && (
-                    <div className="flex gap-3 mt-6">
-                      <button
-                        type="submit"
-                        disabled={submitting}
-                        className={`px-6 py-2 rounded-lg transition font-medium ${
-                          submitting
-                            ? "bg-gray-400 cursor-not-allowed"
-                            : "bg-purple-600 hover:bg-purple-700 text-white"
-                        }`}
-                      >
-                        {submitting ? "Uploading..." : editingContent ? "Update Content" : "Create Content"}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={handleCancel}
-                        disabled={submitting}
-                        className="bg-gray-300 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-400 transition"
-                      >
-                        Cancel
-                      </button>
+                  {/* Answer Sheet Upload (for Past Papers only) */}
+                  {formData.contentType === "past_paper" && (
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Upload Answer Paper (PDF) - Optional
+                      </label>
+                      <input
+                        type="file"
+                        accept=".pdf"
+                        onChange={(e) => setAnswerFile(e.target.files[0])}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      />
+                      {answerFile && (
+                        <p className="text-sm text-green-600 mt-2">
+                          ✓ {answerFile.name}
+                        </p>
+                      )}
                     </div>
                   )}
-                </>
+
+                  {/* Video URL (for Lecture Videos) */}
+                  {formData.contentType === "lecture_video" && (
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Video URL (YouTube, Google Drive, etc.)
+                      </label>
+                      <input
+                        type="url"
+                        placeholder="https://youtube.com/..."
+                        value={formData.videoUrl}
+                        onChange={(e) =>
+                          setFormData({ ...formData, videoUrl: e.target.value })
+                        }
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Submit Buttons */}
+              {formData.contentType && (
+                <div className="flex gap-3">
+                  <button
+                    type="submit"
+                    className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition"
+                  >
+                    {editingContent ? "Update Content" : "Create Content"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleCancel}
+                    className="bg-gray-300 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-400 transition"
+                  >
+                    Cancel
+                  </button>
+                </div>
               )}
             </form>
           </div>
         )}
 
-        {/* Rest of the component (filters and table) stays the same */}
-        {/* ... existing table code ... */}
+        {/* Filters */}
+        <div className="bg-white rounded-lg shadow p-4 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Filter by Level
+              </label>
+              <select
+                value={filterLevel}
+                onChange={(e) => setFilterLevel(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              >
+                <option value="all">All Levels</option>
+                {examLevels.map((level) => (
+                  <option key={level._id} value={level._id}>
+                    {level.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Filter by Subject
+              </label>
+              <select
+                value={filterSubject}
+                onChange={(e) => setFilterSubject(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              >
+                <option value="all">All Subjects</option>
+                {subjects.map((subject) => (
+                  <option key={subject._id} value={subject._id}>
+                    {subject.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Filter by Type
+              </label>
+              <select
+                value={filterType}
+                onChange={(e) => setFilterType(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              >
+                <option value="all">All Types</option>
+                <option value="past_paper">Past Papers</option>
+                <option value="lesson">Lessons</option>
+                <option value="short_notes">Short Notes</option>
+                <option value="lecture_video">Lecture Videos</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        {/* Content List */}
+        <div className="bg-white rounded-lg shadow">
+          {filteredContents.length === 0 ? (
+            <div className="p-12 text-center">
+              <p className="text-gray-500 text-lg">
+                No content found. Click "Add Content" to upload some.
+              </p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50 border-b">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
+                      Title
+                    </th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
+                      Subject
+                    </th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
+                      Type
+                    </th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
+                      Year
+                    </th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
+                      Stats
+                    </th>
+                    <th className="px-6 py-3 text-right text-sm font-semibold text-gray-900">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {filteredContents.map((content) => (
+                    <tr key={content._id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                        {content.title}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-600">
+                        {content.subject.name}
+                        <br />
+                        <span className="text-xs text-gray-500">
+                          {content.subject.examLevel.code}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-sm">
+                        <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs">
+                          {content.contentType.replace("_", " ")}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-600">
+                        {content.year || "-"}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-600">
+                        <div className="text-xs">
+                          <div>{content.views || 0} views</div>
+                          <div>{content.downloads || 0} downloads</div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex justify-end gap-2">
+                          {content.fileId && (
+                            <>
+                              <button
+                                onClick={() =>
+                                  handleView(content.fileId)
+                                }
+                                className="text-blue-600 hover:text-blue-800"
+                                title="View"
+                              >
+                                <Eye className="w-5 h-5" />
+                              </button>
+                              <button
+                                onClick={() =>
+                                  handleDownload(
+                                    content.fileId,
+                                    content.fileName
+                                  )
+                                }
+                                className="text-green-600 hover:text-green-800"
+                                title="Download"
+                              >
+                                <Download className="w-5 h-5" />
+                              </button>
+                            </>
+                          )}
+                          <button
+                            onClick={() => handleEdit(content)}
+                            className="text-purple-600 hover:text-purple-800"
+                            title="Edit"
+                          >
+                            <Edit2 className="w-5 h-5" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(content._id)}
+                            className="text-red-600 hover:text-red-800"
+                            title="Delete"
+                          >
+                            <Trash2 className="w-5 h-5" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )
