@@ -27,9 +27,9 @@ export default function MockLevels() {
   }
 
   return (
-    <div>
-      <h2>Mock Exams Level</h2>
-
+    <div >
+      <h1 className="text-2xl font-bold text-center my-6 relative">Mock Exams Level</h1>
+      <hr></hr>
       {/* Subject selector */}
       <select value={subject} onChange={(e) => setSubject(e.target.value)}>
         <option value="Math">Math</option>
@@ -38,7 +38,8 @@ export default function MockLevels() {
         <option value="History">History</option>
         <option value="Geography">Geography</option>
       </select>
-
+    {/*Display level in level cards. If scored above 75%, it is unlocked */}
+    {/*Error: Do not fetch data from db*/}
       <Level
         name="Easy"
         score={

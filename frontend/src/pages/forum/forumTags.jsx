@@ -5,7 +5,7 @@ import DetailedTagContainer from "../../components/detailedTagContainer"
 import { getForumTags } from "../../services/forumApi"
 import { useState } from "react"
 import { useEffect } from "react"
-import CreateTagModel from "./models/createTagModel"
+import CreateEditTagModel from "./models/createEditTagModel"
 
 export default function ForumTags() {
   const [tags, setTags] = useState([])
@@ -22,7 +22,7 @@ export default function ForumTags() {
 
   return (
     <>
-      <CreateTagModel
+      <CreateEditTagModel
         isOpen={createTagModelOpen}
         setIsOpen={setCreateModelOpen}
         setRefreshTags={setRefreshTags}
@@ -55,7 +55,11 @@ export default function ForumTags() {
             </div>
             <section>
               {filteredTags.map((tag, index) => (
-                <DetailedTagContainer key={`tag-${index}`} {...tag} />
+                <DetailedTagContainer
+                  key={`tag-${index}`}
+                  {...tag}
+                  setRefreshTags={setRefreshTags}
+                />
               ))}
             </section>
           </section>

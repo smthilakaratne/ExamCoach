@@ -28,6 +28,7 @@ import MockExam from "./pages/mockExam/MockExam";
 import ExamSummary from "./pages/mockExam/MockLevels";
 import ExamAnswers from "./pages/mockExam/Answers";
 import ExamResult from "./pages/mockExam/MockResult";
+import AddQuestions from "./pages/mockExam/AddQuestions"
 
 function App() {
   return (
@@ -44,19 +45,28 @@ function App() {
 
         {/* Community */}
         <Route path="community">
-          <Route path="forum">
+          <Route path="forum" element={<Forum.Layout />}>
             <Route index element={<Forum.Forum />} />
             <Route path="tags" element={<Forum.Tags />} />
-            <Route path="new" element={<Forum.CreateThread />} />
-            <Route path=":id" element={<Forum.Thread />} />
+            <Route path="new" element={<Forum.CreateUpdateThread />} />
+            <Route path=":id">
+              <Route index element={<Forum.Thread />} />
+              <Route path="edit" element={<Forum.CreateUpdateThread />} />
+            </Route>
           </Route>
         </Route>
 
-        {/* Browse (public) */}
+        {/* Student Browse Routes - NEW */}
         <Route path="browse">
           <Route path=":levelId" element={<BrowseSubjects />} />
-          <Route path=":levelId/subject/:subjectId" element={<ContentCategories />} />
-          <Route path=":levelId/subject/:subjectId/content/:contentType" element={<ContentList />} />
+          <Route
+            path=":levelId/subject/:subjectId"
+            element={<ContentCategories />}
+          />
+          <Route
+            path=":levelId/subject/:subjectId/content/:contentType"
+            element={<ContentList />}
+          />
         </Route>
 
         {/* Mock Exam */}
@@ -65,30 +75,20 @@ function App() {
           <Route path="exam-summary" element={<ExamSummary />} />
           <Route path="exam-answers" element={<ExamAnswers />} />
           <Route path="exam-result" element={<ExamResult />} />
+          <Route path="add-questions" element={<AddQuestions />} />
         </Route>
 
-        {/* Protected - Any Auth */}
-        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-
-        {/* Student */}
-        <Route path="/student/dashboard" element={<ProtectedRoute role="student"><StudentDashboard /></ProtectedRoute>} />
-        <Route path="/student/feedback" element={<ProtectedRoute role="student"><MyFeedback /></ProtectedRoute>} />
-
-        {/* Admin */}
-        <Route path="/admin">
-          <Route index element={<ProtectedRoute role="admin"><AdminDashboard /></ProtectedRoute>} />
-          <Route path="users" element={<ProtectedRoute role="admin"><ManageUsers /></ProtectedRoute>} />
-          <Route path="feedback" element={<ProtectedRoute role="admin"><ManageFeedback /></ProtectedRoute>} />
-          <Route path="exam-levels" element={<ProtectedRoute role="admin"><ExamLevels /></ProtectedRoute>} />
-          <Route path="subjects" element={<ProtectedRoute role="admin"><Subjects /></ProtectedRoute>} />
-          <Route path="content" element={<ProtectedRoute role="admin"><ContentManagement /></ProtectedRoute>} />
+        {/* Admin Routes */}
+        <Route path="admin">
+          <Route index element={<AdminDashboard />} />
+          <Route path="exam-levels" element={<ExamLevels />} />
+          <Route path="subjects" element={<Subjects />} />
+          <Route path="content" element={<ContentManagement />} />
+          
         </Route>
-
-        {/* Catch-all */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Route>
-    </Routes>
-  );
+      </Routes>
+    </BrowserRouter>
+  )
 }
 
 export default App;

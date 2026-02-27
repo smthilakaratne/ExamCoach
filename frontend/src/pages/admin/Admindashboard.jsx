@@ -5,6 +5,7 @@ import StatCard from "../../components/common/StatCard"
 import { getUserStats } from "../../services/userService"
 import { getFeedbackStats } from "../../services/feedbackService"
 import { GraduationCap, BookOpen, FileText, Users, MessageSquare, CheckCircle, Clock, XCircle } from "lucide-react"
+import Button from "../../components/button"
 import Spinner from "../../components/common/Spinner"
 
 export default function AdminDashboard() {
@@ -47,6 +48,11 @@ export default function AdminDashboard() {
           <div className="mb-6">
             <h1 className="font-display text-2xl font-bold text-gray-900">Admin Overview</h1>
             <p className="text-gray-500 text-sm mt-0.5">Platform statistics and management</p>
+            <Link to="/mock-exam/add-questions">
+              <Button kind="primary">
+                Add Questions
+              </Button>
+            </Link>
           </div>
 
           {loading ? (

@@ -1,13 +1,18 @@
 import { useLocation, useNavigate } from "react-router-dom"
+import Button from "./button"
 
 export default function Level({ name, score, unlocked, onStart }) {
   return (
-    <div style={{ margin: "10px 0", opacity: unlocked ? 1 : 0.5 }}>
-      <h3>{name}</h3>
-      <p>Score: {score}</p>
-      <button onClick={onStart} disabled={!unlocked}>
+    <div className={`space-y-4 border-black border-2 rounded-lg p-6 m-4 ${unlocked ? "" : "opacity-50"}
+        ${unlocked ? "" : "opacity-50"}
+      `}> 
+      <h3>Level: {name}</h3>
+      <h3>Score: {score}</h3>
+      <Button kind="primary" 
+      className=" flex justify-center hover:bg-white hover:border hover:border-red-600 hover:text-red-600" //on hover
+      onClick={onStart} disabled={!unlocked}>
         Start
-      </button>
+      </Button>
     </div>
   )
 }

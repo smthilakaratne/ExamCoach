@@ -1,16 +1,20 @@
 import { useEffect, useState } from "react"
-import { Link } from "react-router-dom"
+import { Link, useLocation, useParams } from "react-router-dom"
 import Button from "../../components/button"
 import Container from "../../components/container"
 import MarkdownContent from "../../components/markdownContent"
 import TextEditor from "../../components/textEditor"
-import { getForumTags } from "../../services/forumApi"
+import {
+  createThread,
+  getForumTags,
+  getThread,
+  updateThread,
+} from "../../services/forumApi"
 import ForumTag from "../../components/tag"
 import { X } from "lucide-react"
+import { useRef } from "react"
 
-const { VITE_API_URL } = import.meta.env
-
-function TagSelector({ selectedTags, setSelectedTags }) {
+function TagSelector({ selectedTags, setSelectedTags, ref }) {
   const [tagQuery, setTagQuery] = useState("")
   const [tags, setTags] = useState([])
 
@@ -26,6 +30,7 @@ function TagSelector({ selectedTags, setSelectedTags }) {
   const handleInputKeyPress = (evt) => {
     if (evt.key === "Backspace" && !evt.repeat && tagQuery.length === 0) {
       setSelectedTags((prev) => prev.slice(0, -1))
+      ref.current.setCustomValidity("")
     }
   }
 
@@ -43,9 +48,10 @@ function TagSelector({ selectedTags, setSelectedTags }) {
               <ForumTag name={tag} className="pr-0" />
               <X
                 className="size-3 cursor-pointer hover:bg-gray-400 transition-colors rounded-full"
-                onClick={() =>
+                onClick={() => {
                   setSelectedTags((prev) => prev.filter((t) => t !== tag))
-                }
+                  ref.current.setCustomValidity("")
+                }}
               />
             </div>
           ))}
@@ -62,6 +68,7 @@ function TagSelector({ selectedTags, setSelectedTags }) {
           value={tagQuery}
           onChange={(evt) => setTagQuery(evt.target.value)}
           onKeyDown={handleInputKeyPress}
+          ref={ref}
         />
       </div>
       {tagQuery.length > 0 && (
@@ -88,32 +95,66 @@ function TagSelector({ selectedTags, setSelectedTags }) {
   )
 }
 
-export default function CreateThread() {
+export default function CreateUpdateThread() {
   const [title, setTitle] = useState("")
   const [body, setBody] = useState("")
   const [tags, setTags] = useState([])
+  const tagRef = useRef()
+  const formRef = useRef()
+  const { pathname } = useLocation()
+  const params = useParams()
+  const isCreating = pathname === "/community/forum/new"
 
   const handleSubmit = async (evt) => {
+    tagRef.current.setCustomValidity("")
+
+    if (tags.length > 5) {
+      tagRef.current.setCustomValidity("Cannot have more than 5 tags")
+    }
+
+    if (!formRef.current.checkValidity()) {
+      evt.preventDefault()
+      formRef.current.reportValidity()
+      return
+    }
+
     evt.preventDefault()
-    const response = await fetch(`${VITE_API_URL}/api/forum`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ title, body, tags }),
-    })
-    const result = await response.json()
-    if (response.ok)
-      window.location.href = `/community/forum/${result?.body?.thread?._id ?? ""}`
-    else console.error(result)
+
+    try {
+      let thread
+      if (isCreating) thread = await createThread(title, body, tags)
+      else thread = await updateThread(params.id, title, body, tags)
+      window.location.href = `/community/forum/${thread?._id ?? ""}`
+    } catch (error) {
+      console.error(error)
+    }
   }
 
+  useEffect(() => {
+    // only apply this effect if we are in editting mode (not creating)
+    if (isCreating) return
+    ;(async () => {
+      try {
+        const thread = await getThread(params.id)
+        setTitle(thread.title)
+        setBody(thread.body)
+        setTags(thread.tags)
+      } catch (error) {
+        // todo: too lazy to do full error handling yet
+        console.error(error)
+      }
+    })()
+  }, [isCreating])
+
   return (
-    <main className="m-6 mx-28">
-      <h2 className="text-2xl my-6 font-bold">Ask a new question</h2>
+    <main>
+      <h2 className="text-2xl my-6 font-bold">
+        {isCreating ? "Ask a new question" : "Edit thread"}
+      </h2>
       <form
         onSubmit={handleSubmit}
         className="border border-gray-300 rounded-sm px-8 py-4"
+        ref={formRef}
       >
         <fieldset className="grid my-4">
           <label htmlFor="title" className="font-bold">
@@ -126,6 +167,8 @@ export default function CreateThread() {
             placeholder="Enter your topic's title here"
             value={title}
             onChange={(evt) => setTitle(evt.target.value)}
+            minLength={5}
+            maxLength={120}
             required
           />
         </fieldset>
@@ -133,7 +176,7 @@ export default function CreateThread() {
           <label htmlFor="body" className="font-bold">
             Body
           </label>
-          <TextEditor text={body} setText={setBody} />
+          <TextEditor text={body} setText={setBody} minLength={10} />
         </fieldset>
         <div>
           <div className="font-bold">Preview</div>
@@ -151,9 +194,13 @@ export default function CreateThread() {
           <label htmlFor="tags" className="font-bold">
             Tags
           </label>
-          <TagSelector selectedTags={tags} setSelectedTags={setTags} />
+          <TagSelector
+            selectedTags={tags}
+            setSelectedTags={setTags}
+            ref={tagRef}
+          />
         </fieldset>
-        <Button type="submit">Create</Button>
+        <Button type="submit">{isCreating ? "Create" : "Update"}</Button>
       </form>
     </main>
   )
