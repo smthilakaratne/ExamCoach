@@ -120,13 +120,13 @@ const authRoute = require("./routes/Authroute")
 const feedbackRoute = require("./routes/Feedbackroute")
 
 // Existing routes – uncomment as teammates complete them
-// const examLevelRoute = require("./routes/examLevelRoute")
-// const subjectRoute = require("./routes/subjectRoute")
-// const contentRoute = require("./routes/contentRoute")
-// const fileRoute = require("./routes/fileRoute")
-// const forumRoute = require("./routes/forumRoute")
-// const forumTagsRoute = require("./routes/forumTagRoute")
-// const mockExamRoute = require("./routes/mockExamRoute")
+const examLevelRoute = require("./routes/examLevelRoute")
+ const subjectRoute = require("./routes/subjectRoute")
+ const contentRoute = require("./routes/contentRoute")
+ const fileRoute = require("./routes/fileRoute")
+ const forumRoute = require("./routes/forumRoute")
+ const forumTagsRoute = require("./routes/forumTagRoute")
+ const mockExamRoute = require("./routes/mockExamRoute")
 
 // ── Swagger ───────────────────────────────────────────────────────────────────
 expressJSDocSwagger(app)(swaggerOptions)
@@ -136,13 +136,13 @@ app.use("/api/auth", authRoute)
 app.use("/api/feedback", feedbackRoute)
 app.use("/api/user", usersRoute)
 
-// app.use("/api/exam-levels", examLevelRoute)
-// app.use("/api/subjects", subjectRoute)
-// app.use("/api/contents", contentRoute)
-// app.use("/api/files", fileRoute)
-// app.use("/api/forum/tags", forumTagsRoute)
-// app.use("/api/forum", forumRoute)
-// app.use("/api/mock-exams", mockExamRoute)
+ app.use("/api/exam-levels", examLevelRoute)
+ app.use("/api/subjects", subjectRoute)
+ app.use("/api/contents", contentRoute)
+ app.use("/api/files", fileRoute)
+ app.use("/api/forum/tags", forumTagsRoute)
+ app.use("/api/forum", forumRoute)
+ app.use("/api/mock-exams", mockExamRoute)
 
 app.use("/api", rootRoute)
 
@@ -154,7 +154,7 @@ app.use((req, res) =>
 // ── Global error handler ──────────────────────────────────────────────────────
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
-    console.error("💥 Unhandled error:", err)
+    console.error(" Unhandled error:", err)
 
     if (err.code === 11000) {
         const field = Object.keys(err.keyValue)[0]
@@ -178,24 +178,25 @@ app.use((err, req, res, next) => {
 
 // ── Start server ──────────────────────────────────────────────────────────────
 const start = async () => {
-    const PORT = process.env.PORT || 5001
+    const PORT = process.env.PORT || 5001 || 8888
+    //const { MONGO_URI } = process.env
+    const SERVER_PORT = process.env.SERVER_PORT || 8888
 
     await mongoose.connect(process.env.MONGO_URI, { dbName: "ExamCoach" })
-    console.log("✅ MongoDB connected")
+    console.log(" MongoDB connected")
 
     initGridFS()
 
-    app.listen(PORT, () => {
+    app.listen(SERVER_PORT, () => {
         let networkInterfaces = os.networkInterfaces()
         let address = networkInterfaces.wlo1 && networkInterfaces.wlo1[0].address
-        console.log("🚀 Server listening on")
-        console.log(`\tLocal:\thttp://127.0.0.1:${PORT}`)
-        console.log(`\tDocs:\thttp://127.0.0.1:${PORT}/api/docs`)
+        console.log("Server listening on")
+        console.log(`\tLocal:\thttp://127.0.0.1:${SERVER_PORT}`)
         console.log("Connected to DB:", mongoose.connection.name)
-        address && console.log(`\tIP:\thttp://${address}:${PORT}`)
+        console.log("ENV URI:", process.env.MONGO_URI)
+        address && console.log(`\tIP:\thttp://${address}:${SERVER_PORT}`)
     })
 }
-
 start()
 
 module.exports = app

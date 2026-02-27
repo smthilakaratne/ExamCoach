@@ -56,7 +56,7 @@ function App() {
           </Route>
         </Route>
 
-        {/* Student Browse Routes - NEW */}
+        {/* Student Browse Routes */}
         <Route path="browse">
           <Route path=":levelId" element={<BrowseSubjects />} />
           <Route
@@ -78,17 +78,28 @@ function App() {
           <Route path="add-questions" element={<AddQuestions />} />
         </Route>
 
-        {/* Admin Routes */}
-        <Route path="admin">
-          <Route index element={<AdminDashboard />} />
-          <Route path="exam-levels" element={<ExamLevels />} />
-          <Route path="subjects" element={<Subjects />} />
-          <Route path="content" element={<ContentManagement />} />
-          
+        {/* Protected - Any Auth */}
+        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+
+        {/* Student */}
+        <Route path="/student/dashboard" element={<ProtectedRoute role="student"><StudentDashboard /></ProtectedRoute>} />
+        <Route path="/student/feedback" element={<ProtectedRoute role="student"><MyFeedback /></ProtectedRoute>} />
+
+        {/* Admin */}
+        <Route path="/admin">
+          <Route index element={<ProtectedRoute role="admin"><AdminDashboard /></ProtectedRoute>} />
+          <Route path="users" element={<ProtectedRoute role="admin"><ManageUsers /></ProtectedRoute>} />
+          <Route path="feedback" element={<ProtectedRoute role="admin"><ManageFeedback /></ProtectedRoute>} />
+          <Route path="exam-levels" element={<ProtectedRoute role="admin"><ExamLevels /></ProtectedRoute>} />
+          <Route path="subjects" element={<ProtectedRoute role="admin"><Subjects /></ProtectedRoute>} />
+          <Route path="content" element={<ProtectedRoute role="admin"><ContentManagement /></ProtectedRoute>} />
         </Route>
-      </Routes>
-    </BrowserRouter>
-  )
+
+        {/* Catch-all */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Route>
+    </Routes>
+  );
 }
 
 export default App;
