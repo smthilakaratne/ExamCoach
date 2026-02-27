@@ -38,10 +38,9 @@ export default function Thread() {
   const sortModes = {
     date: (a1, a2) => new Date(a1?.createdAt) - new Date(a2?.createdAt),
     votes: (a1, a2) =>
-      ((a2.reactions.up.length ?? 0) -
-      (a2.reactions.down.length ?? 0)) -
-      ((a1.reactions.up.length ?? 0) -
-      (a1.reactions.down.length ?? 0)),
+      (a2.reactions.up.length ?? 0) -
+      (a2.reactions.down.length ?? 0) -
+      ((a1.reactions.up.length ?? 0) - (a1.reactions.down.length ?? 0)),
   }
 
   const sortedAnswers = (thread?.answers ?? []).sort(sortModes[sortMode])
@@ -189,7 +188,12 @@ export default function Thread() {
         <section>
           <h3 className="text-xl my-3">Your Answer</h3>
           <form onSubmit={handlePostComment}>
-            <TextEditor text={replyBody} setText={setReplyBody} />
+            <TextEditor
+              text={replyBody}
+              setText={setReplyBody}
+              minLength={10}
+              required
+            />
             <h5 className="text-base font-bold my-3">Preview</h5>
             <Container className="px-8 mb-5">
               {replyBody.length === 0 ? (
