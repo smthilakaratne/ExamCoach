@@ -12,6 +12,7 @@ import ExamResult from "./pages/mockExam/MockResult"
 import BrowseSubjects from "./pages/student/BrowseSubjects"
 import ContentCategories from "./pages/student/ContentCategories"
 import ContentList from "./pages/student/ContentList"
+import AddQuestions from "./pages/mockExam/AddQuestions"
 
 function App() {
   return (
@@ -49,6 +50,7 @@ function App() {
           <Route path="exam-summary" element={<ExamSummary />} />
           <Route path="exam-answers" element={<ExamAnswers />} />
           <Route path="exam-result" element={<ExamResult />} />
+          <Route path="add-questions" element={<AddQuestions />} />
         </Route>
 
         {/* Admin Routes */}

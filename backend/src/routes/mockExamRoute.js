@@ -1,9 +1,11 @@
 const express = require("express")
 const router = express.Router()
 
-const { submitExam } = require("../controllers/submissionController")
-const { getUserProgress } = require("../controllers/progressController")
-const { startExam } = require("../controllers/examController")
+const { submitExam } = require("../controllers/submissionController");
+const { getUserProgress } = require("../controllers/progressController");
+const { startExam} = require("../controllers/examController");
+const { fetchApiQuestions, importSelectedQuestions,} = require("../controllers/AddQuestions");
+
 
 // Start exam
 /*router.post("/start", async (req, res) => {
@@ -20,12 +22,24 @@ const { startExam } = require("../controllers/examController")
   res.json({ questions }); // <-- must send response
 });
 */
-router.post("/start", startExam)
+
+// Start exam
+router.post("/start", startExam);
 
 // Submit exam
 router.post("/submit", submitExam)
 
 // Get progress
-router.get("/progress/:userId", getUserProgress)
+router.get("/progress/:userId", getUserProgress);
 
-module.exports = router
+
+// ================= QUESTION IMPORT ROUTES (Admin)=================
+
+// Fetch preview questions
+router.get("/questions", fetchApiQuestions);
+
+// Import selected questions
+router.post("/questions/import", importSelectedQuestions);
+
+
+module.exports = router;
