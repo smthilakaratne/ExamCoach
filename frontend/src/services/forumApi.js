@@ -167,3 +167,10 @@ export const createForumTag = async (name, description) => {
     throw new Error(response?.data?.body || response.statusText)
   return response.data
 }
+
+export const deleteForumTag = async (name) => {
+  const response = await axios.delete(`${VITE_API_URL}/api/forum/tags/${name}`)
+  if (response.status !== axios.HttpStatusCode.Ok)
+    throw new Error(response?.data?.body || response.statusText)
+  return response?.data?.tag
+}

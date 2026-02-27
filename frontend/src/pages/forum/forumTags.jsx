@@ -55,7 +55,11 @@ export default function ForumTags() {
             </div>
             <section>
               {filteredTags.map((tag, index) => (
-                <DetailedTagContainer key={`tag-${index}`} {...tag} />
+                <DetailedTagContainer
+                  key={`tag-${index}`}
+                  {...tag}
+                  setRefreshTags={setRefreshTags}
+                />
               ))}
             </section>
           </section>

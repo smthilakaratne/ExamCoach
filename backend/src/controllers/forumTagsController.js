@@ -29,9 +29,18 @@ const createTag = async (req, res, next) => {
                 })),
             )
 
-        console.error(error)
         next(error)
     }
 }
 
-module.exports = { getTags, createTag }
+const deleteTag = async (req, res, next) => {
+    try {
+        const tag = await ForumTag.findOneAndDelete({ name: req.params.name })
+        if (!tag) return createResponse(res, StatusCodes.NOT_FOUND, "Tag not found")
+        return createResponse(res, StatusCodes.OK, { tag })
+    } catch (error) {
+        next(error)
+    }
+}
+
+module.exports = { getTags, createTag, deleteTag }
