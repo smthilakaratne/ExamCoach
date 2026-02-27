@@ -270,7 +270,8 @@ const unvoteThreadComment = async (req, res, next) => {
 
         const thread = await ForumThread.findOneAndUpdate(
             {
-                _id: threadId, "answers._id": commentId
+                _id: threadId,
+                "answers._id": commentId,
             },
             {
                 $pull: {
@@ -318,6 +319,32 @@ const markThreadComment = async (req, res, next) => {
     }
 }
 
+const unmarkThreadComment = async (req, res, next) => {
+    try {
+        const threadId = req.params.id
+        const commentId = req.params.comment
+
+        if (!mongoose.isValidObjectId(threadId))
+            return createResponse(res, StatusCodes.BAD_REQUEST, "Invalid thread ID")
+        if (!mongoose.isValidObjectId(commentId))
+            return createResponse(res, StatusCodes.BAD_REQUEST, "Invalid comment ID")
+
+        const thread = await ForumThread.findOneAndUpdate(
+            { _id: threadId, "answers._id": commentId },
+            {
+                $set: {
+                    "answers.$[].isCorrectAnswer": false,
+                },
+            },
+            { new: true },
+        )
+        if (!thread) return createResponse(res, StatusCodes.NOT_FOUND, { thread })
+        return createResponse(res, StatusCodes.OK, { thread })
+    } catch (error) {
+        next(error)
+    }
+}
+
 const deleteThreadComment = async (req, res, next) => {
     try {
         const threadId = req.params.id
@@ -357,5 +384,6 @@ module.exports = {
     voteThreadComment,
     unvoteThreadComment,
     markThreadComment,
+    unmarkThreadComment,
     deleteThreadComment,
 }

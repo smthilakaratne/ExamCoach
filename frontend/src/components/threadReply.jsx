@@ -8,6 +8,7 @@ import TextEditor from "./textEditor"
 import Button from "./button"
 import {
   markThreadComment,
+  unmarkThreadComment,
   unvoteThreadComment,
   updateComment,
   voteThreadComment,
@@ -49,7 +50,9 @@ export default function ThreadReply(props) {
 
   const handleMark = async () => {
     try {
-      await markThreadComment(props?.threadId, props._id)
+      if (props?.isCorrectAnswer)
+        await unmarkThreadComment(props?.threadId, props._id)
+      else await markThreadComment(props?.threadId, props._id)
       props?.setRefreshThread((prev) => !prev)
     } catch (error) {
       console.error(error)

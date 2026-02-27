@@ -15,6 +15,7 @@ const {
     voteThreadComment,
     unvoteThreadComment,
     markThreadComment,
+    unmarkThreadComment,
 } = require("../controllers/forumController")
 const ForumThread = require("../models/ForumThread")
 
@@ -154,6 +155,15 @@ router.delete("/:id/comments/:comment/vote", unvoteThreadComment)
  * @return {object} 500 - Internal Server Error - application/json
  */
 router.patch("/:id/comments/:comment/mark", markThreadComment)
+
+/**
+ * DELETE /api/forum/{id}/comments/{comment}/mark
+ * @summary Unmark a comment as the correct answer
+ * @tags forum
+ * @return {ForumThread} 200 - OK - application/json
+ * @return {object} 500 - Internal Server Error - application/json
+ */
+router.delete("/:id/comments/:comment/mark", unmarkThreadComment)
 
 /**
  * DELETE /api/forum/{id}/comments/{comment}
