@@ -9,16 +9,16 @@ export default function MockAnswers() {
   const { questions, answers } = location.state || {}
 
   if (!questions || !answers) {
-    return <p>No answers to display.</p>
+    return <p className="text-center text-gray-500">No answers to display.</p>
   }
 
   return (
     <div>
-      <h1>Exam Review</h1>
+      <h1 className="font-bold text-center">Exam Review</h1>
 
       {questions.map((q, idx) => {
         const qId = q._id.toString()
-
+        {/*Analyze questions data and set properties*/}
         const rawUserAnswer = answers[qId]
 
         const userAnswerIndex =
@@ -43,7 +43,7 @@ export default function MockAnswers() {
                   ? "#d4edda" // green
                   : "#f8d7da", // red
             }}
-          >
+          > {/*Background colour according to answered and correctness */}
             <h3>
               {idx + 1}. {q.questionText}
             </h3>
@@ -52,7 +52,7 @@ export default function MockAnswers() {
               {q.options.map((opt, i) => {
                 const isUserChoice = i === userAnswerIndex
                 const isCorrect = i === correctIndex
-
+                  {/*Outer return:Get index of correct answer and user's answer for styling */}
                 return (
                   <li
                     key={i}
@@ -65,7 +65,7 @@ export default function MockAnswers() {
                           ? "red"
                           : "black",
                     }}
-                  >
+                  >{/*Inner return: Logic to display answers and user answers*/}
                     {opt}
                     {isUserChoice && " (Your Answer)"}
                     {isCorrect && " (Correct Answer)"}

@@ -97,13 +97,13 @@ export default function MockExam() {
     }
   }
 
-  if (!level) return <p>No level selected</p>
-  if (loading) return <p>Loading questions...</p>
+  if (!level) return <p className="text-center text-gray-500">No level selected</p>
+  if (loading) return <p className="text-center text-gray-500">Loading questions...</p>
 
   return (
     <div>
       <h1 className="text-2xl font-bold text-center my-6 relative">{level} Exam</h1>
-
+      {/*Each question displayed in question card*/}
       {questions.map((q, index) => (
         <div key={q._id + index}>
           <h3 className={`text-lg font-semibold`}>Question {index + 1}</h3>

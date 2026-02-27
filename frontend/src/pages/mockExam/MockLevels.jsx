@@ -38,7 +38,8 @@ export default function MockLevels() {
         <option value="History">History</option>
         <option value="Geography">Geography</option>
       </select>
-
+    {/*Display level in level cards. If scored above 75%, it is unlocked */}
+    {/*Error: Do not fetch data from db*/}
       <Level
         name="Easy"
         score={
