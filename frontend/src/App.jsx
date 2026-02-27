@@ -31,7 +31,7 @@ function App() {
           </Route>
         </Route>
 
-        {/* Student Browse Routes - NEW */}
+        {/* Student Browse Routes */}
         <Route path="browse">
           <Route path=":levelId" element={<BrowseSubjects />} />
           <Route
