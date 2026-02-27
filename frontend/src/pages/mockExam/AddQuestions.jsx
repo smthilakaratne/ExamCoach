@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import PreviewQuestionCard from "../../components/PreviewQuestionCard";
+import Button from "../../components/Button"
 
 export default function PreviewQuestions() {
   const [questions, setQuestions] = useState([]);
@@ -11,6 +12,7 @@ export default function PreviewQuestions() {
   const navigate = useNavigate();
   const [visibleCount, setVisibleCount] = useState(5);
 
+  //fetch questions from open trivia database based on selected level and subject
   const fetchQuestions = async () => {
     try {
       const response = await axios.get(
@@ -27,6 +29,7 @@ export default function PreviewQuestions() {
   setSelectedQuestions((prev) => [...prev, question]);
 };
 
+//importing and adding questions to the database
 const handleImport = async () => {
   try {
      const response = await axios.post(
@@ -45,24 +48,26 @@ const handleImport = async () => {
 
   return (
     <div>
-      <h2>Preview Questions</h2>
-
+      <h2 className="text-lg font-semibold text-center">Preview Questions</h2>
+      {/* Level dropdown*/}
       <select onChange={(e) => setLevel(e.target.value)}>
         <option value="easy">Easy</option>
         <option value="intermediate">Intermediate</option>
         <option value="advanced">Advanced</option>
       </select>
 
+    {/*subject dropdown*/}
         <select onChange={(e) => setSubject(e.target.value)}>
         <option value="math">Math</option>
         <option value="science">Science</option>
         <option value="history">History</option>
       </select>
 
-      <button onClick={fetchQuestions}>Fetch Questions</button>
-      
-        {questions.length === 0 && <p>No questions available</p>}
-      <div>
+      <Button kind="dangerSecondary" className=" mt-4" onClick={fetchQuestions}>Fetch Questions</Button>
+     {/*if no questions available or not clicked fetch button*/}
+        {questions.length === 0 && <p className="text-center text-gray-500">No questions available. Please select level and subject.</p>}
+      {/*Each question presented in preview card*/}
+      <div className="space-y-4 border-black border-2 rounded-lg p-6 m-4">
         {questions.slice(0, visibleCount).map((q, index) => (
         <div key={`${q.questionText}-${index}`} className="mb-3">
           <PreviewQuestionCard question={q}/>
@@ -72,8 +77,11 @@ const handleImport = async () => {
         </div>
 
         ))}
-        <button onClick={handleImport}>Import Selected</button>
-        <button onClick={() => setVisibleCount(prev => prev + 5)}> View More</button>
+        <Button kind="primary" 
+        className="hover:bg-white hover:border hover:border-blue-600 hover:text-red-600"
+        onClick={handleImport}>Import Selected</Button>
+        <Button kind="secondary" 
+        onClick={() => setVisibleCount(prev => prev + 5)}> View More</Button>
       </div>
     </div>
   );
