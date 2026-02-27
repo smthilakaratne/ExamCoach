@@ -36,6 +36,8 @@ export default function CreateTagModel({ isOpen, setIsOpen, setRefreshTags }) {
             className="ring-1 ring-gray-300 px-4 py-2 my-2 rounded-sm flex-auto"
             value={name}
             onChange={(evt) => setName(evt.target.value)}
+            minLength={3}
+            maxLength={25}
             required
           />
         </fieldset>
@@ -46,6 +48,8 @@ export default function CreateTagModel({ isOpen, setIsOpen, setRefreshTags }) {
             className="ring-1 ring-gray-300 px-4 py-2 my-2 rounded-sm flex-auto"
             value={description}
             onChange={(evt) => setDescription(evt.target.value)}
+            minLength={10}
+            maxLength={2048}
             required
           ></textarea>
         </fieldset>

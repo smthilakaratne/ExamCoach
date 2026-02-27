@@ -27,12 +27,23 @@ export default function Thread() {
   const [deleteThreadModelOpen, setDeleteThreadModelOpen] = useState(false)
   const [refreshThread, setRefreshThread] = useState(false)
   const [replyBody, setReplyBody] = useState("")
+  const [sortMode, setSortMode] = useState("date")
   const params = useParams()
 
   const hasUpvoted =
     thread?.reactions?.up?.some((u) => u.name === user) || false
   const hasDownvoted =
     thread?.reactions?.down?.some((u) => u.name === user) || false
+
+  const sortModes = {
+    date: (a1, a2) => new Date(a1?.createdAt) - new Date(a2?.createdAt),
+    votes: (a1, a2) =>
+      (a2.reactions.up.length ?? 0) -
+      (a2.reactions.down.length ?? 0) -
+      ((a1.reactions.up.length ?? 0) - (a1.reactions.down.length ?? 0)),
+  }
+
+  const sortedAnswers = (thread?.answers ?? []).sort(sortModes[sortMode])
 
   useEffect(() => {
     getThread(params.id).then(setThread)
@@ -146,9 +157,12 @@ export default function Thread() {
             {thread?.answers?.length ?? 0} Answers
           </h3>
           <div className="flex gap-2 items-center">
-            <select className="ring-1 ring-gray-300 px-4 py-2 rounded-sm flex-auto">
-              <option>Sort by: Votes</option>
-              <option>Sort by: Date</option>
+            <select
+              className="ring-1 ring-gray-300 px-4 py-2 rounded-sm flex-auto"
+              onChange={(evt) => setSortMode(evt.target.value)}
+            >
+              <option value="date">Sort by: Date</option>
+              <option value="votes">Sort by: Votes</option>
             </select>
             <Button>Answer</Button>
           </div>
@@ -159,7 +173,7 @@ export default function Thread() {
               This thread hasn’t been answered yet. Be the first to reply!
             </p>
           ) : (
-            (thread?.answers || []).map((reply, index) => (
+            sortedAnswers.map((reply, index) => (
               <ThreadReply
                 index={index}
                 key={`reply-${index}`}
@@ -174,7 +188,12 @@ export default function Thread() {
         <section>
           <h3 className="text-xl my-3">Your Answer</h3>
           <form onSubmit={handlePostComment}>
-            <TextEditor text={replyBody} setText={setReplyBody} />
+            <TextEditor
+              text={replyBody}
+              setText={setReplyBody}
+              minLength={10}
+              required
+            />
             <h5 className="text-base font-bold my-3">Preview</h5>
             <Container className="px-8 mb-5">
               {replyBody.length === 0 ? (
