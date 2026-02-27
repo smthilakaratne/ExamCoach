@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react"
 import { Plus, Edit2, Trash2 } from "lucide-react"
+import Navbar from "../../components/common/Navbar"
+import AdminSidebar from "../../components/common/AdminSidebar"
 
 export default function ExamLevels() {
   const [examLevels, setExamLevels] = useState([])

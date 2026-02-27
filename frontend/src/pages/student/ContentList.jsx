@@ -1,14 +1,8 @@
 import { useEffect, useState } from "react"
 import { Link, useParams, useNavigate } from "react-router-dom"
-import {
-  FileText,
-  Download,
-  Eye,
-  ArrowLeft,
-  GraduationCap,
-  Calendar,
-  Tag,
-} from "lucide-react"
+import Navbar from "../../components/common/Navbar"
+import { FileText, Download, Eye, ArrowLeft, Calendar, Tag } from "lucide-react"
+import Spinner from "../../components/common/Spinner"
 
 export default function ContentList() {
   const { levelId, subjectId, contentType } = useParams()
@@ -19,167 +13,68 @@ export default function ContentList() {
   const [filterYear, setFilterYear] = useState("all")
   const [filterTerm, setFilterTerm] = useState("all")
 
-  useEffect(() => {
-    fetchData()
-  }, [subjectId, contentType])
+  useEffect(() => { fetchData() }, [subjectId, contentType])
 
   const fetchData = async () => {
     try {
-      // Fetch subject details
-      const subjectRes = await fetch(
-        `http://localhost:8888/api/subjects/${subjectId}`
-      )
-      const subjectData = await subjectRes.json()
-      if (subjectData.success) {
-        setSubject(subjectData.body)
-      }
-
-      // Fetch content
-      const contentsRes = await fetch(
-        `http://localhost:8888/api/contents?subject=${subjectId}&contentType=${contentType}`
-      )
-      const contentsData = await contentsRes.json()
-      if (contentsData.success) {
-        setContents(contentsData.body)
-      }
-
-      setLoading(false)
-    } catch (error) {
-      console.error("Failed to fetch data:", error)
-      setLoading(false)
-    }
+      const [subjectRes, contentsRes] = await Promise.all([
+        fetch(`http://localhost:5001/api/subjects/${subjectId}`),
+        fetch(`http://localhost:5001/api/contents?subject=${subjectId}&contentType=${contentType}`),
+      ])
+      const sd = await subjectRes.json(); const cd = await contentsRes.json()
+      if (sd.success) setSubject(sd.body)
+      if (cd.success) setContents(cd.body)
+    } catch (error) { console.error(error) }
+    setLoading(false)
   }
 
-  const handleDownload = async (contentId, fileId, fileName) => {
+  const handleDownload = async (contentId, fileId) => {
     try {
-      // Record download
-      await fetch(`http://localhost:8888/api/contents/${contentId}/download`, {
-        method: "POST",
-      })
-
-      // Download file
-      window.open(
-        `http://localhost:8888/api/files/download/${fileId}`,
-        "_blank"
-      )
-    } catch (error) {
-      console.error("Download failed:", error)
-    }
+      await fetch(`http://localhost:5001/api/contents/${contentId}/download`, { method: "POST" })
+      window.open(`http://localhost:5001/api/files/download/${fileId}`, "_blank")
+    } catch (error) { console.error(error) }
   }
 
-  const handleView = (fileId) => {
-    window.open(`http://localhost:8888/api/files/view/${fileId}`, "_blank")
-  }
+  const getContentTypeName = (type) => ({ past_paper: "Past Papers", lesson: "Lessons", lecture_video: "Video Lectures", short_notes: "Short Notes" }[type] || type)
 
-  const getContentTypeName = (type) => {
-    const names = {
-      past_paper: "Past Papers",
-      lesson: "Lessons",
-      lecture_video: "Video Lectures",
-      short_notes: "Short Notes",
-    }
-    return names[type] || type
-  }
-
-  // Filter contents
-  const filteredContents = contents.filter((content) => {
-    if (filterYear !== "all" && content.year !== parseInt(filterYear))
-      return false
-    if (filterTerm !== "all" && content.term !== filterTerm) return false
+  const filteredContents = contents.filter(c => {
+    if (filterYear !== "all" && c.year !== parseInt(filterYear)) return false
+    if (filterTerm !== "all" && c.term !== filterTerm) return false
     return true
   })
-
-  // Get unique years and terms for filters
-  const uniqueYears = [
-    ...new Set(contents.map((c) => c.year).filter(Boolean)),
-  ].sort((a, b) => b - a)
-  const uniqueTerms = [...new Set(contents.map((c) => c.term).filter(Boolean))]
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-xl">Loading content...</div>
-      </div>
-    )
-  }
+  const uniqueYears = [...new Set(contents.map(c => c.year).filter(Boolean))].sort((a, b) => b - a)
+  const uniqueTerms = [...new Set(contents.map(c => c.term).filter(Boolean))]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      {/* Navigation Bar */}
-      <nav className="bg-white shadow-md">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
-            <GraduationCap className="w-8 h-8 text-indigo-600" />
-            <h1 className="text-2xl font-bold text-gray-900">ExamCoach</h1>
-          </Link>
-          <Link
-            to={`/browse/${levelId}/subject/${subjectId}`}
-            className="text-gray-700 hover:text-indigo-600 font-medium flex items-center gap-2"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Categories
-          </Link>
-        </div>
-      </nav>
-
-      <div className="max-w-7xl mx-auto px-4 py-12">
-        {/* Header */}
-        <div className="mb-8">
-          <button
-            onClick={() => navigate(`/browse/${levelId}/subject/${subjectId}`)}
-            className="text-indigo-600 hover:text-indigo-800 mb-4 flex items-center gap-2"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Categories
-          </button>
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            {getContentTypeName(contentType)}
-          </h1>
-          <p className="text-xl text-gray-600">
-            {subject?.name} • {subject?.examLevel?.name}
-          </p>
+    <div className="min-h-screen bg-gray-50">
+      <Navbar />
+      <div className="page-container">
+        <button onClick={() => navigate(`/browse/${levelId}/subject/${subjectId}`)} className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-indigo-600 mb-6 transition-colors">
+          <ArrowLeft className="w-4 h-4" /> Back to Categories
+        </button>
+        <div className="mb-6">
+          <h1 className="font-display text-3xl font-bold text-gray-900 mb-1">{getContentTypeName(contentType)}</h1>
+          <p className="text-gray-500">{subject?.name} • {subject?.examLevel?.name}</p>
         </div>
 
-        {/* Filters */}
         {(uniqueYears.length > 0 || uniqueTerms.length > 0) && (
-          <div className="bg-white rounded-lg shadow p-4 mb-6">
+          <div className="card border border-gray-100 mb-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {uniqueYears.length > 0 && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Filter by Year
-                  </label>
-                  <select
-                    value={filterYear}
-                    onChange={(e) => setFilterYear(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
-                  >
+                  <label className="label">Filter by Year</label>
+                  <select value={filterYear} onChange={e => setFilterYear(e.target.value)} className="input-field">
                     <option value="all">All Years</option>
-                    {uniqueYears.map((year) => (
-                      <option key={year} value={year}>
-                        {year}
-                      </option>
-                    ))}
+                    {uniqueYears.map(y => <option key={y} value={y}>{y}</option>)}
                   </select>
                 </div>
               )}
-
               {uniqueTerms.length > 0 && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Filter by Term
-                  </label>
-                  <select
-                    value={filterTerm}
-                    onChange={(e) => setFilterTerm(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
-                  >
+                  <label className="label">Filter by Term</label>
+                  <select value={filterTerm} onChange={e => setFilterTerm(e.target.value)} className="input-field">
                     <option value="all">All Terms</option>
-                    {uniqueTerms.map((term) => (
-                      <option key={term} value={term}>
-                        {term.replace("_", " ")}
-                      </option>
-                    ))}
+                    {uniqueTerms.map(t => <option key={t} value={t}>{t.replace("_", " ")}</option>)}
                   </select>
                 </div>
               )}
@@ -187,139 +82,60 @@ export default function ContentList() {
           </div>
         )}
 
-        {/* Content Grid */}
-        {filteredContents.length === 0 ? (
-          <div className="bg-white rounded-xl shadow-lg p-12 text-center">
-            <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-2xl font-semibold text-gray-900 mb-2">
-              No Content Found
-            </h3>
-            <p className="text-gray-600">
-              {contents.length === 0
-                ? `No ${getContentTypeName(contentType).toLowerCase()} available yet.`
-                : "Try adjusting your filters."}
-            </p>
+        {loading ? (
+          <div className="flex justify-center py-20"><Spinner size="lg" /></div>
+        ) : filteredContents.length === 0 ? (
+          <div className="card border border-gray-100 text-center py-16">
+            <FileText className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+            <h3 className="font-semibold text-gray-700 mb-2">No Content Found</h3>
+            <p className="text-gray-400 text-sm">{contents.length === 0 ? `No ${getContentTypeName(contentType).toLowerCase()} available yet.` : "Try adjusting your filters."}</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredContents.map((content) => (
-              <div
-                key={content._id}
-                className="bg-white rounded-xl shadow-lg p-6 hover:shadow-2xl transition"
-              >
-                {/* Content Icon */}
-                <div className="flex items-center justify-center w-12 h-12 bg-indigo-100 rounded-lg mb-4">
-                  <FileText className="w-6 h-6 text-indigo-600" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {filteredContents.map(content => (
+              <div key={content._id} className="card-hover border border-gray-100">
+                <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center mb-4">
+                  <FileText className="w-5 h-5 text-indigo-600" />
                 </div>
-
-                {/* Title */}
-                <h3 className="text-lg font-bold text-gray-900 mb-2">
-                  {content.title}
-                </h3>
-
-                {/* Description */}
-                {content.description && (
-                  <p className="text-sm text-gray-600 mb-4 line-clamp-2">
-                    {content.description}
-                  </p>
-                )}
-
-                {/* Metadata */}
-                <div className="space-y-2 mb-4">
+                <h3 className="font-semibold text-gray-900 mb-2 leading-snug">{content.title}</h3>
+                {content.description && <p className="text-sm text-gray-500 mb-3 line-clamp-2">{content.description}</p>}
+                <div className="space-y-1.5 mb-4">
                   {content.year && (
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <Calendar className="w-4 h-4" />
-                      <span>
-                        {content.year}
-                        {content.term &&
-                          ` • ${content.term.replace("_", " ")}`}
-                      </span>
+                    <div className="flex items-center gap-2 text-xs text-gray-500">
+                      <Calendar className="w-3.5 h-3.5" /> {content.year}{content.term && ` • ${content.term.replace("_", " ")}`}
                     </div>
                   )}
-
                   {content.unit && (
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <Tag className="w-4 h-4" />
-                      <span>{content.unit}</span>
+                    <div className="flex items-center gap-2 text-xs text-gray-500">
+                      <Tag className="w-3.5 h-3.5" /> {content.unit}
                     </div>
                   )}
-
-                  {/* Stats */}
-                  <div className="flex items-center gap-4 text-xs text-gray-500">
-                    <span>{content.views || 0} views</span>
-                    <span>{content.downloads || 0} downloads</span>
+                  <div className="flex gap-3 text-xs text-gray-400">
+                    <span>👁 {content.views || 0}</span>
+                    <span>⬇ {content.downloads || 0}</span>
                   </div>
                 </div>
-
-                {/* Tags */}
-                {content.tags && content.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {content.tags.slice(0, 3).map((tag, idx) => (
-                      <span
-                        key={idx}
-                        className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                )}
-
-                {/* Actions */}
                 <div className="flex gap-2">
                   {content.contentType === "lecture_video" ? (
-                    <a
-                      href={content.videoUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex-1 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition text-center text-sm font-medium"
-                    >
-                      Watch Video
-                    </a>
-                  ) : (
+                    <a href={content.videoUrl} target="_blank" rel="noopener noreferrer"
+                      className="flex-1 btn-primary text-sm py-2">Watch Video</a>
+                  ) : content.fileId ? (
                     <>
-                      {content.fileId && (
-                        <>
-                          <button
-                            onClick={() => handleView(content.fileId)}
-                            className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center justify-center gap-2 text-sm font-medium"
-                          >
-                            <Eye className="w-4 h-4" />
-                            View
-                          </button>
-                          <button
-                            onClick={() =>
-                              handleDownload(
-                                content._id,
-                                content.fileId,
-                                content.fileName
-                              )
-                            }
-                            className="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition flex items-center justify-center gap-2 text-sm font-medium"
-                          >
-                            <Download className="w-4 h-4" />
-                            Download
-                          </button>
-                        </>
-                      )}
+                      <button onClick={() => window.open(`http://localhost:5001/api/files/view/${content.fileId}`, "_blank")}
+                        className="flex-1 btn-secondary text-sm py-2 gap-1.5">
+                        <Eye className="w-3.5 h-3.5" /> View
+                      </button>
+                      <button onClick={() => handleDownload(content._id, content.fileId)}
+                        className="flex-1 btn-primary text-sm py-2 gap-1.5">
+                        <Download className="w-3.5 h-3.5" /> Download
+                      </button>
                     </>
-                  )}
+                  ) : null}
                 </div>
-
-                {/* Answer Sheet */}
                 {content.hasAnswerSheet && content.answerSheetFileId && (
-                  <button
-                    onClick={() =>
-                      handleDownload(
-                        content._id,
-                        content.answerSheetFileId,
-                        content.answerSheetFileName
-                      )
-                    }
-                    className="w-full mt-2 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition flex items-center justify-center gap-2 text-sm font-medium"
-                  >
-                    <Download className="w-4 h-4" />
-                    Download Answers
+                  <button onClick={() => handleDownload(content._id, content.answerSheetFileId)}
+                    className="w-full mt-2 bg-purple-600 hover:bg-purple-700 text-white text-sm py-2 rounded-xl transition-colors flex items-center justify-center gap-1.5">
+                    <Download className="w-3.5 h-3.5" /> Download Answers
                   </button>
                 )}
               </div>
