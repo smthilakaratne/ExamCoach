@@ -12,10 +12,9 @@ import {
 } from "../../services/forumApi"
 import ForumTag from "../../components/tag"
 import { X } from "lucide-react"
+import { useRef } from "react"
 
-const { VITE_API_URL } = import.meta.env
-
-function TagSelector({ selectedTags, setSelectedTags }) {
+function TagSelector({ selectedTags, setSelectedTags, ref }) {
   const [tagQuery, setTagQuery] = useState("")
   const [tags, setTags] = useState([])
 
@@ -31,6 +30,7 @@ function TagSelector({ selectedTags, setSelectedTags }) {
   const handleInputKeyPress = (evt) => {
     if (evt.key === "Backspace" && !evt.repeat && tagQuery.length === 0) {
       setSelectedTags((prev) => prev.slice(0, -1))
+      ref.current.setCustomValidity("")
     }
   }
 
@@ -48,9 +48,10 @@ function TagSelector({ selectedTags, setSelectedTags }) {
               <ForumTag name={tag} className="pr-0" />
               <X
                 className="size-3 cursor-pointer hover:bg-gray-400 transition-colors rounded-full"
-                onClick={() =>
+                onClick={() => {
                   setSelectedTags((prev) => prev.filter((t) => t !== tag))
-                }
+                  ref.current.setCustomValidity("")
+                }}
               />
             </div>
           ))}
@@ -67,6 +68,7 @@ function TagSelector({ selectedTags, setSelectedTags }) {
           value={tagQuery}
           onChange={(evt) => setTagQuery(evt.target.value)}
           onKeyDown={handleInputKeyPress}
+          ref={ref}
         />
       </div>
       {tagQuery.length > 0 && (
@@ -97,12 +99,27 @@ export default function CreateUpdateThread() {
   const [title, setTitle] = useState("")
   const [body, setBody] = useState("")
   const [tags, setTags] = useState([])
+  const tagRef = useRef()
+  const formRef = useRef()
   const { pathname } = useLocation()
   const params = useParams()
   const isCreating = pathname === "/community/forum/new"
 
   const handleSubmit = async (evt) => {
+    tagRef.current.setCustomValidity("")
+
+    if (tags.length > 5) {
+      tagRef.current.setCustomValidity("Cannot have more than 5 tags")
+    }
+
+    if (!formRef.current.checkValidity()) {
+      evt.preventDefault()
+      formRef.current.reportValidity()
+      return
+    }
+
     evt.preventDefault()
+
     try {
       let thread
       if (isCreating) thread = await createThread(title, body, tags)
@@ -137,6 +154,7 @@ export default function CreateUpdateThread() {
       <form
         onSubmit={handleSubmit}
         className="border border-gray-300 rounded-sm px-8 py-4"
+        ref={formRef}
       >
         <fieldset className="grid my-4">
           <label htmlFor="title" className="font-bold">
@@ -149,6 +167,8 @@ export default function CreateUpdateThread() {
             placeholder="Enter your topic's title here"
             value={title}
             onChange={(evt) => setTitle(evt.target.value)}
+            minLength={5}
+            maxLength={120}
             required
           />
         </fieldset>
@@ -156,7 +176,7 @@ export default function CreateUpdateThread() {
           <label htmlFor="body" className="font-bold">
             Body
           </label>
-          <TextEditor text={body} setText={setBody} />
+          <TextEditor text={body} setText={setBody} minLength={10} />
         </fieldset>
         <div>
           <div className="font-bold">Preview</div>
@@ -174,7 +194,11 @@ export default function CreateUpdateThread() {
           <label htmlFor="tags" className="font-bold">
             Tags
           </label>
-          <TagSelector selectedTags={tags} setSelectedTags={setTags} />
+          <TagSelector
+            selectedTags={tags}
+            setSelectedTags={setTags}
+            ref={tagRef}
+          />
         </fieldset>
         <Button type="submit">{isCreating ? "Create" : "Update"}</Button>
       </form>
