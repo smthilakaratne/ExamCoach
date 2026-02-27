@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom"
-import Button from "../../components/Button"
+import Button from  "../../components/button"
 
 export default function MockResult() {
   const location = useLocation()

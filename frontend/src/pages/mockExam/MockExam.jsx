@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import Question from "../../components/QuestionCard"
 import { useLocation, useNavigate } from "react-router-dom"
 import { startExam, submitExam } from "../../services/mockExamApi"
-import Button from "../../components/Button"
+import Button from "../../components/button"
 
 export default function MockExam() {
   const [questions, setQuestions] = useState([])

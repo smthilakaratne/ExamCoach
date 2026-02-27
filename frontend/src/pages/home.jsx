@@ -3,7 +3,7 @@ import { Link } from "react-router-dom"
 import { BookOpen, Search, TrendingUp } from "lucide-react"
 import Navbar from "../components/navbar"
 import Footer from "../components/footer"
-import Button from "../components/Button"
+import Button from "../components/button"
 
 export default function Home() {
   const [examLevels, setExamLevels] = useState([])

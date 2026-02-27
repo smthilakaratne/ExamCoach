@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { BookOpen, FileText, GraduationCap, Video } from "lucide-react"
-import Button from "../../components/Button"
+import Button from "../../components/button"
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({

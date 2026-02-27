@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom"
-import Button from "../components/Button"
+import Button from "./button"
 
 export default function Level({ name, score, unlocked, onStart }) {
   return (
