@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import PreviewQuestionCard from "../../components/PreviewQuestionCard";
 
 export default function PreviewQuestions() {
   const [questions, setQuestions] = useState([]);
@@ -8,17 +9,18 @@ export default function PreviewQuestions() {
   const [subject, setSubject] = useState("math");
   const [selectedQuestions, setSelectedQuestions] = useState([]);
   const navigate = useNavigate();
+  const [visibleCount, setVisibleCount] = useState(5);
 
   const fetchQuestions = async () => {
-    /*try {
+    try {
       const response = await axios.get(
-        `http://localhost:8888/api/admin/mockexam/questions?level=${level}`
+        `http://localhost:8888/api/mock-exams/questions?level=${level}&subject=${subject}`
       );
       setQuestions(response.data);
     } catch (error) {
       console.error("Error fetching questions:", error);
     }
-      */
+      
   };
 
   const handleAdd = (question) => {
@@ -27,17 +29,17 @@ export default function PreviewQuestions() {
 
 const handleImport = async () => {
   try {
-    await axios.post(
-      "http://localhost:8888/api/questions/import",
+     const response = await axios.post(
+      "http://localhost:8888/api/mock-exams/questions/import",
       {
         questions: selectedQuestions,
-        subjectId: "12345", 
       }
     );
-
+    console.log("Import response:", response.data);
     alert("Questions imported successfully");
   } catch (error) {
-    console.error("Import failed:", error);
+    console.error("Import failed:", error);           // logs AxiosError object
+    console.error("Error response data:", error.response?.data);
   }
 };
 
@@ -61,19 +63,17 @@ const handleImport = async () => {
       
         {questions.length === 0 && <p>No questions available</p>}
       <div>
-        {questions.map((q, index) => (
-          <div key={index}>
-            <h4>{q.questionText}</h4>
-            <ul>
-              {q.options.map((opt, i) => (
-                <li key={i}>{opt}</li>
-              ))}
-            </ul>
-            <button onClick={() => {}}>Add Question</button>
-          </div>
+        {questions.slice(0, visibleCount).map((q, index) => (
+        <div key={`${q.questionText}-${index}`} className="mb-3">
+          <PreviewQuestionCard question={q}/>
+          <button onClick={() => handleAdd(q)}>
+            Add Question
+          </button>
+        </div>
+
         ))}
         <button onClick={handleImport}>Import Selected</button>
-        <button>View More</button>
+        <button onClick={() => setVisibleCount(prev => prev + 5)}> View More</button>
       </div>
     </div>
   );

@@ -11,3 +11,11 @@ export const submitExam = (data) =>
 
 export const getProgress = (userId, subject) =>
   axios.get(`${API}/progress/${userId}?subject=${subject}`);
+
+export const fetchPreviewQuestions = (level, subject) => {
+  return axios.get(`${API}/questions?level=${level}&subject=${subject}`);
+};
+
+export const importQuestions = (data) => {
+  return axios.post(`${API}/questions/import`, data);
+};
