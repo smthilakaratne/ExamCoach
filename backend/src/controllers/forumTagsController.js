@@ -33,6 +33,30 @@ const createTag = async (req, res, next) => {
     }
 }
 
+const editTag = async (req, res, next) => {
+    try {
+        const tag = await ForumTag.findOneAndUpdate(
+            { name: req.params.name },
+            { ...req.body },
+            { runValidators: true, new: true },
+        )
+        if (!tag) return createResponse(res, StatusCodes.NOT_FOUND, "Tag not found")
+        return createResponse(res, StatusCodes.OK, { tag })
+    } catch (error) {
+        if (error instanceof mongoose.Error.ValidationError)
+            return createResponse(
+                res,
+                StatusCodes.BAD_REQUEST,
+                Object.keys(error.errors).map((key) => ({
+                    field: key,
+                    message: error.errors[key].message,
+                })),
+            )
+
+        next(error)
+    }
+}
+
 const deleteTag = async (req, res, next) => {
     try {
         const tag = await ForumTag.findOneAndDelete({ name: req.params.name })
@@ -43,4 +67,4 @@ const deleteTag = async (req, res, next) => {
     }
 }
 
-module.exports = { getTags, createTag, deleteTag }
+module.exports = { getTags, createTag, editTag, deleteTag }
