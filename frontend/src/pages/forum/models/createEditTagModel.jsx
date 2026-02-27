@@ -1,28 +1,45 @@
 import { useState } from "react"
 import Button from "../../../components/button"
 import OverlayWindow from "../../../components/overlaywindow"
-import { createForumTag } from "../../../services/forumApi"
+import { createForumTag, editForumTag } from "../../../services/forumApi"
 
-export default function CreateTagModel({ isOpen, setIsOpen, setRefreshTags }) {
-  const [name, setName] = useState("")
-  const [description, setDescription] = useState("")
+export default function CreateEditTagModel({
+  isOpen,
+  setIsOpen,
+  setRefreshTags,
+  isEditting,
+  originalName,
+  originalDescription,
+}) {
+  const [name, setName] = useState(originalName || "")
+  const [description, setDescription] = useState(originalDescription || "")
 
   const handleSubmit = async (evt) => {
     evt.preventDefault()
     try {
-      await createForumTag(name, description)
-      setName("")
-      setDescription("")
+      if (isEditting) {
+        await editForumTag(originalName, name, description)
+      } else {
+        await createForumTag(name, description)
+        setName("")
+        setDescription("")
+      }
       setIsOpen(false)
       setRefreshTags((refreshTags) => !refreshTags)
-    } catch (error) {}
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   return (
     <OverlayWindow isOpen={isOpen} setIsOpen={setIsOpen}>
-      <h3 className="text-xl my-2">Create a new tag</h3>
+      <h3 className="text-xl my-2">
+        {isEditting ? "Edit tag" : "Create a new tag"}
+      </h3>
       <p className="text-gray-400 text-sm font-light my-2">
-        Check if a similar tag already exists before creating a new one.
+        {isEditting
+          ? "Edit your tag details"
+          : "Check if a similar tag already exists before creating a new one."}
       </p>
       <form
         className="grid gap-2 border border-gray-300 rounded-sm p-4"
@@ -53,7 +70,7 @@ export default function CreateTagModel({ isOpen, setIsOpen, setRefreshTags }) {
             required
           ></textarea>
         </fieldset>
-        <Button type="submit">Create!</Button>
+        <Button type="submit">{isEditting ? "Update" : "Create!"}</Button>
       </form>
     </OverlayWindow>
   )
