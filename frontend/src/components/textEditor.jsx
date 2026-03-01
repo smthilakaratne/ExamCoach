@@ -20,25 +20,10 @@ import {
   Quote,
   Table,
 } from "lucide-react"
+import { useTextEditor } from "../contexts/textEditor"
 
 export default function TextEditor({ text, setText, extraTools, ...props }) {
-  const textareaRef = useRef()
-
-  const insertAtCursor = (before, after = "") => {
-    const el = textareaRef.current
-    const start = el.selectionStart
-    const end = el.selectionEnd
-    const selected = text.slice(start, end)
-    const newText =
-      text.slice(0, start) + before + selected + after + text.slice(end)
-    setText(newText)
-
-    // Put cursor after inserted text
-    setTimeout(() => {
-      el.focus()
-      el.selectionStart = el.selectionEnd = start + before.length
-    }, 0)
-  }
+  const { textareaRef, insertAtCursor } = useTextEditor()
 
   return (
     <div className="grid my-2">
