@@ -26,3 +26,17 @@ export const getTrendingGifs = async () => {
   )
   return response.data.data.data
 }
+
+export const searchGif = async (q) => {
+  const response = await axios.get(
+    `${KLIPY_ENDPOINT}/api/v1/${VITE_KLIPY_API_KEY}/gifs/search`,
+    {
+      params: {
+        customer_id: CUSTOMER_ID,
+        format_filter: "gif",
+        q,
+      },
+    },
+  )
+  return response.data.data.data
+}

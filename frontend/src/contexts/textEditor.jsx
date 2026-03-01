@@ -12,7 +12,6 @@ export default function TextEditProvider({ children, text, setText }) {
   const textareaRef = useRef()
 
   const insertAtCursor = (before, after = "") => {
-    console.log(textareaRef)
     const el = textareaRef.current
     const start = el.selectionStart
     const end = el.selectionEnd
