@@ -5,7 +5,7 @@ import Navbar from "../../components/navbar"
 export default function ForumLayout() {
   return (
     <>
-      <Navbar />
+      {/*<Navbar />*/}
       <div className="max-w-7xl mx-auto px-4 py-8">
         <Outlet />
       </div>
