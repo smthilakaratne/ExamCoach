@@ -1,13 +1,9 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { BookOpen, Search, TrendingUp } from "lucide-react"
-import Navbar from "../components/navbar"
 import Footer from "../components/footer"
 import Button from "../components/button"
-import { BookOpen, Search, TrendingUp } from "lucide-react"
 import Navbar from "../components/navbar"
-import Footer from "../components/footer"
-import Button from "../components/button"
 
 export default function Home() {
   const [examLevels, setExamLevels] = useState([])
@@ -52,6 +48,7 @@ export default function Home() {
   }
 
   return (
+    <>
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       {/*<Navbar/>*/} 
       {/* Hero Section */}
@@ -128,7 +125,6 @@ export default function Home() {
                     <div className="mt-6 text-center">
                       <span
                         className={`${
-                          index % 2 === 0 ? "text-blue-600" : "text-green-600"
                           index % 2 === 0 ? "text-blue-600" : "text-green-600"
                         } font-semibold text-lg group-hover:underline`}
                       >
@@ -266,6 +262,7 @@ export default function Home() {
       <Footer />
       <Footer />
     </div>
+   </>
   )
 }
 

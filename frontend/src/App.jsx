@@ -35,6 +35,7 @@ function App() {
     <Routes>
       {/* All routes are wrapped in the Layout which contains the Navbar */}
       <Route element={<Layout />}>
+
         {/* Public */}
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
@@ -46,14 +47,8 @@ function App() {
         {/* Community */}
         <Route path="community">
           <Route path="forum" element={<Forum.Layout />}>
-          <Route path="forum" element={<Forum.Layout />}>
             <Route index element={<Forum.Forum />} />
             <Route path="tags" element={<Forum.Tags />} />
-            <Route path="new" element={<Forum.CreateUpdateThread />} />
-            <Route path=":id">
-              <Route index element={<Forum.Thread />} />
-              <Route path="edit" element={<Forum.CreateUpdateThread />} />
-            </Route>
             <Route path="new" element={<Forum.CreateUpdateThread />} />
             <Route path=":id">
               <Route index element={<Forum.Thread />} />
@@ -63,17 +58,8 @@ function App() {
         </Route>
 
         {/* Student Browse Routes */}
-        {/* Student Browse Routes */}
         <Route path="browse">
           <Route path=":levelId" element={<BrowseSubjects />} />
-          <Route
-            path=":levelId/subject/:subjectId"
-            element={<ContentCategories />}
-          />
-          <Route
-            path=":levelId/subject/:subjectId/content/:contentType"
-            element={<ContentList />}
-          />
           <Route
             path=":levelId/subject/:subjectId"
             element={<ContentCategories />}
