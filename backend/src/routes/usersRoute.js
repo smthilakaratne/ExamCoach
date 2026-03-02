@@ -46,7 +46,7 @@ router.put("/profile", protect, updateProfileRules, userController.updateProfile
 
 /**
  * PUT /api/user/change-password
- * @summary Change own password
+*  @summary Change own password
  * @tags Users
  * @security BearerAuth
  * @param {object} request.body.required

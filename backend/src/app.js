@@ -36,7 +36,7 @@ app.use("/api", apiLimiter)
 
 // ═════════════════════════════════════════════════════════════════════════════
 //  AUTH MIDDLEWARE
-//  IMPORTANT: defined and exported BEFORE routes are imported below.
+//IMPORTANT: defined and exported BEFORE routes are imported below.
 //  Routes use: const { protect, restrictTo } = require("../app")
 //  Node.js module cache ensures routes get the correct functions as long as
 //  module.exports.protect is set before the route require() calls.
@@ -119,14 +119,13 @@ const usersRoute = require("./routes/usersRoute")
 const authRoute = require("./routes/Authroute")
 const feedbackRoute = require("./routes/Feedbackroute")
 
-// Existing routes – uncomment as teammates complete them
-// const examLevelRoute = require("./routes/examLevelRoute")
-// const subjectRoute = require("./routes/subjectRoute")
-// const contentRoute = require("./routes/contentRoute")
-// const fileRoute = require("./routes/fileRoute")
-// const forumRoute = require("./routes/forumRoute")
-// const forumTagsRoute = require("./routes/forumTagRoute")
-// const mockExamRoute = require("./routes/mockExamRoute")
+const examLevelRoute = require("./routes/examLevelRoute")
+const subjectRoute = require("./routes/subjectRoute")
+const contentRoute = require("./routes/contentRoute")
+const fileRoute = require("./routes/fileRoute")
+const forumRoute = require("./routes/forumRoute")
+const forumTagsRoute = require("./routes/forumTagRoute")
+const mockExamRoute = require("./routes/mockExamRoute")
 
 // ── Swagger ───────────────────────────────────────────────────────────────────
 expressJSDocSwagger(app)(swaggerOptions)
@@ -136,13 +135,13 @@ app.use("/api/auth", authRoute)
 app.use("/api/feedback", feedbackRoute)
 app.use("/api/user", usersRoute)
 
-// app.use("/api/exam-levels", examLevelRoute)
-// app.use("/api/subjects", subjectRoute)
-// app.use("/api/contents", contentRoute)
-// app.use("/api/files", fileRoute)
-// app.use("/api/forum/tags", forumTagsRoute)
-// app.use("/api/forum", forumRoute)
-// app.use("/api/mock-exams", mockExamRoute)
+app.use("/api/exam-levels", examLevelRoute)
+app.use("/api/subjects", subjectRoute)
+app.use("/api/contents", contentRoute)
+app.use("/api/files", fileRoute)
+app.use("/api/forum/tags", forumTagsRoute)
+app.use("/api/forum", forumRoute)
+app.use("/api/mock-exams", mockExamRoute)
 
 app.use("/api", rootRoute)
 
@@ -178,10 +177,12 @@ app.use((err, req, res, next) => {
 
 // ── Start server ──────────────────────────────────────────────────────────────
 const start = async () => {
-    const PORT = process.env.PORT || 5001
+    const PORT = process.env.PORT || 5001 
+
+    
 
     await mongoose.connect(process.env.MONGO_URI, { dbName: "ExamCoach" })
-    console.log("✅ MongoDB connected")
+    console.log(" MongoDB connected")
 
     initGridFS()
 
@@ -190,12 +191,12 @@ const start = async () => {
         let address = networkInterfaces.wlo1 && networkInterfaces.wlo1[0].address
         console.log("🚀 Server listening on")
         console.log(`\tLocal:\thttp://127.0.0.1:${PORT}`)
-        console.log(`\tDocs:\thttp://127.0.0.1:${PORT}/api/docs`)
         console.log("Connected to DB:", mongoose.connection.name)
+        console.log("EENV URI:", process.env.MONGO_URI)
         address && console.log(`\tIP:\thttp://${address}:${PORT}`)
     })
 }
 
 start()
 
-module.exports = app
+module.exports = app;

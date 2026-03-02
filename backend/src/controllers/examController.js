@@ -37,14 +37,14 @@ async function startExam(req, res) {
 
 module.exports = { startExam }
 
-/* Example answer key for scoring
+/*Example answer key for scoring
 const answerKey = {
   1: "A",
   2: "C",
   3: "B",
   4: "D",
   5: "B",
-};
+}
 
 const ExamController = async (req, res) => {
   try {
