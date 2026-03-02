@@ -16,8 +16,8 @@ export default function ContentCategories() {
   const fetchData = async () => {
     try {
       const [subjectRes, contentsRes] = await Promise.all([
-        fetch(`http://localhost:5001/api/subjects/${subjectId}`),
-        fetch(`http://localhost:5001/api/contents?subject=${subjectId}`),
+        fetch(`http://localhost:8888/api/subjects/${subjectId}`),
+        fetch(`http://localhost:8888/api/contents?subject=${subjectId}`),
       ])
       const subjectData = await subjectRes.json()
       const contentsData = await contentsRes.json()

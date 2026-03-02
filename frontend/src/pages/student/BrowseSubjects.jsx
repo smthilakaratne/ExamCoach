@@ -16,8 +16,8 @@ export default function BrowseSubjects() {
   const fetchData = async () => {
     try {
       const [levelRes, subjectsRes] = await Promise.all([
-        fetch(`http://localhost:5001/api/exam-levels/${levelId}`),
-        fetch(`http://localhost:5001/api/subjects?examLevel=${levelId}`),
+        fetch(`http://localhost:8888/api/exam-levels/${levelId}`),
+        fetch(`http://localhost:8888/api/subjects?examLevel=${levelId}`),
       ])
       const levelData = await levelRes.json()
       const subjectsData = await subjectsRes.json()

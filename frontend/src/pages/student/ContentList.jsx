@@ -18,8 +18,8 @@ export default function ContentList() {
   const fetchData = async () => {
     try {
       const [subjectRes, contentsRes] = await Promise.all([
-        fetch(`http://localhost:5001/api/subjects/${subjectId}`),
-        fetch(`http://localhost:5001/api/contents?subject=${subjectId}&contentType=${contentType}`),
+        fetch(`http://localhost:8888/api/subjects/${subjectId}`),
+        fetch(`http://localhost:8888/api/contents?subject=${subjectId}&contentType=${contentType}`),
       ])
       const sd = await subjectRes.json(); const cd = await contentsRes.json()
       if (sd.success) setSubject(sd.body)
@@ -30,8 +30,8 @@ export default function ContentList() {
 
   const handleDownload = async (contentId, fileId) => {
     try {
-      await fetch(`http://localhost:5001/api/contents/${contentId}/download`, { method: "POST" })
-      window.open(`http://localhost:5001/api/files/download/${fileId}`, "_blank")
+      await fetch(`http://localhost:8888/api/contents/${contentId}/download`, { method: "POST" })
+      window.open(`http://localhost:8888/api/files/download/${fileId}`, "_blank")
     } catch (error) { console.error(error) }
   }
 

@@ -260,7 +260,7 @@ export default function Home() {
         </div>
       </div>
       <Footer />
-      <Footer />
+      
     </div>
    </>
   )

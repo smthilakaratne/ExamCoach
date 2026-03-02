@@ -7,6 +7,7 @@ import { getFeedbackStats } from "../../services/feedbackService"
 import { GraduationCap, BookOpen, FileText, Users, MessageSquare, CheckCircle, Clock, XCircle } from "lucide-react"
 import Button from "../../components/button"
 import Spinner from "../../components/common/Spinner"
+import { Link } from "react-router-dom"
 
 export default function AdminDashboard() {
   const [uStats, setUStats] = useState(null)
