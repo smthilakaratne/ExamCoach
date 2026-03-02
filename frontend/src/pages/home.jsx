@@ -4,6 +4,10 @@ import { BookOpen, Search, TrendingUp } from "lucide-react"
 import Navbar from "../components/navbar"
 import Footer from "../components/footer"
 import Button from "../components/button"
+import { BookOpen, Search, TrendingUp } from "lucide-react"
+import Navbar from "../components/navbar"
+import Footer from "../components/footer"
+import Button from "../components/button"
 
 export default function Home() {
   const [examLevels, setExamLevels] = useState([])
@@ -125,6 +129,7 @@ export default function Home() {
                       <span
                         className={`${
                           index % 2 === 0 ? "text-blue-600" : "text-green-600"
+                          index % 2 === 0 ? "text-blue-600" : "text-green-600"
                         } font-semibold text-lg group-hover:underline`}
                       >
                         Explore Subjects →
@@ -212,6 +217,7 @@ export default function Home() {
                     <span
                       className={`text-xs font-semibold px-3 py-1 rounded-full ${getContentTypeColor(
                         content.contentType,
+                        content.contentType,
                       )}`}
                     >
                       {content.contentType.replace("_", " ")}
@@ -242,6 +248,10 @@ export default function Home() {
           <Button kind="primary">Mock Exam</Button>
         </Link>
 
+        <Link to="/mock-exam/exam-summary" className="block p-6 m-4  text-white rounded-lg text-center ">
+          <Button kind="primary">Mock Exam</Button>
+        </Link>
+
         {/* CTA Section */}
         <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl shadow-2xl p-12 text-center text-white">
           <h3 className="text-4xl font-bold mb-4">
@@ -254,6 +264,8 @@ export default function Home() {
         </div>
       </div>
       <Footer />
+      <Footer />
     </div>
   )
 }
+
