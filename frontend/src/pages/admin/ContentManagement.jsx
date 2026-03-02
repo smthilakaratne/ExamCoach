@@ -9,7 +9,7 @@ export default function ContentManagement() {
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [editingContent, setEditingContent] = useState(null)
-  
+
   // Filters
   const [filterLevel, setFilterLevel] = useState("all")
   const [filterSubject, setFilterSubject] = useState("all")
@@ -33,6 +33,9 @@ export default function ContentManagement() {
   const [questionFile, setQuestionFile] = useState(null)
   const [answerFile, setAnswerFile] = useState(null)
 
+  // ✅ Validations (added)
+  const [errors, setErrors] = useState({})
+
   useEffect(() => {
     fetchData()
   }, [])
@@ -40,9 +43,7 @@ export default function ContentManagement() {
   useEffect(() => {
     // Filter subjects when exam level changes in form
     if (formData.examLevel) {
-      const filtered = subjects.filter(
-        (s) => s.examLevel._id === formData.examLevel
-      )
+      const filtered = subjects.filter((s) => s.examLevel._id === formData.examLevel)
       setFilteredSubjects(filtered)
     } else {
       setFilteredSubjects([])
@@ -73,8 +74,89 @@ export default function ContentManagement() {
     }
   }
 
+  // ✅ Helpers for validation (added)
+  const isPdfFile = (file) => {
+    if (!file) return false
+    const nameOk = file.name?.toLowerCase().endsWith(".pdf")
+    const typeOk = file.type === "application/pdf" || file.type === "application/x-pdf" || file.type === ""
+    return nameOk && typeOk
+  }
+
+  const validateForm = () => {
+    const newErrors = {}
+
+    // Step validations
+    if (!formData.examLevel) newErrors.examLevel = "Exam level is required"
+    if (!formData.subject) newErrors.subject = "Subject is required"
+    if (!formData.contentType) newErrors.contentType = "Content type is required"
+
+    // Title
+    if (!formData.title?.trim()) newErrors.title = "Title is required"
+    if (formData.title?.trim() && formData.title.trim().length < 3)
+      newErrors.title = "Title must be at least 3 characters"
+
+    // Content-type specific validations
+    if (formData.contentType === "lecture_video") {
+      if (!formData.videoUrl?.trim()) newErrors.videoUrl = "Video URL is required for lecture videos"
+      else {
+        try {
+          // basic URL validation
+          // eslint-disable-next-line no-new
+          new URL(formData.videoUrl.trim())
+        } catch {
+          newErrors.videoUrl = "Please enter a valid URL"
+        }
+      }
+    } else {
+      // For past_paper, lesson, short_notes => require a PDF file on create,
+      // and allow no new file on edit if an existing file is already present.
+      const hasExistingFile = !!(editingContent && editingContent.fileId)
+      const hasNewFile = !!questionFile
+
+      if (!hasNewFile && !hasExistingFile) {
+        newErrors.questionFile = "PDF file is required"
+      }
+
+      if (hasNewFile && !isPdfFile(questionFile)) {
+        newErrors.questionFile = "Only PDF files are allowed"
+      }
+
+      // Past paper answer sheet optional but must be PDF if present
+      if (formData.contentType === "past_paper" && answerFile && !isPdfFile(answerFile)) {
+        newErrors.answerFile = "Answer sheet must be a PDF"
+      }
+    }
+
+    // Past paper year + term validations (optional fields but validate if provided)
+    if (formData.contentType === "past_paper" && formData.year) {
+      const y = Number(formData.year)
+      const currentYear = new Date().getFullYear()
+      if (Number.isNaN(y) || y < 1900 || y > currentYear + 1) {
+        newErrors.year = `Year must be between 1900 and ${currentYear + 1}`
+      }
+    }
+
+    // Lessons/notes unit validation (optional, but if typed, keep reasonable)
+    if (
+      (formData.contentType === "lesson" || formData.contentType === "short_notes") &&
+      formData.unit &&
+      formData.unit.trim().length < 2
+    ) {
+      newErrors.unit = "Unit/Chapter must be at least 2 characters"
+    }
+
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
+
+    // ✅ Run validations first (added)
+    if (!validateForm()) {
+      alert("Please fix the form errors and try again.")
+      return
+    }
 
     try {
       const formDataToSend = new FormData()
@@ -83,16 +165,14 @@ export default function ContentManagement() {
       formDataToSend.append("title", formData.title)
       formDataToSend.append("subject", formData.subject)
       formDataToSend.append("contentType", formData.contentType)
-      if (formData.description)
-        formDataToSend.append("description", formData.description)
+      if (formData.description) formDataToSend.append("description", formData.description)
       if (formData.year) formDataToSend.append("year", formData.year)
       if (formData.term) formDataToSend.append("term", formData.term)
       if (formData.unit) formDataToSend.append("unit", formData.unit)
       if (formData.tags) formDataToSend.append("tags", formData.tags)
-      if (formData.videoUrl)
-        formDataToSend.append("videoUrl", formData.videoUrl)
+      if (formData.videoUrl) formDataToSend.append("videoUrl", formData.videoUrl)
 
-      // Add files
+      // ✅ Add files (same logic works for past_paper, lesson, short_notes PDF uploads)
       if (questionFile) {
         formDataToSend.append("file", questionFile)
       }
@@ -114,11 +194,7 @@ export default function ContentManagement() {
       const data = await response.json()
 
       if (data.success) {
-        alert(
-          editingContent
-            ? "Content updated successfully!"
-            : "Content created successfully!"
-        )
+        alert(editingContent ? "Content updated successfully!" : "Content created successfully!")
         handleCancel()
         fetchData()
       } else {
@@ -132,6 +208,7 @@ export default function ContentManagement() {
 
   const handleEdit = (content) => {
     setEditingContent(content)
+    setErrors({}) // ✅ reset errors (added)
     setFormData({
       title: content.title,
       examLevel: content.subject.examLevel._id,
@@ -172,6 +249,7 @@ export default function ContentManagement() {
   const handleCancel = () => {
     setShowForm(false)
     setEditingContent(null)
+    setErrors({}) // ✅ reset errors (added)
     setFormData({
       title: "",
       examLevel: "",
@@ -189,22 +267,54 @@ export default function ContentManagement() {
   }
 
   const handleDownload = (fileId, fileName) => {
-    window.open(
-      `http://localhost:8888/api/files/download/${fileId}`,
-      "_blank"
-    )
+    window.open(`http://localhost:8888/api/files/download/${fileId}`, "_blank")
   }
 
   const handleView = (fileId) => {
     window.open(`http://localhost:8888/api/files/view/${fileId}`, "_blank")
   }
 
+  // ✅ File change handlers with validation (added)
+  const handleQuestionFileChange = (e) => {
+    const file = e.target.files?.[0]
+    if (!file) {
+      setQuestionFile(null)
+      setErrors((prev) => ({ ...prev, questionFile: undefined }))
+      return
+    }
+
+    if (!isPdfFile(file)) {
+      setQuestionFile(null)
+      setErrors((prev) => ({ ...prev, questionFile: "Only PDF files are allowed" }))
+      return
+    }
+
+    setQuestionFile(file)
+    setErrors((prev) => ({ ...prev, questionFile: undefined }))
+  }
+
+  const handleAnswerFileChange = (e) => {
+    const file = e.target.files?.[0]
+    if (!file) {
+      setAnswerFile(null)
+      setErrors((prev) => ({ ...prev, answerFile: undefined }))
+      return
+    }
+
+    if (!isPdfFile(file)) {
+      setAnswerFile(null)
+      setErrors((prev) => ({ ...prev, answerFile: "Answer sheet must be a PDF" }))
+      return
+    }
+
+    setAnswerFile(file)
+    setErrors((prev) => ({ ...prev, answerFile: undefined }))
+  }
+
   // Filter contents
   const filteredContents = contents.filter((content) => {
-    if (filterLevel !== "all" && content.subject.examLevel._id !== filterLevel)
-      return false
-    if (filterSubject !== "all" && content.subject._id !== filterSubject)
-      return false
+    if (filterLevel !== "all" && content.subject.examLevel._id !== filterLevel) return false
+    if (filterSubject !== "all" && content.subject._id !== filterSubject) return false
     if (filterType !== "all" && content.contentType !== filterType) return false
     return true
   })
@@ -223,15 +333,14 @@ export default function ContentManagement() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">
-              Content Management
-            </h1>
-            <p className="text-gray-600 mt-2">
-              Upload and manage exam content (past papers, lessons, videos)
-            </p>
+            <h1 className="text-3xl font-bold text-gray-900">Content Management</h1>
+            <p className="text-gray-600 mt-2">Upload and manage exam content (past papers, lessons, videos)</p>
           </div>
           <button
-            onClick={() => setShowForm(true)}
+            onClick={() => {
+              setErrors({})
+              setShowForm(true)
+            }}
             className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition flex items-center gap-2"
           >
             <Plus className="w-5 h-5" />
@@ -249,19 +358,18 @@ export default function ContentManagement() {
             <form onSubmit={handleSubmit}>
               {/* Step 1: Select Exam Level */}
               <div className="mb-6">
-                <h3 className="text-lg font-semibold text-gray-800 mb-3">
-                  Step 1: Select Exam Level
-                </h3>
+                <h3 className="text-lg font-semibold text-gray-800 mb-3">Step 1: Select Exam Level</h3>
                 <select
                   required
                   value={formData.examLevel}
-                  onChange={(e) =>
+                  onChange={(e) => {
                     setFormData({
                       ...formData,
                       examLevel: e.target.value,
                       subject: "", // Reset subject when level changes
                     })
-                  }
+                    setErrors((prev) => ({ ...prev, examLevel: undefined, subject: undefined }))
+                  }}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 >
                   <option value="">Select Exam Level</option>
@@ -271,20 +379,20 @@ export default function ContentManagement() {
                     </option>
                   ))}
                 </select>
+                {errors.examLevel && <p className="text-sm text-red-600 mt-2">{errors.examLevel}</p>}
               </div>
 
               {/* Step 2: Select Subject */}
               {formData.examLevel && (
                 <div className="mb-6">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-3">
-                    Step 2: Select Subject
-                  </h3>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-3">Step 2: Select Subject</h3>
                   <select
                     required
                     value={formData.subject}
-                    onChange={(e) =>
+                    onChange={(e) => {
                       setFormData({ ...formData, subject: e.target.value })
-                    }
+                      setErrors((prev) => ({ ...prev, subject: undefined }))
+                    }}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   >
                     <option value="">Select Subject</option>
@@ -294,15 +402,14 @@ export default function ContentManagement() {
                       </option>
                     ))}
                   </select>
+                  {errors.subject && <p className="text-sm text-red-600 mt-2">{errors.subject}</p>}
                 </div>
               )}
 
               {/* Step 3: Select Content Type */}
               {formData.subject && (
                 <div className="mb-6">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-3">
-                    Step 3: Select Content Type
-                  </h3>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-3">Step 3: Select Content Type</h3>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {[
                       { value: "past_paper", label: "Past Paper" },
@@ -323,76 +430,70 @@ export default function ContentManagement() {
                           name="contentType"
                           value={type.value}
                           checked={formData.contentType === type.value}
-                          onChange={(e) =>
+                          onChange={(e) => {
                             setFormData({
                               ...formData,
                               contentType: e.target.value,
                             })
-                          }
+                            setErrors((prev) => ({ ...prev, contentType: undefined }))
+                          }}
                           className="sr-only"
                         />
                         <div className="text-center">
                           <FileText className="w-8 h-8 mx-auto mb-2 text-purple-600" />
-                          <p className="font-medium text-gray-900">
-                            {type.label}
-                          </p>
+                          <p className="font-medium text-gray-900">{type.label}</p>
                         </div>
                       </label>
                     ))}
                   </div>
+                  {errors.contentType && <p className="text-sm text-red-600 mt-2">{errors.contentType}</p>}
                 </div>
               )}
 
               {/* Step 4: Fill Details */}
               {formData.contentType && (
                 <div className="mb-6">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-3">
-                    Step 4: Fill Content Details
-                  </h3>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-3">Step 4: Fill Content Details</h3>
 
                   {/* Title */}
                   <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Title *
-                    </label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Title *</label>
                     <input
                       type="text"
                       required
                       placeholder="e.g., Physics A/L 2023 - 1st Term"
                       value={formData.title}
-                      onChange={(e) =>
+                      onChange={(e) => {
                         setFormData({ ...formData, title: e.target.value })
-                      }
+                        setErrors((prev) => ({ ...prev, title: undefined }))
+                      }}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     />
+                    {errors.title && <p className="text-sm text-red-600 mt-2">{errors.title}</p>}
                   </div>
 
                   {/* Metadata: Year and Term (for Past Papers) */}
                   {formData.contentType === "past_paper" && (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Year
-                        </label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Year</label>
                         <input
                           type="number"
                           placeholder="2023"
                           value={formData.year}
-                          onChange={(e) =>
+                          onChange={(e) => {
                             setFormData({ ...formData, year: e.target.value })
-                          }
+                            setErrors((prev) => ({ ...prev, year: undefined }))
+                          }}
                           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                         />
+                        {errors.year && <p className="text-sm text-red-600 mt-2">{errors.year}</p>}
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Term
-                        </label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Term</label>
                         <select
                           value={formData.term}
-                          onChange={(e) =>
-                            setFormData({ ...formData, term: e.target.value })
-                          }
+                          onChange={(e) => setFormData({ ...formData, term: e.target.value })}
                           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                         >
                           <option value="">Select Term</option>
@@ -406,29 +507,26 @@ export default function ContentManagement() {
                   )}
 
                   {/* Unit/Chapter (for Lessons and Notes) */}
-                  {(formData.contentType === "lesson" ||
-                    formData.contentType === "short_notes") && (
+                  {(formData.contentType === "lesson" || formData.contentType === "short_notes") && (
                     <div className="mb-4">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Unit/Chapter
-                      </label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Unit/Chapter</label>
                       <input
                         type="text"
                         placeholder="e.g., Mechanics, Thermodynamics"
                         value={formData.unit}
-                        onChange={(e) =>
+                        onChange={(e) => {
                           setFormData({ ...formData, unit: e.target.value })
-                        }
+                          setErrors((prev) => ({ ...prev, unit: undefined }))
+                        }}
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                       />
+                      {errors.unit && <p className="text-sm text-red-600 mt-2">{errors.unit}</p>}
                     </div>
                   )}
 
                   {/* Description */}
                   <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Description
-                    </label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
                     <textarea
                       rows="3"
                       placeholder="Brief description"
@@ -445,16 +543,12 @@ export default function ContentManagement() {
 
                   {/* Tags */}
                   <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Tags (comma separated)
-                    </label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Tags (comma separated)</label>
                     <input
                       type="text"
                       placeholder="e.g., mechanics, motion, forces"
                       value={formData.tags}
-                      onChange={(e) =>
-                        setFormData({ ...formData, tags: e.target.value })
-                      }
+                      onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     />
                   </div>
@@ -467,17 +561,43 @@ export default function ContentManagement() {
                           ? "Upload Question Paper (PDF)"
                           : "Upload File (PDF)"}
                       </label>
+
+                      {/* Show existing file when editing (works for past_paper, lesson, short_notes) */}
+                      {editingContent && editingContent.fileId && !questionFile && (
+                        <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                          <p className="text-sm text-blue-800 font-medium mb-2">
+                            ✓ Current file: {editingContent.fileName || "Uploaded file"}
+                          </p>
+                          <div className="flex gap-2">
+                            <button
+                              type="button"
+                              onClick={() => handleView(editingContent.fileId)}
+                              className="text-xs bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+                            >
+                              View
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                handleDownload(editingContent.fileId, editingContent.fileName)
+                              }
+                              className="text-xs bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
+                            >
+                              Download
+                            </button>
+                          </div>
+                          <p className="text-xs text-gray-600 mt-2">Upload new file below to replace</p>
+                        </div>
+                      )}
+
                       <input
                         type="file"
-                        accept=".pdf"
-                        onChange={(e) => setQuestionFile(e.target.files[0])}
+                        accept=".pdf,application/pdf"
+                        onChange={handleQuestionFileChange}
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                       />
-                      {questionFile && (
-                        <p className="text-sm text-green-600 mt-2">
-                          ✓ {questionFile.name}
-                        </p>
-                      )}
+                      {questionFile && <p className="text-sm text-green-600 mt-2">✓ {questionFile.name}</p>}
+                      {errors.questionFile && <p className="text-sm text-red-600 mt-2">{errors.questionFile}</p>}
                     </div>
                   )}
 
@@ -489,15 +609,12 @@ export default function ContentManagement() {
                       </label>
                       <input
                         type="file"
-                        accept=".pdf"
-                        onChange={(e) => setAnswerFile(e.target.files[0])}
+                        accept=".pdf,application/pdf"
+                        onChange={handleAnswerFileChange}
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                       />
-                      {answerFile && (
-                        <p className="text-sm text-green-600 mt-2">
-                          ✓ {answerFile.name}
-                        </p>
-                      )}
+                      {answerFile && <p className="text-sm text-green-600 mt-2">✓ {answerFile.name}</p>}
+                      {errors.answerFile && <p className="text-sm text-red-600 mt-2">{errors.answerFile}</p>}
                     </div>
                   )}
 
@@ -511,11 +628,13 @@ export default function ContentManagement() {
                         type="url"
                         placeholder="https://youtube.com/..."
                         value={formData.videoUrl}
-                        onChange={(e) =>
+                        onChange={(e) => {
                           setFormData({ ...formData, videoUrl: e.target.value })
-                        }
+                          setErrors((prev) => ({ ...prev, videoUrl: undefined }))
+                        }}
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                       />
+                      {errors.videoUrl && <p className="text-sm text-red-600 mt-2">{errors.videoUrl}</p>}
                     </div>
                   )}
                 </div>
@@ -547,9 +666,7 @@ export default function ContentManagement() {
         <div className="bg-white rounded-lg shadow p-4 mb-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Filter by Level
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Filter by Level</label>
               <select
                 value={filterLevel}
                 onChange={(e) => setFilterLevel(e.target.value)}
@@ -564,9 +681,7 @@ export default function ContentManagement() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Filter by Subject
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Filter by Subject</label>
               <select
                 value={filterSubject}
                 onChange={(e) => setFilterSubject(e.target.value)}
@@ -581,9 +696,7 @@ export default function ContentManagement() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Filter by Type
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Filter by Type</label>
               <select
                 value={filterType}
                 onChange={(e) => setFilterType(e.target.value)}
@@ -603,56 +716,36 @@ export default function ContentManagement() {
         <div className="bg-white rounded-lg shadow">
           {filteredContents.length === 0 ? (
             <div className="p-12 text-center">
-              <p className="text-gray-500 text-lg">
-                No content found. Click "Add Content" to upload some.
-              </p>
+              <p className="text-gray-500 text-lg">No content found. Click "Add Content" to upload some.</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-gray-50 border-b">
                   <tr>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                      Title
-                    </th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                      Subject
-                    </th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                      Type
-                    </th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                      Year
-                    </th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                      Stats
-                    </th>
-                    <th className="px-6 py-3 text-right text-sm font-semibold text-gray-900">
-                      Actions
-                    </th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Title</th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Subject</th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Type</th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Year</th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Stats</th>
+                    <th className="px-6 py-3 text-right text-sm font-semibold text-gray-900">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {filteredContents.map((content) => (
                     <tr key={content._id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                        {content.title}
-                      </td>
+                      <td className="px-6 py-4 text-sm font-medium text-gray-900">{content.title}</td>
                       <td className="px-6 py-4 text-sm text-gray-600">
                         {content.subject.name}
                         <br />
-                        <span className="text-xs text-gray-500">
-                          {content.subject.examLevel.code}
-                        </span>
+                        <span className="text-xs text-gray-500">{content.subject.examLevel.code}</span>
                       </td>
                       <td className="px-6 py-4 text-sm">
                         <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs">
                           {content.contentType.replace("_", " ")}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-600">
-                        {content.year || "-"}
-                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-600">{content.year || "-"}</td>
                       <td className="px-6 py-4 text-sm text-gray-600">
                         <div className="text-xs">
                           <div>{content.views || 0} views</div>
@@ -661,24 +754,18 @@ export default function ContentManagement() {
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex justify-end gap-2">
+                          {/* ✅ Works for lessons & notes too if backend returns fileId/fileName */}
                           {content.fileId && (
                             <>
                               <button
-                                onClick={() =>
-                                  handleView(content.fileId)
-                                }
+                                onClick={() => handleView(content.fileId)}
                                 className="text-blue-600 hover:text-blue-800"
                                 title="View"
                               >
                                 <Eye className="w-5 h-5" />
                               </button>
                               <button
-                                onClick={() =>
-                                  handleDownload(
-                                    content.fileId,
-                                    content.fileName
-                                  )
-                                }
+                                onClick={() => handleDownload(content.fileId, content.fileName)}
                                 className="text-green-600 hover:text-green-800"
                                 title="Download"
                               >
