@@ -52,7 +52,16 @@ const register = async (req, res) => {
             emailOTPExpiry: otpExpiry,
         })
 
-        await sendOTPEmail(email, otp, name)
+        if (process.env.NODE_ENV === "development") {
+      return createResponse(res, StatusCodes.CREATED, {
+        message: "Registration successful (DEV). Use OTP shown.",
+        userId: user._id,
+        email: user.email,
+        otp, // 👈 this sends OTP in response
+      })
+    }
+
+       await sendOTPEmail(email, otp, name)
 
         return createResponse(res, StatusCodes.CREATED, {
             message: "Registration successful. Check your email for the OTP.",
@@ -103,44 +112,80 @@ const createAdmin = async (req, res) => {
 }
 
 // ── POST /api/auth/verify-email ───────────────────────────────────────────────
+// ── POST /api/auth/verify-email ───────────────────────────────────────────────
 const verifyEmail = async (req, res) => {
-    try {
-        if (!handleValidation(req, res)) return
+  try {
+    if (!handleValidation(req, res)) return
 
-        const { email, otp } = req.body
+    const { email, otp } = req.body
 
-        const user = await User.findOne({ email }).select("+emailOTP +emailOTPExpiry")
-        if (!user) {
-            return createResponse(res, StatusCodes.NOT_FOUND, { message: "User not found" })
-        }
-        if (user.isEmailVerified) {
-            return createResponse(res, StatusCodes.BAD_REQUEST, { message: "Email is already verified" })
-        }
-        if (!user.isOTPValid(otp)) {
-            return createResponse(res, StatusCodes.BAD_REQUEST, {
-                message: "Invalid or expired OTP. Please request a new one.",
-            })
-        }
-
-        user.isEmailVerified = true
-        user.emailOTP = undefined
-        user.emailOTPExpiry = undefined
-        await user.save({ validateBeforeSave: false })
-
-        await sendWelcomeEmail(email, user.name)
-
-        const token = signToken(user._id)
-        return createResponse(res, StatusCodes.OK, {
-            message: "Email verified successfully! Welcome to ExamCoach.",
-            token,
-            user: { id: user._id, name: user.name, email: user.email, role: user.role },
-        })
-    } catch (err) {
-        console.error("Verify email error:", err)
-        return createResponse(res, StatusCodes.INTERNAL_SERVER_ERROR, {
-            message: "Server error during verification",
-        })
+    const user = await User.findOne({ email }).select("+emailOTP +emailOTPExpiry +isEmailVerified")
+    if (!user) {
+      return createResponse(res, StatusCodes.NOT_FOUND, { message: "User not found" })
     }
+
+    if (user.isEmailVerified) {
+      return createResponse(res, StatusCodes.BAD_REQUEST, { message: "Email is already verified" })
+    }
+
+    // If you have a helper method isOTPValid on user (you used it earlier), use it.
+    // Fallback: a safe check here if that method isn't available.
+    if (typeof user.isOTPValid === "function") {
+      if (!user.isOTPValid(otp)) {
+        return createResponse(res, StatusCodes.BAD_REQUEST, { message: "Invalid or expired OTP. Please request a new one." })
+      }
+    } else {
+      // fallback: compare plain values and expiry
+      if (!user.emailOTP || user.emailOTP !== otp || !user.emailOTPExpiry || user.emailOTPExpiry < Date.now()) {
+        return createResponse(res, StatusCodes.BAD_REQUEST, { message: "Invalid or expired OTP. Please request a new one." })
+      }
+    }
+
+    // mark verified
+    user.isEmailVerified = true
+    user.emailOTP = undefined
+    user.emailOTPExpiry = undefined
+
+    // Save without running full schema validators (if you want)
+    await user.save({ validateBeforeSave: false })
+
+    // send welcome email but do not crash if it fails
+    try {
+      // In dev we *can* skip sending to avoid SMTP failures
+      if (process.env.NODE_ENV !== "development") {
+        await sendWelcomeEmail(email, user.name)
+      } else {
+        console.log("DEV: skipping welcome email send.")
+      }
+    } catch (emailErr) {
+      // Log the email error for debugging, but do not fail the whole request
+      console.error("Welcome email failed:", emailErr)
+      // Optional: if you want to notify client in dev that email failed, you can include an info field
+    }
+
+    // create JWT token
+    let token
+    try {
+      token = signToken(user._id)
+    } catch (tokenErr) {
+      // log and still return success (user verified) but without token
+      console.error("Token generation failed:", tokenErr)
+      return createResponse(res, StatusCodes.INTERNAL_SERVER_ERROR, {
+        message: "Email verified but failed to issue token. Please login.",
+      })
+    }
+
+    return createResponse(res, StatusCodes.OK, {
+      message: "Email verified successfully! Welcome to ExamCoach.",
+      token,
+      user: { id: user._id, name: user.name, email: user.email, role: user.role },
+    })
+  } catch (err) {
+    console.error("Verify email error:", err)
+    return createResponse(res, StatusCodes.INTERNAL_SERVER_ERROR, {
+      message: "Server error during verification",
+    })
+  }
 }
 
 // ── POST /api/auth/resend-otp ─────────────────────────────────────────────────

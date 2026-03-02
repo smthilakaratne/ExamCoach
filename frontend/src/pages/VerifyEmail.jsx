@@ -1,7 +1,7 @@
 // src/pages/VerifyEmail.jsx
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { verifyEmail, verifyForgotOTP, resendOTP } from '../services/authService';
+import { verifyEmail, verifyForgotOTP, resendOTP, forgotPassword } from '../services/authService';
 import toast from 'react-hot-toast';
 
 export default function VerifyEmail() {
