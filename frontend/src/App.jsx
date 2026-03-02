@@ -16,7 +16,7 @@ import BrowseSubjects from "./pages/student/BrowseSubjects";
 import ContentCategories from "./pages/student/ContentCategories";
 import ContentList from "./pages/student/ContentList";
 
-import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminDashboard from "./pages/admin/Admindashboard";
 import ManageUsers from "./pages/admin/ManageUsers";
 import ManageFeedback from "./pages/admin/ManageFeedback";
 import ExamLevels from "./pages/admin/ExamLevels";
