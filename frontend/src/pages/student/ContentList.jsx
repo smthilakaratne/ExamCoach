@@ -47,7 +47,7 @@ export default function ContentList() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar />
+      
       <div className="page-container">
         <button onClick={() => navigate(`/browse/${levelId}/subject/${subjectId}`)} className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-indigo-600 mb-6 transition-colors">
           <ArrowLeft className="w-4 h-4" /> Back to Categories
