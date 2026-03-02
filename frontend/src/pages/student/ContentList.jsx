@@ -121,7 +121,7 @@ export default function ContentList() {
                       className="flex-1 btn-primary text-sm py-2">Watch Video</a>
                   ) : content.fileId ? (
                     <>
-                      <button onClick={() => window.open(`http://localhost:5001/api/files/view/${content.fileId}`, "_blank")}
+                      <button onClick={() => window.open(`http://localhost:8888/api/files/view/${content.fileId}`, "_blank")}
                         className="flex-1 btn-secondary text-sm py-2 gap-1.5">
                         <Eye className="w-3.5 h-3.5" /> View
                       </button>
