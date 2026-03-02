@@ -65,7 +65,7 @@ export default function ManageUsers() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar />
+      
       <div className="flex">
         <AdminSidebar />
         <main className="ml-60 flex-1 p-8 min-w-0">
