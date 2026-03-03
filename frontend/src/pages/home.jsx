@@ -240,9 +240,6 @@ export default function Home() {
           </div>
         )}
 
-        <Link to="/mock-exam/exam-summary" className="block p-6 m-4  text-white rounded-lg text-center ">
-          <Button kind="primary">Mock Exam</Button>
-        </Link>
 
         <Link to="/mock-exam/exam-summary" className="block p-6 m-4  text-white rounded-lg text-center ">
           <Button kind="primary">Mock Exam</Button>
