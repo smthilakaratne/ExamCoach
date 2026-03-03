@@ -21,12 +21,12 @@ export default function AdminDashboard() {
         const [u, f, levelsRes, subjectsRes, contentsRes] = await Promise.all([
           getUserStats(),
           getFeedbackStats(),
-          window.fetch("http://localhost:5001/api/exam-levels"),
-          window.fetch("http://localhost:5001/api/subjects"),
-          window.fetch("http://localhost:5001/api/contents"),
+          window.fetch("http://localhost:8888/api/exam-levels"),
+          window.fetch("http://localhost:8888/api/subjects"),
+          window.fetch("http://localhost:8888/api/contents"),
         ])
-        setUStats(u.data.body)
-        setFStats(f.data.body)
+        setUStats(u.body)
+        setFStats(f.body)
         const ld = await levelsRes.json(); const sd = await subjectsRes.json(); const cd = await contentsRes.json()
         setContentStats({
           levels: ld.body?.length || 0,

@@ -21,8 +21,8 @@ export default function ManageUsers() {
     setLoading(true)
     try {
       const res = await getAllUsers({ page, limit: 10, search, role })
-      setUsers(res.data.body.users)
-      setPagination(res.data.body.pagination)
+      setUsers(res.body.users)
+      setPagination(res.body.pagination)
     } catch (err) {
       console.error(err)
     }
