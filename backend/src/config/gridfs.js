@@ -8,7 +8,7 @@ let gridFsBucket = null
 const initGridFS = () => {
     const conn = mongoose.connection
 
-    // ✅ If already connected, init immediately (no race)
+    //  If already connected, init immediately (no race)
     if (conn.readyState === 1) {
         gridFsBucket = new mongoose.mongo.GridFSBucket(conn.db, {
             bucketName: "uploads",
@@ -17,7 +17,7 @@ const initGridFS = () => {
         return
     }
 
-    // ✅ Otherwise wait for open
+    //  Otherwise wait for open
     conn.once("open", () => {
         gridFsBucket = new mongoose.mongo.GridFSBucket(conn.db, {
             bucketName: "uploads",
