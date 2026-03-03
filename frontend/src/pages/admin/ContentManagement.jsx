@@ -33,7 +33,7 @@ export default function ContentManagement() {
   const [questionFile, setQuestionFile] = useState(null)
   const [answerFile, setAnswerFile] = useState(null)
 
-  // ✅ Validations (added)
+  //  Validations (added)
   const [errors, setErrors] = useState({})
 
   useEffect(() => {
