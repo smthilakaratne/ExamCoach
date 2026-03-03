@@ -74,7 +74,7 @@ export default function ContentManagement() {
     }
   }
 
-  // ✅ Helpers for validation (added)
+  //  Helpers for validation (added)
   const isPdfFile = (file) => {
     if (!file) return false
     const nameOk = file.name?.toLowerCase().endsWith(".pdf")
@@ -152,7 +152,7 @@ export default function ContentManagement() {
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    // ✅ Run validations first (added)
+    //  Run validations first (added)
     if (!validateForm()) {
       alert("Please fix the form errors and try again.")
       return
@@ -172,7 +172,7 @@ export default function ContentManagement() {
       if (formData.tags) formDataToSend.append("tags", formData.tags)
       if (formData.videoUrl) formDataToSend.append("videoUrl", formData.videoUrl)
 
-      // ✅ Add files (same logic works for past_paper, lesson, short_notes PDF uploads)
+      //  Add files (same logic works for past_paper, lesson, short_notes PDF uploads)
       if (questionFile) {
         formDataToSend.append("file", questionFile)
       }
@@ -208,7 +208,7 @@ export default function ContentManagement() {
 
   const handleEdit = (content) => {
     setEditingContent(content)
-    setErrors({}) // ✅ reset errors (added)
+    setErrors({}) //  reset errors (added)
     setFormData({
       title: content.title,
       examLevel: content.subject.examLevel._id,
@@ -249,7 +249,7 @@ export default function ContentManagement() {
   const handleCancel = () => {
     setShowForm(false)
     setEditingContent(null)
-    setErrors({}) // ✅ reset errors (added)
+    setErrors({}) //  reset errors (added)
     setFormData({
       title: "",
       examLevel: "",
@@ -274,7 +274,7 @@ export default function ContentManagement() {
     window.open(`http://localhost:8888/api/files/view/${fileId}`, "_blank")
   }
 
-  // ✅ File change handlers with validation (added)
+  //  File change handlers with validation (added)
   const handleQuestionFileChange = (e) => {
     const file = e.target.files?.[0]
     if (!file) {
@@ -754,7 +754,7 @@ export default function ContentManagement() {
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex justify-end gap-2">
-                          {/* ✅ Works for lessons & notes too if backend returns fileId/fileName */}
+                          {/*  Works for lessons & notes too if backend returns fileId/fileName */}
                           {content.fileId && (
                             <>
                               <button
