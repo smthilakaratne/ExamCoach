@@ -4,9 +4,7 @@ import MarkdownContent from "../../components/markdownContent"
 import ForumTag from "../../components/tag"
 import { relativeTime } from "../../utils/relativeTime"
 import Button from "../../components/button"
-import TextEditor from "../../components/textEditor"
 import { useState } from "react"
-import Container from "../../components/container"
 import ThreadReply from "../../components/threadReply"
 import { useEffect } from "react"
 import { useParams } from "react-router-dom"
@@ -18,6 +16,9 @@ import {
 } from "../../services/forumApi"
 import axios from "axios"
 import DeleteThreadModel from "./models/deleteThreadModel"
+import { GifProvider } from "../../contexts/gifProvider"
+import TextEditProvider from "../../contexts/textEditor"
+import TextEditorExtensions from "../../components/textEditorExtensions"
 
 // temporary user
 const user = "Sample user"
@@ -187,23 +188,12 @@ export default function Thread() {
         <br />
         <section>
           <h3 className="text-xl my-3">Your Answer</h3>
-          <form onSubmit={handlePostComment}>
-            <TextEditor
-              text={replyBody}
-              setText={setReplyBody}
-              minLength={10}
-              required
-            />
-            <h5 className="text-base font-bold my-3">Preview</h5>
-            <Container className="px-8 mb-5">
-              {replyBody.length === 0 ? (
-                <p className="font-light text-sm text-gray-500 italic">
-                  Nothing to display...
-                </p>
-              ) : (
-                <MarkdownContent content={replyBody} />
-              )}
-            </Container>
+          <form onSubmit={handlePostComment} className="relative">
+            <TextEditProvider text={replyBody} setText={setReplyBody}>
+              <GifProvider>
+                <TextEditorExtensions />
+              </GifProvider>
+            </TextEditProvider>
             <Button type="submit">Post your answer</Button>
           </form>
         </section>
