@@ -1,17 +1,24 @@
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
-import { GraduationCap, User, LogOut, MessageSquare, LayoutDashboard } from 'lucide-react';
-import { useState } from 'react';
+import { Link, useNavigate } from "react-router-dom"
+import { useAuth } from "@/contexts/AuthContext"
+import {
+  GraduationCap,
+  User,
+  LogOut,
+  MessageSquare,
+  LayoutDashboard,
+} from "lucide-react"
+import { useState } from "react"
+import ProfileImage from "./ProfileImage"
 
 export default function Navbar() {
-  const { user, logout } = useAuth();
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const navigate = useNavigate();
+  const { user, logout } = useAuth()
+  const [dropdownOpen, setDropdownOpen] = useState(false)
+  const navigate = useNavigate()
 
   const handleLogout = async () => {
-    await logout();
-    navigate('/');
-  };
+    await logout()
+    navigate("/")
+  }
 
   return (
     <nav className="bg-white shadow-md sticky top-0 z-50">
@@ -23,9 +30,24 @@ export default function Navbar() {
 
         <div className="flex items-center gap-6">
           {/* Public links */}
-          <Link to="/" className="text-gray-700 hover:text-indigo-600 font-medium">Home</Link>
-          <Link to="/community/forum" className="text-gray-700 hover:text-indigo-600 font-medium">Forum</Link>
-          <Link to="/mock-exam/exam-summary" className="text-gray-700 hover:text-indigo-600 font-medium">Mock Exam</Link>
+          <Link
+            to="/"
+            className="text-gray-700 hover:text-indigo-600 font-medium"
+          >
+            Home
+          </Link>
+          <Link
+            to="/community/forum"
+            className="text-gray-700 hover:text-indigo-600 font-medium"
+          >
+            Forum
+          </Link>
+          <Link
+            to="/mock-exam/exam-summary"
+            className="text-gray-700 hover:text-indigo-600 font-medium"
+          >
+            Mock Exam
+          </Link>
           <Link
             to="/contact"
             className="text-gray-700 hover:text-indigo-600 font-medium"
@@ -35,17 +57,26 @@ export default function Navbar() {
           {user && (
             <>
               {/* Role‑specific links */}
-              {user.role === 'student' && (
-                <Link to="/student/feedback" className="text-gray-700 hover:text-indigo-600 font-medium flex items-center gap-1">
+              {user.role === "student" && (
+                <Link
+                  to="/student/feedback"
+                  className="text-gray-700 hover:text-indigo-600 font-medium flex items-center gap-1"
+                >
                   <MessageSquare className="w-4 h-4" /> Feedback
                 </Link>
               )}
-              {user.role === 'admin' && (
+              {user.role === "admin" && (
                 <>
-                  <Link to="/admin/feedback" className="text-gray-700 hover:text-indigo-600 font-medium flex items-center gap-1">
+                  <Link
+                    to="/admin/feedback"
+                    className="text-gray-700 hover:text-indigo-600 font-medium flex items-center gap-1"
+                  >
                     <MessageSquare className="w-4 h-4" /> Feedback
                   </Link>
-                  <Link to="/admin" className="text-gray-700 hover:text-indigo-600 font-medium flex items-center gap-1">
+                  <Link
+                    to="/admin"
+                    className="text-gray-700 hover:text-indigo-600 font-medium flex items-center gap-1"
+                  >
                     <LayoutDashboard className="w-4 h-4" /> Admin
                   </Link>
                 </>
@@ -55,8 +86,12 @@ export default function Navbar() {
 
           {!user ? (
             <div className="flex gap-2">
-              <Link to="/login" className="btn-secondary py-2 px-4">Login</Link>
-              <Link to="/register" className="btn-primary py-2 px-4">Register</Link>
+              <Link to="/login" className="btn-secondary py-2 px-4">
+                Login
+              </Link>
+              <Link to="/register" className="btn-primary py-2 px-4">
+                Register
+              </Link>
             </div>
           ) : (
             <div className="relative">
@@ -64,18 +99,12 @@ export default function Navbar() {
                 onClick={() => setDropdownOpen(!dropdownOpen)}
                 className="flex items-center gap-2 focus:outline-none"
               >
-                <div className="w-9 h-9 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold">
-                  {user.avatar ? (
-                    <img src={user.avatar} alt="avatar" className="w-9 h-9 rounded-full object-cover" />
-                  ) : (
-                    user.name?.charAt(0).toUpperCase() || 'U'
-                  )}
-                </div>
+                <ProfileImage user={user} size={9} />
               </button>
               {dropdownOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg py-2 border border-gray-100 z-50">
                   <Link
-                    to={user.role === 'admin' ? '/admin' : '/student/dashboard'}
+                    to={user.role === "admin" ? "/admin" : "/student/dashboard"}
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 flex items-center gap-2"
                     onClick={() => setDropdownOpen(false)}
                   >
@@ -101,5 +130,5 @@ export default function Navbar() {
         </div>
       </div>
     </nav>
-  );
+  )
 }

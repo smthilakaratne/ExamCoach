@@ -13,17 +13,19 @@ import {
   updateComment,
   voteThreadComment,
 } from "../services/forumApi"
+import ProfileImage from "./common/ProfileImage"
+import { useAuth } from "../contexts/AuthContext"
 
 // temporary test user
-const user = "Sample user"
 
 export default function ThreadReply(props) {
+  const { user } = useAuth()
   const [deleteModelOpen, setDeleteModelOpen] = useState(false)
   const [replyBody, setReplyBody] = useState(props?.body || "")
   const [isEditting, setIsEditting] = useState(false)
-  const hasUpvoted = props?.reactions?.up?.some((u) => u.name === user) || false
+  const hasUpvoted = props?.reactions?.up?.some((u) => u === user._id) || false
   const hasDownvoted =
-    props?.reactions?.down?.some((u) => u.name === user) || false
+    props?.reactions?.down?.some((u) => u === user._id) || false
 
   const handleEditComment = async (evt) => {
     evt.preventDefault()
@@ -148,9 +150,7 @@ export default function ThreadReply(props) {
             </div>
             <MarkdownContent content={props?.body} />
             <div className="flex gap-2 justify-end items-center text-sm text-gray-500">
-              <div className="w-4 h-4 grid content-center justify-center rounded-full bg-blue-500 text-white text-xs p-3">
-                SP
-              </div>
+              <ProfileImage user={props?.createdBy || {}} size={5} />
               <div>
                 <a>{props?.createdBy?.name}</a> replied{" "}
                 <abbr title={new Date(props?.createdAt).toString()}>

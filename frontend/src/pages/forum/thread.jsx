@@ -14,14 +14,15 @@ import {
   unvoteThread,
   voteThread,
 } from "../../services/forumApi"
-import axios from "axios"
 import DeleteThreadModel from "./models/deleteThreadModel"
 import { GifProvider } from "../../contexts/gifProvider"
 import TextEditProvider from "../../contexts/textEditor"
 import TextEditorExtensions from "../../components/textEditorExtensions"
+import ProfileImage from "../../components/common/ProfileImage"
+import { useAuth } from "../../contexts/AuthContext"
 
 // temporary user
-const user = "Sample user"
+
 
 export default function Thread() {
   const [thread, setThread] = useState({})
@@ -30,11 +31,12 @@ export default function Thread() {
   const [replyBody, setReplyBody] = useState("")
   const [sortMode, setSortMode] = useState("date")
   const params = useParams()
+  const {user} = useAuth()
 
   const hasUpvoted =
-    thread?.reactions?.up?.some((u) => u.name === user) || false
+    thread?.reactions?.up?.some((u) => u === user._id) || false
   const hasDownvoted =
-    thread?.reactions?.down?.some((u) => u.name === user) || false
+    thread?.reactions?.down?.some((u) => u === user._id) || false
 
   const sortModes = {
     date: (a1, a2) => new Date(a1?.createdAt) - new Date(a2?.createdAt),
@@ -134,9 +136,7 @@ export default function Thread() {
               </div>
               <div className="flex items-center gap-5">
                 <div className="flex justify-end gap-2 items-center text-sm text-gray-500">
-                  <div className="w-4 h-4 grid content-center justify-center rounded-full bg-blue-500 text-white text-xs p-3">
-                    SP
-                  </div>
+                  <ProfileImage user={thread?.createdBy || {}} size={5} />
                   <div>
                     <a>{thread?.createdBy?.name}</a> asked{" "}
                     <abbr title={new Date(thread?.createdAt)?.toString()}>

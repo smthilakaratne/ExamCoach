@@ -26,23 +26,23 @@ const answerSchema = new mongoose.Schema(
             default: false,
         },
         createdBy: {
-            name: {
-                type: String,
-                required: [true, "creator name is required"],
-                trim: true,
-            },
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            required: true,
         },
         reactions: {
             up: [
                 {
-                    _id: false,
-                    name: { type: String, required: true },
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "User",
+                    required: true,
                 },
             ],
             down: [
                 {
-                    _id: false,
-                    name: { type: String, required: true },
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "User",
+                    required: true,
                 },
             ],
         },
@@ -74,23 +74,23 @@ const forumThreadSchema = new mongoose.Schema(
             },
         },
         createdBy: {
-            name: {
-                type: String,
-                required: [true, "creator name is required"],
-                trim: true,
-            },
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            required: true,
         },
         reactions: {
             up: [
                 {
-                    _id: false,
-                    name: { type: String, required: true },
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "User",
+                    required: true,
                 },
             ],
             down: [
                 {
-                    _id: false,
-                    name: { type: String, required: true },
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "User",
+                    required: true,
                 },
             ],
         },

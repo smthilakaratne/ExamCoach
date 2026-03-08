@@ -1,97 +1,119 @@
 // src/pages/Profile.jsx
-import { useState, useEffect } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import { getProfile, updateProfile, changePassword, deleteAccount } from '../services/userService';
-import toast from 'react-hot-toast';
-import Spinner from '../components/common/Spinner';
-import { User, Camera, Lock, Trash2 } from 'lucide-react';
+import { useState, useEffect } from "react"
+import { useAuth } from "../contexts/AuthContext"
+import {
+  getProfile,
+  updateProfile,
+  changePassword,
+  deleteAccount,
+} from "../services/userService"
+import toast from "react-hot-toast"
+import Spinner from "../components/common/Spinner"
+import { User, Camera, Lock, Trash2 } from "lucide-react"
+import ProfileImage from "../components/common/ProfileImage"
 
 export default function Profile() {
-  const { user, logout } = useAuth();
-  const [profile, setProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [editMode, setEditMode] = useState(false);
-  const [form, setForm] = useState({ name: '', bio: '', avatar: '' });
-  const [passwords, setPasswords] = useState({ current: '', new: '', confirm: '' });
-  const [submitting, setSubmitting] = useState(false);
+  const { user, logout } = useAuth()
+  const [profile, setProfile] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [editMode, setEditMode] = useState(false)
+  const [form, setForm] = useState({ name: "", bio: "", avatar: "" })
+  const [passwords, setPasswords] = useState({
+    current: "",
+    new: "",
+    confirm: "",
+  })
+  const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
-    fetchProfile();
-  }, []);
+    fetchProfile()
+  }, [])
 
   const fetchProfile = async () => {
     try {
-      const res = await getProfile();
-      setProfile(res.body.user);
-      setForm({ name: res.body.user.name, bio: res.body.user.bio || '', avatar: res.body.user.avatar || '' });
-    } catch (error) {} finally {
-      setLoading(false);
+      const res = await getProfile()
+      setProfile(res.body.user)
+      setForm({
+        name: res.body.user.name,
+        bio: res.body.user.bio || "",
+        avatar: res.body.user.avatar || "",
+      })
+    } catch (error) {
+    } finally {
+      setLoading(false)
     }
-  };
+  }
 
   const handleUpdate = async (e) => {
-    e.preventDefault();
-    setSubmitting(true);
+    e.preventDefault()
+    setSubmitting(true)
     try {
-      const res = await updateProfile(form);
-      toast.success('Profile updated');
-      setProfile(res.body.user);
-      setEditMode(false);
-    } catch (error) {} finally {
-      setSubmitting(false);
+      const res = await updateProfile(form)
+      toast.success("Profile updated")
+      setProfile(res.body.user)
+      setEditMode(false)
+    } catch (error) {
+    } finally {
+      setSubmitting(false)
     }
-  };
+  }
 
   const handleChangePassword = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
     if (passwords.new !== passwords.confirm) {
-      toast.error('New passwords do not match');
-      return;
+      toast.error("New passwords do not match")
+      return
     }
-    setSubmitting(true);
+    setSubmitting(true)
     try {
-      await changePassword({ currentPassword: passwords.current, newPassword: passwords.new });
-      toast.success('Password changed');
-      setPasswords({ current: '', new: '', confirm: '' });
-    } catch (error) {} finally {
-      setSubmitting(false);
+      await changePassword({
+        currentPassword: passwords.current,
+        newPassword: passwords.new,
+      })
+      toast.success("Password changed")
+      setPasswords({ current: "", new: "", confirm: "" })
+    } catch (error) {
+    } finally {
+      setSubmitting(false)
     }
-  };
+  }
 
   const handleDeleteAccount = async () => {
-    if (!window.confirm('Are you sure? This will deactivate your account.')) return;
+    if (!window.confirm("Are you sure? This will deactivate your account."))
+      return
     try {
-      await deleteAccount();
-      toast.success('Account deactivated');
-      await logout();
+      await deleteAccount()
+      toast.success("Account deactivated")
+      await logout()
     } catch (error) {}
-  };
+  }
 
-  if (loading) return <Spinner fullPage />;
+  if (loading) return <Spinner fullPage />
 
   return (
     <div className="min-h-screen bg-gray-50 py-10">
       <div className="max-w-4xl mx-auto px-4">
-        <h1 className="text-3xl font-bold text-gray-900 mb-6">Profile Settings</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-6">
+          Profile Settings
+        </h1>
 
         <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-center gap-4">
-              <div className="w-20 h-20 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 text-3xl font-bold">
-                {profile?.avatar ? (
-                  <img src={profile.avatar} alt="avatar" className="w-20 h-20 rounded-full object-cover" />
-                ) : (
-                  profile?.name?.charAt(0).toUpperCase() || <User className="w-8 h-8" />
-                )}
-              </div>
+              <ProfileImage user={profile} size={20} />
               <div>
                 <h2 className="text-2xl font-bold">{profile?.name}</h2>
                 <p className="text-gray-500">{profile?.email}</p>
-                <span className="badge bg-indigo-100 text-indigo-800 mt-1">{profile?.role}</span>
+                <span className="badge bg-indigo-100 text-indigo-800 mt-1">
+                  {profile?.role}
+                </span>
               </div>
             </div>
-            <button onClick={() => setEditMode(!editMode)} className="btn-secondary text-sm">
-              {editMode ? 'Cancel' : 'Edit Profile'}
+            <button
+              onClick={() => setEditMode(!editMode)}
+              className="btn-secondary text-sm"
+            >
+              {editMode ? "Cancel" : "Edit Profile"}
             </button>
           </div>
 
@@ -126,15 +148,21 @@ export default function Profile() {
                   onChange={(e) => setForm({ ...form, avatar: e.target.value })}
                 />
               </div>
-              <button type="submit" disabled={submitting} className="btn-primary">
-                {submitting ? 'Saving...' : 'Save Changes'}
+              <button
+                type="submit"
+                disabled={submitting}
+                className="btn-primary"
+              >
+                {submitting ? "Saving..." : "Save Changes"}
               </button>
             </form>
           )}
         </div>
 
         <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
-          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2"><Lock className="w-5 h-5" /> Change Password</h3>
+          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <Lock className="w-5 h-5" /> Change Password
+          </h3>
           <form onSubmit={handleChangePassword} className="space-y-4 max-w-md">
             <div>
               <label className="label">Current Password</label>
@@ -142,7 +170,9 @@ export default function Profile() {
                 type="password"
                 className="input-field"
                 value={passwords.current}
-                onChange={(e) => setPasswords({ ...passwords, current: e.target.value })}
+                onChange={(e) =>
+                  setPasswords({ ...passwords, current: e.target.value })
+                }
                 required
               />
             </div>
@@ -152,7 +182,9 @@ export default function Profile() {
                 type="password"
                 className="input-field"
                 value={passwords.new}
-                onChange={(e) => setPasswords({ ...passwords, new: e.target.value })}
+                onChange={(e) =>
+                  setPasswords({ ...passwords, new: e.target.value })
+                }
                 required
                 minLength={8}
               />
@@ -163,7 +195,9 @@ export default function Profile() {
                 type="password"
                 className="input-field"
                 value={passwords.confirm}
-                onChange={(e) => setPasswords({ ...passwords, confirm: e.target.value })}
+                onChange={(e) =>
+                  setPasswords({ ...passwords, confirm: e.target.value })
+                }
                 required
               />
             </div>
@@ -174,12 +208,14 @@ export default function Profile() {
         </div>
 
         <div className="bg-white rounded-2xl shadow-lg p-6">
-          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 text-red-600"><Trash2 className="w-5 h-5" /> Danger Zone</h3>
+          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 text-red-600">
+            <Trash2 className="w-5 h-5" /> Danger Zone
+          </h3>
           <button onClick={handleDeleteAccount} className="btn-danger">
             Deactivate Account
           </button>
         </div>
       </div>
     </div>
-  );
+  )
 }

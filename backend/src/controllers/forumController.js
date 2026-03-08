@@ -5,7 +5,7 @@ const { StatusCodes } = require("http-status-codes")
 
 const getThreads = async (req, res, next) => {
     try {
-        const threads = await ForumThread.find({})
+        const threads = await ForumThread.find({}).populate("createdBy", "_id name email avatar")
         return createResponse(res, StatusCodes.OK, threads)
     } catch (error) {
         next(error)
@@ -16,7 +16,7 @@ const createThread = async (req, res, next) => {
     try {
         const thread = await ForumThread.create({
             ...req.body,
-            createdBy: { name: "Sample user" },
+            createdBy: req.user,
         })
         return createResponse(res, StatusCodes.CREATED, { thread })
     } catch (error) {
@@ -46,6 +46,8 @@ const getThread = async (req, res, next) => {
             },
             { new: true },
         )
+            .populate("createdBy", "_id name email avatar")
+            .populate("answers.createdBy", "_id name email avatar")
         if (!thread) return createResponse(res, StatusCodes.NOT_FOUND, "Thread not found")
         return createResponse(res, StatusCodes.OK, { thread })
     } catch (error) {
@@ -89,7 +91,7 @@ const voteThread = async (req, res, next) => {
     try {
         const { value } = req.body // 1 or -1
         // temporary user for testing till the user component is done
-        const user = { name: "Sample user" }
+        const user = req.user
         const threadId = req.params.id
 
         if (!mongoose.isValidObjectId(threadId))
@@ -101,12 +103,12 @@ const voteThread = async (req, res, next) => {
         const update =
             value === 1
                 ? {
-                      $addToSet: { "reactions.up": user },
-                      $pull: { "reactions.down": { name: user.name } },
+                      $addToSet: { "reactions.up": user._id },
+                      $pull: { "reactions.down": user._id },
                   }
                 : {
-                      $addToSet: { "reactions.down": user },
-                      $pull: { "reactions.up": { name: user.name } },
+                      $addToSet: { "reactions.down": user._id },
+                      $pull: { "reactions.up": user._id },
                   }
 
         const thread = await ForumThread.findByIdAndUpdate(threadId, update, { new: true })
@@ -119,7 +121,7 @@ const voteThread = async (req, res, next) => {
 
 const unvoteThread = async (req, res, next) => {
     try {
-        const user = { name: "Sample user" }
+        const user = req.user
         const threadId = req.params.id
 
         if (!mongoose.isValidObjectId(threadId))
@@ -129,8 +131,8 @@ const unvoteThread = async (req, res, next) => {
             threadId,
             {
                 $pull: {
-                    "reactions.up": user,
-                    "reactions.down": user,
+                    "reactions.up": user._id,
+                    "reactions.down": user._id,
                 },
             },
             { new: true },
@@ -158,6 +160,7 @@ const deleteThread = async (req, res, next) => {
 
 const createThreadComment = async (req, res, next) => {
     try {
+        const user = req.user
         const threadId = req.params.id
         if (!mongoose.isValidObjectId(threadId))
             return createResponse(res, StatusCodes.BAD_REQUEST, "Invalid thread ID")
@@ -165,7 +168,10 @@ const createThreadComment = async (req, res, next) => {
             threadId,
             {
                 $push: {
-                    answers: { ...req.body, createdBy: { name: "Sample user" } },
+                    answers: {
+                        ...req.body,
+                        createdBy: user._id,
+                    },
                 },
             },
             { new: true, runValidators: true },
@@ -221,7 +227,7 @@ const voteThreadComment = async (req, res, next) => {
     try {
         const { value } = req.body // 1 or -1
         // temporary user for testing till the user component is done
-        const user = { name: "Sample user" }
+        const user = req.user
         const threadId = req.params.id
         const commentId = req.params.comment
 
@@ -236,12 +242,12 @@ const voteThreadComment = async (req, res, next) => {
         const update =
             value === 1
                 ? {
-                      $addToSet: { "answers.$.reactions.up": user },
-                      $pull: { "answers.$.reactions.down": { name: user.name } },
+                      $addToSet: { "answers.$.reactions.up": user._id },
+                      $pull: { "answers.$.reactions.down": user._id },
                   }
                 : {
-                      $addToSet: { "answers.$.reactions.down": user },
-                      $pull: { "answers.$.reactions.up": { name: user.name } },
+                      $addToSet: { "answers.$.reactions.down": user._id },
+                      $pull: { "answers.$.reactions.up": user._id },
                   }
 
         const thread = await ForumThread.findOneAndUpdate(
@@ -259,7 +265,7 @@ const voteThreadComment = async (req, res, next) => {
 
 const unvoteThreadComment = async (req, res, next) => {
     try {
-        const user = { name: "Sample user" }
+        const user = req.user
         const threadId = req.params.id
         const commentId = req.params.comment
 
@@ -275,8 +281,8 @@ const unvoteThreadComment = async (req, res, next) => {
             },
             {
                 $pull: {
-                    "answers.$.reactions.up": user,
-                    "answers.$.reactions.down": user,
+                    "answers.$.reactions.up": user._id,
+                    "answers.$.reactions.down": user._id,
                 },
             },
             { new: true },
