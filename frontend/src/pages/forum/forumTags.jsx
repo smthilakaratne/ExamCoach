@@ -6,12 +6,13 @@ import { getForumTags } from "../../services/forumApi"
 import { useState } from "react"
 import { useEffect } from "react"
 import CreateEditTagModel from "./models/createEditTagModel"
-
+import { useAuth } from "../../contexts/AuthContext"
 export default function ForumTags() {
   const [tags, setTags] = useState([])
   const [refreshTags, setRefreshTags] = useState(false)
   const [searchValue, setSearhcValue] = useState("")
   const [createTagModelOpen, setCreateModelOpen] = useState(false)
+  const { user } = useAuth()
   const filteredTags = tags.filter((tag) =>
     tag.name.match(new RegExp(".*" + searchValue + ".*")),
   )
@@ -45,13 +46,15 @@ export default function ForumTags() {
           <section className="flex-auto">
             <div className="flex justify-between items-center">
               <h3 className="text-xl my-3">{filteredTags?.length ?? 0} tags</h3>
-              <Button
-                className="flex gap-2 items-center"
-                onClick={() => setCreateModelOpen(true)}
-              >
-                <Plus />
-                <span>Create new tag</span>
-              </Button>
+              {user && user?.role === "admin" && (
+                <Button
+                  className="flex gap-2 items-center"
+                  onClick={() => setCreateModelOpen(true)}
+                >
+                  <Plus />
+                  <span>Create new tag</span>
+                </Button>
+              )}
             </div>
             <section>
               {filteredTags.map((tag, index) => (
