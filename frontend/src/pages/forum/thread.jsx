@@ -23,7 +23,6 @@ import { useAuth } from "../../contexts/AuthContext"
 
 // temporary user
 
-
 export default function Thread() {
   const [thread, setThread] = useState({})
   const [deleteThreadModelOpen, setDeleteThreadModelOpen] = useState(false)
@@ -31,12 +30,12 @@ export default function Thread() {
   const [replyBody, setReplyBody] = useState("")
   const [sortMode, setSortMode] = useState("date")
   const params = useParams()
-  const {user} = useAuth()
+  const { user } = useAuth()
+  const isMyThread = user && (user._id === thread?.createdBy?._id)
 
-  const hasUpvoted =
-    thread?.reactions?.up?.some((u) => u === user._id) || false
+  const hasUpvoted = thread?.reactions?.up?.some((u) => u === user?._id) || false
   const hasDownvoted =
-    thread?.reactions?.down?.some((u) => u === user._id) || false
+    thread?.reactions?.down?.some((u) => u === user?._id) || false
 
   const sortModes = {
     date: (a1, a2) => new Date(a1?.createdAt) - new Date(a2?.createdAt),
@@ -86,20 +85,22 @@ export default function Thread() {
       <main>
         <div className="flex justify-between items-center">
           <h1 className="text-4xl font-bold my-5">{thread?.title}</h1>
-          <div className="flex gap-1 items-center">
-            <div
-              className="cursor-pointer p-2 rounded-full hover:bg-red-100 transition-all"
-              onClick={() => setDeleteThreadModelOpen(true)}
-            >
-              <Trash className="size-5 text-red-400 " />
+          {isMyThread && (
+            <div className="flex gap-1 items-center">
+              <div
+                className="cursor-pointer p-2 rounded-full hover:bg-red-100 transition-all"
+                onClick={() => setDeleteThreadModelOpen(true)}
+              >
+                <Trash className="size-5 text-red-400 " />
+              </div>
+              <Link
+                to="./edit"
+                className="cursor-pointer p-2 rounded-full hover:bg-gray-100 transition-all"
+              >
+                <SquarePen className="size-5 text-gray-400" />
+              </Link>
             </div>
-            <Link
-              to="./edit"
-              className="cursor-pointer p-2 rounded-full hover:bg-gray-100 transition-all"
-            >
-              <SquarePen className="size-5 text-gray-400" />
-            </Link>
-          </div>
+          )}
         </div>
         <section className="flex gap-10 content-start my-8">
           <div>

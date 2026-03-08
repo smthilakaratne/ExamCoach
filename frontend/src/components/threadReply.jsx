@@ -23,9 +23,10 @@ export default function ThreadReply(props) {
   const [deleteModelOpen, setDeleteModelOpen] = useState(false)
   const [replyBody, setReplyBody] = useState(props?.body || "")
   const [isEditting, setIsEditting] = useState(false)
-  const hasUpvoted = props?.reactions?.up?.some((u) => u === user._id) || false
+  const isMyReply = user && user?._id === props?.createdBy?._id
+  const hasUpvoted = props?.reactions?.up?.some((u) => u === user?._id) || false
   const hasDownvoted =
-    props?.reactions?.down?.some((u) => u === user._id) || false
+    props?.reactions?.down?.some((u) => u === user?._id) || false
 
   const handleEditComment = async (evt) => {
     evt.preventDefault()
@@ -132,22 +133,23 @@ export default function ThreadReply(props) {
               </div>
             </div>
           </div>
-
           <div className="grid flex-auto">
-            <div className="flex gap-2 items-center justify-end">
-              <div
-                className="cursor-pointer p-2 rounded-full hover:bg-red-100 transition-all"
-                onClick={() => setDeleteModelOpen(true)}
-              >
-                <Trash className="size-5 text-red-400 " />
+            {isMyReply && (
+              <div className="flex gap-2 items-center justify-end">
+                <div
+                  className="cursor-pointer p-2 rounded-full hover:bg-red-100 transition-all"
+                  onClick={() => setDeleteModelOpen(true)}
+                >
+                  <Trash className="size-5 text-red-400 " />
+                </div>
+                <div
+                  className="cursor-pointer p-2 rounded-full hover:bg-gray-100 transition-all"
+                  onClick={() => setIsEditting(true)}
+                >
+                  <SquarePen className="size-5 text-gray-400" />
+                </div>
               </div>
-              <div
-                className="cursor-pointer p-2 rounded-full hover:bg-gray-100 transition-all"
-                onClick={() => setIsEditting(true)}
-              >
-                <SquarePen className="size-5 text-gray-400" />
-              </div>
-            </div>
+            )}
             <MarkdownContent content={props?.body} />
             <div className="flex gap-2 justify-end items-center text-sm text-gray-500">
               <ProfileImage user={props?.createdBy || {}} size={5} />
