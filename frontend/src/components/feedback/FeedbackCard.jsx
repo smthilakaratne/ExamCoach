@@ -1,6 +1,6 @@
 // src/components/feedback/FeedbackCard.jsx
 import { useState } from 'react';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
 import { updateFeedback, deleteFeedback, reactToFeedback, addReply, deleteReply } from '../../services/feedbackService';
 import toast from 'react-hot-toast';
 import { ThumbsUp, MessageCircle, Trash2, Edit2, X } from 'lucide-react';

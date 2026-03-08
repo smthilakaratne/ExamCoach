@@ -1,6 +1,6 @@
 // src/pages/Profile.jsx
 import { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 import { getProfile, updateProfile, changePassword, deleteAccount } from '../services/userService';
 import toast from 'react-hot-toast';
 import Spinner from '../components/common/Spinner';

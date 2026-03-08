@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { GraduationCap, User, LogOut, MessageSquare, LayoutDashboard } from 'lucide-react';
 import { useState } from 'react';
 
