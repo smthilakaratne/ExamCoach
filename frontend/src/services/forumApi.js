@@ -1,191 +1,132 @@
 import axios from "axios"
+import api from "./api"
 
 const { VITE_API_URL } = import.meta.env
 
 export const getThread = async (threadId) => {
-  const response = await axios.get(`${VITE_API_URL}/api/forum/${threadId}`)
-  if (response.status !== axios.HttpStatusCode.Ok)
-    throw new Error(response?.data?.body || response.statusText)
-  return response?.data?.body?.thread || {}
+  const response = await api.get(`/forum/${threadId}`)
+  if (!response.success)
+    throw new Error(response?.body || response.statusMessage)
+  return response?.body?.thread || {}
 }
 
 export const createThread = async (title, body, tags) => {
-  const response = await axios.post(
-    `${VITE_API_URL}/api/forum`,
-    JSON.stringify({ title, body, tags }),
-    {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    },
-  )
-  if (response.status !== axios.HttpStatusCode.Created)
-    throw new Error(response?.data?.body || response.statusText)
-  return response?.data?.body?.thread || {}
+  const response = await api.post(`/forum`, { title, body, tags })
+  if (!response.success)
+    throw new Error(response?.body || response.statusMessage)
+  return response?.body?.thread || {}
 }
 
 export const updateThread = async (id, title, body, tags) => {
-  const response = await axios.put(
-    `${VITE_API_URL}/api/forum/${id}`,
-    JSON.stringify({ title, body, tags }),
-    {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    },
-  )
-  if (response.status !== axios.HttpStatusCode.Ok)
-    throw new Error(response?.data?.body || response.statusText)
-  return response?.data?.body?.thread || {}
+  const response = await api.put(`/forum/${id}`, { title, body, tags })
+  if (!response.success)
+    throw new Error(response?.body || response.statusMessage)
+  return response?.body?.thread || {}
 }
 
 export const voteThread = async (threadId, value) => {
-  const response = await axios.post(
-    `${VITE_API_URL}/api/forum/${threadId}/vote`,
-    JSON.stringify({ value }),
-    {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    },
-  )
-  if (response.status !== axios.HttpStatusCode.Ok)
-    throw new Error(response?.data?.body || response.statusText)
-  return response?.data?.body?.thread
+  const response = await api.post(`/forum/${threadId}/vote`, { value })
+  if (!response.success)
+    throw new Error(response?.body || response.statusMessage)
+  return response?.body?.thread
 }
 
 export const unvoteThread = async (threadId) => {
-  const response = await axios.delete(
-    `${VITE_API_URL}/api/forum/${threadId}/vote`,
-  )
-  if (response.status !== axios.HttpStatusCode.Ok)
-    throw new Error(response?.data?.body || response.statusText)
-  return response?.data?.body?.thread
+  const response = await api.delete(`/forum/${threadId}/vote`)
+  if (!response.success)
+    throw new Error(response?.body || response.statusMessage)
+  return response?.body?.thread
 }
 
 export const deleteThread = async (threadId) => {
-  const response = await axios.delete(`${VITE_API_URL}/api/forum/${threadId}`)
-  if (response.status !== axios.HttpStatusCode.Ok)
-    throw new Error(response?.data?.body || response.statusText)
+  const response = await api.delete(`/forum/${threadId}`)
+  if (!response.success)
+    throw new Error(response?.body || response.statusMessage)
 }
 
 export const postComment = async (threadId, body) => {
-  const response = await axios.post(
-    `${VITE_API_URL}/api/forum/${threadId}/comments`,
-    JSON.stringify(body),
-    {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    },
-  )
+  const response = await api.post(`/forum/${threadId}/comments`, body)
   return response
 }
 
 export const updateComment = async (threadId, commentId, body) => {
-  const response = await axios.patch(
-    `${VITE_API_URL}/api/forum/${threadId}/comments/${commentId}`,
-    JSON.stringify({ body }),
-    {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    },
-  )
-  if (response.status !== axios.HttpStatusCode.Ok)
-    throw new Error(response?.data?.body || response.statusText)
+  const response = await api.patch(`/forum/${threadId}/comments/${commentId}`, {
+    body,
+  })
+  if (!response.success)
+    throw new Error(response?.body || response.statusMessage)
 }
 
 export const voteThreadComment = async (threadId, commentId, value) => {
-  const response = await axios.post(
-    `${VITE_API_URL}/api/forum/${threadId}/comments/${commentId}/vote`,
-    JSON.stringify({ value }),
-    {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    },
+  const response = await api.post(
+    `/forum/${threadId}/comments/${commentId}/vote`,
+    { value },
   )
-  if (response.status !== axios.HttpStatusCode.Ok)
-    throw new Error(response?.data?.body || response.statusText)
-  return response?.data?.body?.thread
+  if (!response.success)
+    throw new Error(response?.body || response.statusMessagee)
+  return response?.body?.thread
 }
 
 export const unvoteThreadComment = async (threadId, commentId) => {
-  const response = await axios.delete(
-    `${VITE_API_URL}/api/forum/${threadId}/comments/${commentId}/vote`,
+  const response = await api.delete(
+    `/forum/${threadId}/comments/${commentId}/vote`,
   )
-  if (response.status !== axios.HttpStatusCode.Ok)
-    throw new Error(response?.data?.body || response.statusText)
-  return response?.data?.body?.thread
+  if (!response.success)
+    throw new Error(response?.body || response.statusMessage)
+  return response?.body?.thread
 }
 
 export const markThreadComment = async (threadId, commentId) => {
-  const response = await axios.patch(
-    `${VITE_API_URL}/api/forum/${threadId}/comments/${commentId}/mark`,
+  const response = await api.patch(
+    `/forum/${threadId}/comments/${commentId}/mark`,
   )
-  if (response.status !== axios.HttpStatusCode.Ok)
-    throw new Error(response?.data?.body || response.statusText)
-  return response?.data?.body?.thread
+  if (!response.success)
+    throw new Error(response?.body || response.statusMessage)
+  return response?.body?.thread
 }
 
 export const unmarkThreadComment = async (threadId, commentId) => {
-  const response = await axios.delete(
-    `${VITE_API_URL}/api/forum/${threadId}/comments/${commentId}/mark`,
+  const response = await api.delete(
+    `/forum/${threadId}/comments/${commentId}/mark`,
   )
-  if (response.status !== axios.HttpStatusCode.Ok)
-    throw new Error(response?.data?.body || response.statusText)
-  return response?.data?.body?.thread
+  if (!response.success)
+    throw new Error(response?.body || response.statusMessage)
+  return response?.body?.thread
 }
 
 export const deleteComment = async (threadId, commentId) => {
-  const response = await axios.delete(
-    `${VITE_API_URL}/api/forum/${threadId}/comments/${commentId}`,
-  )
-  if (response.status !== axios.HttpStatusCode.Ok)
-    throw new Error(response?.data?.body || response.statusText)
+  const response = await api.delete(`/forum/${threadId}/comments/${commentId}`)
+  if (!response.success)
+    throw new Error(response?.body || response.statusMessage)
 }
 
 export const getForumTags = async (query) => {
-  const response = await axios.get(`${VITE_API_URL}/api/forum/tags`, {
+  const response = await api.get(`/forum/tags`, {
     params: query ? { q: query } : {},
   })
-  return response?.data?.body?.tags ?? []
+  return response?.body?.tags ?? []
 }
 
 export const createForumTag = async (name, description) => {
-  const response = await axios.post(
-    `${VITE_API_URL}/api/forum/tags`,
-    { name, description },
-    {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    },
-  )
-  if (response.status !== axios.HttpStatusCode.Created)
-    throw new Error(response?.data?.body || response.statusText)
-  return response.data
+  const response = await api.post(`/forum/tags`, { name, description })
+  if (!response.success)
+    throw new Error(response?.body || response.statusMessage)
+  return response
 }
 
 export const editForumTag = async (originalName, newName, newDescription) => {
-  const response = await axios.put(
-    `${VITE_API_URL}/api/forum/tags/${originalName}`,
-    JSON.stringify({ name: newName, description: newDescription }),
-    {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    },
-  )
-  if (response.status !== axios.HttpStatusCode.Ok)
-    throw new Error(response?.data?.body || response.statusText)
-  return response?.data?.tag
+  const response = await api.put(`/forum/tags/${originalName}`, {
+    name: newName,
+    description: newDescription,
+  })
+  if (!response.success)
+    throw new Error(response?.body || response.statusMessage)
+  return response?.tag
 }
 
 export const deleteForumTag = async (name) => {
-  const response = await axios.delete(`${VITE_API_URL}/api/forum/tags/${name}`)
-  if (response.status !== axios.HttpStatusCode.Ok)
-    throw new Error(response?.data?.body || response.statusText)
-  return response?.data?.tag
+  const response = await api.delete(`/forum/tags/${name}`)
+  if (!response.success)
+    throw new Error(response?.body || response.statusMessage)
+  return response?.tag
 }

@@ -53,7 +53,7 @@ export default function Thread() {
   const handlePostComment = async (event) => {
     event.preventDefault()
     const result = await postComment(params.id, { body: replyBody })
-    if (result.status === axios.HttpStatusCode.Created) {
+    if (result.success) {
       setRefreshThread((prev) => !prev)
       setReplyBody("")
     }
