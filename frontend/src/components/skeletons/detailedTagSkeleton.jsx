@@ -1,5 +1,4 @@
 import Container from "../container"
-import DetailedTagContainer from "../detailedTagContainer"
 import BlockSkeleton from "./blockSkeleton"
 
 export default function DetailedTagSkeleton() {
