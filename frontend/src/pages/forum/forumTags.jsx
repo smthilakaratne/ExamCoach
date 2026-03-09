@@ -2,6 +2,8 @@ import { Flame, Plus, Search } from "lucide-react"
 import Button from "../../components/button"
 import ForumTag from "../../components/tag"
 import DetailedTagContainer from "../../components/detailedTagContainer"
+import DetailedTagSkeleton from "../../components/skeletons/detailedTagSkeleton"
+import BlockSkeleton from "../../components/skeletons/blockSkeleton"
 import { getForumTags } from "../../services/forumApi"
 import { useState } from "react"
 import { useEffect } from "react"
@@ -9,6 +11,7 @@ import CreateEditTagModel from "./models/createEditTagModel"
 import { useAuth } from "../../contexts/AuthContext"
 export default function ForumTags() {
   const [tags, setTags] = useState([])
+  const [loading, setLoading] = useState(true)
   const [refreshTags, setRefreshTags] = useState(false)
   const [searchValue, setSearhcValue] = useState("")
   const [createTagModelOpen, setCreateModelOpen] = useState(false)
@@ -18,7 +21,10 @@ export default function ForumTags() {
   )
 
   useEffect(() => {
-    getForumTags().then(setTags)
+    setLoading(true)
+    getForumTags()
+      .then(setTags)
+      .then(() => setLoading(false))
   }, [refreshTags])
 
   return (
@@ -45,7 +51,14 @@ export default function ForumTags() {
         <div className="flex gap-3 justify-between my-3">
           <section className="flex-auto">
             <div className="flex justify-between items-center">
-              <h3 className="text-xl my-3">{filteredTags?.length ?? 0} tags</h3>
+              {loading ? (
+                <BlockSkeleton className="w-40" />
+              ) : (
+                <h3 className="text-xl my-3">
+                  {filteredTags?.length ?? 0} tags
+                </h3>
+              )}
+
               {user && user?.role === "admin" && (
                 <Button
                   className="flex gap-2 items-center"
@@ -57,13 +70,17 @@ export default function ForumTags() {
               )}
             </div>
             <section>
-              {filteredTags.map((tag, index) => (
-                <DetailedTagContainer
-                  key={`tag-${index}`}
-                  {...tag}
-                  setRefreshTags={setRefreshTags}
-                />
-              ))}
+              {loading ? (
+                <DetailedTagSkeleton />
+              ) : (
+                filteredTags.map((tag, index) => (
+                  <DetailedTagContainer
+                    key={`tag-${index}`}
+                    {...tag}
+                    setRefreshTags={setRefreshTags}
+                  />
+                ))
+              )}
             </section>
           </section>
 
@@ -73,16 +90,25 @@ export default function ForumTags() {
               <span>Popular tags</span>
             </h3>
             <div className="flex flex-wrap gap-2 my-4">
-              {tags
-                .map((tag) => tag.name)
-                .slice(0, 100)
-                .map((tag, index) => (
-                  <ForumTag
-                    key={`tag-${index}`}
-                    name={tag}
-                    className="cursor-pointer hover:bg-gray-400"
-                  />
-                ))}
+              {loading
+                ? new Array(40)
+                    .fill(0)
+                    .map((_, index) => (
+                      <BlockSkeleton
+                        className="inline-block mx-1 my-1"
+                        style={{ width: `${3 + (index % 4) * 2}rem` }}
+                      />
+                    ))
+                : tags
+                    .map((tag) => tag.name)
+                    .slice(0, 100)
+                    .map((tag, index) => (
+                      <ForumTag
+                        key={`tag-${index}`}
+                        name={tag}
+                        className="cursor-pointer hover:bg-gray-400"
+                      />
+                    ))}
             </div>
           </section>
         </div>
