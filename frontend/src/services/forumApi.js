@@ -1,7 +1,11 @@
-import axios from "axios"
 import api from "./api"
 
-const { VITE_API_URL } = import.meta.env
+export const getThreads = async () => {
+  const response = await api.get("/forum")
+  if (!response.success)
+    throw new Error(response?.body || response.statusMessage)
+  return response?.body || []
+}
 
 export const getThread = async (threadId) => {
   const response = await api.get(`/forum/${threadId}`)

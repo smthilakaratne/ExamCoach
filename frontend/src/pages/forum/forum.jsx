@@ -6,15 +6,17 @@ import ForumTag from "../../components/tag"
 import Container from "../../components/container"
 import { useState } from "react"
 import { useEffect } from "react"
-import { getForumTags } from "../../services/forumApi"
-
-const { VITE_API_URL } = import.meta.env
-
-const user = { name: "Sample user" }
+import { getForumTags, getThreads } from "../../services/forumApi"
+import Spinner from "../../components/common/Spinner"
+import ThreadSkeleton from "../../components/skeletons/threadSkeleton"
+import BlockSkeleton from "../../components/skeletons/blockSkeleton"
+import HotThreadSkeleton from "../../components/skeletons/hotThreadSkeleton"
 
 export default function Forum() {
   const [threads, setThreads] = useState([])
+  const [threadsLoading, setThreadsLoading] = useState(true)
   const [tags, setTags] = useState([])
+  const [tagsLoading, setTagsLoading] = useState(true)
   const [viewMode, setViewMode] = useState("trending")
 
   const views = {
@@ -32,15 +34,17 @@ export default function Forum() {
   const filteredThreads = views[viewMode]()
 
   useEffect(() => {
-    ;(async () => {
-      const response = await fetch(`${VITE_API_URL}/api/forum`)
-      const result = await response.json()
-      setThreads(result?.body ?? [])
-    })()
+    setThreadsLoading(true)
+    getThreads()
+      .then(setThreads)
+      .then(() => setThreadsLoading(false))
   }, [])
 
   useEffect(() => {
-    getForumTags().then(setTags)
+    setTagsLoading(true)
+    getForumTags()
+      .then(setTags)
+      .then(() => setTagsLoading(false))
   }, [])
 
   return (
@@ -59,7 +63,11 @@ export default function Forum() {
       <div className="flex gap-3 justify-between my-3">
         <section className="flex-auto">
           <div className="flex justify-between items-center">
-            <h3 className="text-xl my-3">{threads.length} questions</h3>
+            {threadsLoading ? (
+              <BlockSkeleton className="w-40" />
+            ) : (
+              <h3 className="text-xl my-3">{threads.length} questions</h3>
+            )}
             <div className="flex gap-1 border border-gray-300 rounded-sm p-1">
               <Button
                 kind={viewMode === "trending" ? "primary" : "secondary"}
@@ -100,7 +108,9 @@ export default function Forum() {
           </div>
 
           <section>
-            {filteredThreads.length === 0 ? (
+            {threadsLoading ? (
+              <ThreadSkeleton />
+            ) : filteredThreads.length === 0 ? (
               <p className="font-light text-sm text-gray-500 my-5">
                 It's quite here... <Link to="./new">Start a new question</Link>{" "}
                 and shake things up
@@ -124,7 +134,9 @@ export default function Forum() {
               <Flame className="text-orange-400" />
               <span>Hot today</span>
             </h3>
-            {hotTodayQuestions.length <= 0 ? (
+            {threadsLoading ? (
+              <HotThreadSkeleton />
+            ) : hotTodayQuestions.length <= 0 ? (
               <p className="font-light text-sm text-gray-500">
                 No sparks flying today.{" "}
                 <Link to="./new">Start a new topic</Link> and light it up.
@@ -151,16 +163,25 @@ export default function Forum() {
               <span>Explore tags</span>
             </h3>
             <div className="flex flex-wrap gap-2 my-4">
-              {tags
-                .map((tag) => tag.name)
-                .slice(0, 10)
-                .map((tag, index) => (
-                  <ForumTag
-                    key={`tag-${index}`}
-                    name={tag}
-                    className="cursor-pointer hover:bg-gray-400"
-                  />
-                ))}
+              {tagsLoading
+                ? new Array(10)
+                    .fill(0)
+                    .map((_, index) => (
+                      <BlockSkeleton
+                        className="inline-block mx-1 my-1"
+                        style={{ width: `${3 + (index % 4) * 2}rem` }}
+                      />
+                    ))
+                : tags
+                    .map((tag) => tag.name)
+                    .slice(0, 10)
+                    .map((tag, index) => (
+                      <ForumTag
+                        key={`tag-${index}`}
+                        name={tag}
+                        className="cursor-pointer hover:bg-gray-400"
+                      />
+                    ))}
             </div>
             <Link to="./tags">Explore more tags</Link>
           </section>
