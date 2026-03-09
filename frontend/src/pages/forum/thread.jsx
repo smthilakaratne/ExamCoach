@@ -168,7 +168,7 @@ export default function Thread() {
               <MarkdownContent content={thread?.body} />
             )}
 
-            <div className="flex content-center justify-between mt-10">
+            <div className="flex content-center justify-between mt-10 flex-wrap gap-5">
               <div className="flex flex-wrap gap-2">
                 {(thread?.tags || []).map((tag, index) => (
                   <ForumTag
@@ -184,8 +184,8 @@ export default function Thread() {
                   <BlockSkeleton className="w-44" />
                 </div>
               ) : (
-                <div className="flex items-center gap-5">
-                  <div className="flex justify-end gap-2 items-center text-sm text-gray-500">
+                <div className="flex items-center gap-5 flex-wrap">
+                  <div className="flex justify-end gap-2 items-center text-sm text-gray-500 flex-wrap">
                     <ProfileImage user={thread?.createdBy || {}} size={5} />
                     <div>
                       <a>{thread?.createdBy?.name}</a> asked{" "}
@@ -194,7 +194,7 @@ export default function Thread() {
                       </abbr>
                     </div>
                   </div>
-                  <div className="flex gap-1 items-center text-sm text-gray-400 ">
+                  <div className="flex gap-1 items-center text-sm text-gray-400 flex-wrap">
                     <Eye className="size-5" />
                     Viewed <b>{thread?.views ?? 0}</b> times
                   </div>
