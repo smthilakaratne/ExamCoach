@@ -133,7 +133,7 @@ export default function Navbar() {
               {(dropdownOpen || mobileMenuOpen) && (
                 <div
                   className={
-                    "absolute md:right-0 left-0 md:left-auto mt-0 md:mt-2 w-48 bg-white rounded-xl shadow-lg py-0 md:py-2 border border-gray-100 z-50 " +
+                    "absolute md:right-0 left-0 md:left-auto mt-0 md:mt-2 w-full md:w-48 bg-white rounded-none md:rounded-xl shadow-none md:shadow-lg py-0 md:py-2 border border-gray-100 z-50 " +
                       (mobileMenuOpen && "relative border-t border-t-gray-300")
                   }
                 >
