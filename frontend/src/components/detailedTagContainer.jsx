@@ -5,10 +5,12 @@ import OverlayWindow from "./overlaywindow"
 import Button from "./button"
 import { deleteForumTag } from "../services/forumApi"
 import CreateEditTagModel from "../pages/forum/models/createEditTagModel"
+import { useAuth } from "../contexts/AuthContext"
 
 export default function DetailedTagContainer(props) {
   const [deleteModelOpen, setDeleteModelOpen] = useState(false)
   const [editModelOpen, setEditModelOpen] = useState(false)
+  const { user } = useAuth()
 
   const handleDelete = async () => {
     try {
@@ -49,18 +51,22 @@ export default function DetailedTagContainer(props) {
         <div className="flex items-center justify-between">
           <h4 className="text-xl font-bold my-2"># {props.name}</h4>
           <div className="flex items-center">
-            <div
-              className="cursor-pointer p-2 rounded-full hover:bg-red-100 transition-all"
-              onClick={() => setDeleteModelOpen(true)}
-            >
-              <Trash className="size-5 text-red-400 " />
-            </div>
-            <div
-              className="cursor-pointer p-2 rounded-full hover:bg-gray-200 transition-all"
-              onClick={() => setEditModelOpen(true)}
-            >
-              <SquarePen className="size-5 text-gray-400" />
-            </div>
+            {user && user?.role == "admin" && (
+              <>
+                <div
+                  className="cursor-pointer p-2 rounded-full hover:bg-red-100 transition-all"
+                  onClick={() => setDeleteModelOpen(true)}
+                >
+                  <Trash className="size-5 text-red-400 " />
+                </div>
+                <div
+                  className="cursor-pointer p-2 rounded-full hover:bg-gray-200 transition-all"
+                  onClick={() => setEditModelOpen(true)}
+                >
+                  <SquarePen className="size-5 text-gray-400" />
+                </div>
+              </>
+            )}
           </div>
         </div>
         <p>{props.description}</p>

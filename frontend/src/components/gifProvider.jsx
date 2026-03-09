@@ -14,6 +14,7 @@ export function GifOptionButton() {
         src="https://avatars.githubusercontent.com/u/194506457?s=200&v=4"
         className="cursor-pointer rounded-sm"
         title="Insert GIFs with KLIPY"
+        alt="GIF"
         width={32}
         onClick={toggleGifProvider}
       />

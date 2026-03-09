@@ -16,6 +16,7 @@ import { useRef } from "react"
 import TextEditProvider from "../../contexts/textEditor"
 import { GifProvider } from "../../contexts/gifProvider"
 import TextEditorExtensions from "../../components/textEditorExtensions"
+import { useAuth } from "../../contexts/AuthContext"
 
 function TagSelector({ selectedTags, setSelectedTags, ref }) {
   const [tagQuery, setTagQuery] = useState("")
@@ -106,6 +107,7 @@ export default function CreateUpdateThread() {
   const formRef = useRef()
   const { pathname } = useLocation()
   const params = useParams()
+  const auth = useAuth()
   const isCreating = pathname === "/community/forum/new"
 
   const handleSubmit = async (evt) => {
@@ -127,6 +129,7 @@ export default function CreateUpdateThread() {
       let thread
       if (isCreating) thread = await createThread(title, body, tags)
       else thread = await updateThread(params.id, title, body, tags)
+      console.log(thread)
       window.location.href = `/community/forum/${thread?._id ?? ""}`
     } catch (error) {
       console.error(error)
