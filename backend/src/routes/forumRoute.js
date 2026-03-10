@@ -17,6 +17,7 @@ const {
     markThreadComment,
     unmarkThreadComment,
 } = require("../controllers/forumController")
+const { protect } = require("../app")
 const ForumThread = require("../models/ForumThread")
 
 /**
@@ -45,7 +46,7 @@ router.get("/", getThreads)
  *   }
  * ]
  */
-router.post("/", createThread)
+router.post("/", protect, createThread)
 
 /**
  * GET /api/forum/{id}
@@ -68,7 +69,7 @@ router.get("/:id", getThread)
  * @return {object} 400 - Bad Request - application/json
  * @return {object} 500 - Internal Server Error - application/json
  */
-router.put("/:id", updateThread)
+router.put("/:id", protect, updateThread)
 
 /**
  * POST /api/forum/{id}/vote
@@ -78,7 +79,7 @@ router.put("/:id", updateThread)
  * @return {ForumThread} 200 - OK - application/json
  * @return {object} 500 - Internal Server Error - application/json
  */
-router.post("/:id/vote", voteThread)
+router.post("/:id/vote", protect, voteThread)
 
 /**
  * DELETE /api/forum/{id}/vote
@@ -87,7 +88,7 @@ router.post("/:id/vote", voteThread)
  * @return {ForumThread} 200 - OK - application/json
  * @return {object} 500 - Internal Server Error - application/json
  */
-router.delete("/:id/vote", unvoteThread)
+router.delete("/:id/vote", protect, unvoteThread)
 
 /**
  * DELETE /api/forum/{id}
@@ -98,7 +99,7 @@ router.delete("/:id/vote", unvoteThread)
  * @return {object} 400 - Bad Request - application/json
  * @return {object} 500 - Internal Server Error - application/json
  */
-router.delete("/:id", deleteThread)
+router.delete("/:id", protect, deleteThread)
 
 /**
  * POST /api/forum/{id}/comments
@@ -110,7 +111,7 @@ router.delete("/:id", deleteThread)
  * @return {object} 400 - Bad Request - application/json
  * @return {object} 500 - Internal Server Error - applicatiosn/json
  */
-router.post("/:id/comments", createThreadComment)
+router.post("/:id/comments", protect, createThreadComment)
 
 /**
  * PATCH /api/forum/{id}/comments/{comment}
@@ -123,7 +124,7 @@ router.post("/:id/comments", createThreadComment)
  * @return {object} 400 - Bad Request - application/json
  * @return {object} 500 - Internal Server Error - applicatiosn/json
  */
-router.patch("/:id/comments/:comment", editThreadComment)
+router.patch("/:id/comments/:comment", protect, editThreadComment)
 
 /**
  * POST /api/forum/{id}/comments/{comment}/vote
@@ -136,7 +137,7 @@ router.patch("/:id/comments/:comment", editThreadComment)
  * @return {object} 400 - Bad Request - application/json
  * @return {object} 500 - Internal Server Error - applicatiosn/json
  */
-router.post("/:id/comments/:comment/vote", voteThreadComment)
+router.post("/:id/comments/:comment/vote", protect, voteThreadComment)
 
 /**
  * DELETE /api/forum/{id}/comments/{comment}/vote
@@ -145,7 +146,7 @@ router.post("/:id/comments/:comment/vote", voteThreadComment)
  * @return {ForumThread} 200 - OK - application/json
  * @return {object} 500 - Internal Server Error - application/json
  */
-router.delete("/:id/comments/:comment/vote", unvoteThreadComment)
+router.delete("/:id/comments/:comment/vote", protect, unvoteThreadComment)
 
 /**
  * PATCH /api/forum/{id}/comments/{comment}/mark
@@ -154,7 +155,7 @@ router.delete("/:id/comments/:comment/vote", unvoteThreadComment)
  * @return {ForumThread} 200 - OK - application/json
  * @return {object} 500 - Internal Server Error - application/json
  */
-router.patch("/:id/comments/:comment/mark", markThreadComment)
+router.patch("/:id/comments/:comment/mark", protect, markThreadComment)
 
 /**
  * DELETE /api/forum/{id}/comments/{comment}/mark
@@ -163,7 +164,7 @@ router.patch("/:id/comments/:comment/mark", markThreadComment)
  * @return {ForumThread} 200 - OK - application/json
  * @return {object} 500 - Internal Server Error - application/json
  */
-router.delete("/:id/comments/:comment/mark", unmarkThreadComment)
+router.delete("/:id/comments/:comment/mark", protect, unmarkThreadComment)
 
 /**
  * DELETE /api/forum/{id}/comments/{comment}
@@ -175,6 +176,6 @@ router.delete("/:id/comments/:comment/mark", unmarkThreadComment)
  * @return {object} 400 - Bad Request - application/json
  * @return {object} 500 - Internal Server Error - applicatiosn/json
  */
-router.delete("/:id/comments/:comment", deleteThreadComment)
+router.delete("/:id/comments/:comment", protect, deleteThreadComment)
 
 module.exports = router

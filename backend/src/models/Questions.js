@@ -1,5 +1,5 @@
 const mongoose = require("mongoose")
-
+//question model
 const questionSchema = new mongoose.Schema({
   level: { type: String, required: true }, // e.g., "easy", "medium", "hard"
   questionText: { type: String, required: true },

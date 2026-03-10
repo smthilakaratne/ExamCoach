@@ -1,6 +1,7 @@
 const express = require("express")
 const { getTags, createTag, deleteTag, editTag } = require("../controllers/forumTagsController")
-const ForumThread = require("../models/ForumThread")
+const { protect, restrictTo } = require("../app")
+
 const router = express.Router()
 
 /**
@@ -21,7 +22,7 @@ router.get("/", getTags)
  * @return {ForumTag} 201 - Created - application/json
  * @return {object} 500 - Internal Server Error - application/json
  */
-router.post("/", createTag)
+router.post("/", protect, restrictTo("admin"), createTag)
 
 /**
  * PUT /api/forum/tags/{name}
@@ -33,7 +34,7 @@ router.post("/", createTag)
  * @return {object} 404 - Tag not found - application/json
  * @return {object} 500 - Internal Server Error - application/json
  */
-router.put("/:name", editTag)
+router.put("/:name", protect, restrictTo("admin"), editTag)
 
 /**
  * DELETE /api/forum/tags/{name}
@@ -44,6 +45,6 @@ router.put("/:name", editTag)
  * @return {object} 404 - Tag not found - application/json
  * @return {object} 500 - Internal Server Error - application/json
  */
-router.delete("/:name", deleteTag)
+router.delete("/:name", protect, restrictTo("admin"), deleteTag)
 
 module.exports = router
