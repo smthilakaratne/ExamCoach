@@ -54,19 +54,20 @@ export default function MockExam() {
 */
 
   // Fetch questions for selected level
-  useEffect(() => {
-    if (level) {
-      startExam(level)
-        .then((res) => {
-          setQuestions(res.data.questions)
-          setLoading(false)
-        })
-        .catch((err) => {
-          console.error(err)
-          setLoading(false)
-        })
-    }
-  }, [level])
+ useEffect(() => {
+  if (level) {
+    startExam(level)
+      .then((res) => {
+        console.log("API RESPONSE:", res)
+        setQuestions(res.questions)
+        setLoading(false)
+      })
+      .catch((err) => {
+        console.error("API ERROR:", err)
+        setLoading(false)
+      })
+  }
+}, [level])
 
   const selectAnswer = (qId, index) => {
     setAnswers({ ...answers, [qId]: index })
@@ -79,14 +80,14 @@ export default function MockExam() {
         level,
         answers,
       }) // backend calculates score
-      const score = res.data.score // backend returns score in percentage
+      const score = res.score // backend returns score in percentage
 
       // Navigate to result page with score and answers
       navigate("/mock-exam/exam-result", {
         state: {
           fixedUserId,
           level,
-          questions: res.data.questions,
+          questions: res.questions,
           answers,
           score,
         },
