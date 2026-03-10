@@ -42,13 +42,13 @@ export default function ForumTags() {
             value={searchValue}
             onChange={(evt) => setSearhcValue(evt.target.value)}
           />
-          <Button className="flex gap-2 items-center">
+          <Button className="hidden md:flex gap-2 items-center">
             <Search className="size-5" />
             <span>Search</span>
           </Button>
         </section>
 
-        <div className="flex gap-3 justify-between my-3">
+        <div className="grid md:flex gap-3 justify-between my-3">
           <section className="flex-auto">
             <div className="flex justify-between items-center">
               {loading ? (
@@ -84,7 +84,7 @@ export default function ForumTags() {
             </section>
           </section>
 
-          <section className="border-l border-l-gray-300 pl-6 py-5 max-w-md">
+          <section className="border-t border-t-gray-300 md:border-t-0 md:border-l md:border-l-gray-300 pl-6 py-5 max-w-full md:max-w-sm lg:max-w-md">
             <h3 className="text-xl my-3 font-bold flex gap-2 items-center">
               <Flame className="text-orange-400" />
               <span>Popular tags</span>

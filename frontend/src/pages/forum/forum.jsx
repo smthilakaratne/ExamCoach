@@ -7,7 +7,6 @@ import Container from "../../components/container"
 import { useState } from "react"
 import { useEffect } from "react"
 import { getForumTags, getThreads } from "../../services/forumApi"
-import Spinner from "../../components/common/Spinner"
 import ThreadSkeleton from "../../components/skeletons/threadSkeleton"
 import BlockSkeleton from "../../components/skeletons/blockSkeleton"
 import HotThreadSkeleton from "../../components/skeletons/hotThreadSkeleton"
@@ -52,7 +51,7 @@ export default function Forum() {
       <section className="flex gap-2 justify-between items-center">
         <input
           type="search"
-          className="ring-1 ring-gray-300 px-4 py-2 rounded-sm flex-auto"
+          className="ring-1 ring-gray-300 px-4 py-2 rounded-sm flex-auto w-0"
         />
         <Button className="flex gap-2 items-center">
           <Search className="size-5" />
@@ -60,52 +59,67 @@ export default function Forum() {
         </Button>
       </section>
 
-      <div className="flex gap-3 justify-between my-3">
+      <div className="grid md:flex gap-3 justify-between my-3">
         <section className="flex-auto">
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center gap-5">
             {threadsLoading ? (
               <BlockSkeleton className="w-40" />
             ) : (
-              <h3 className="text-xl my-3">{threads.length} questions</h3>
+              <h3 className="text-md xl:text-xl my-3">
+                {threads.length} questions
+              </h3>
             )}
-            <div className="flex gap-1 border border-gray-300 rounded-sm p-1">
+            <div className="hidden lg:flex gap-1 border border-gray-300 rounded-sm p-1">
               <Button
                 kind={viewMode === "trending" ? "primary" : "secondary"}
-                className="border-0 text-sm"
+                className="border-0 text-xs lg:text-sm"
                 onClick={() => setViewMode("trending")}
               >
                 Trending
               </Button>
               <Button
                 kind={viewMode === "latest" ? "primary" : "secondary"}
-                className="border-0 text-sm"
+                className="border-0 text-xs lg:text-sm"
                 onClick={() => setViewMode("latest")}
               >
                 Latest
               </Button>
               <Button
                 kind={viewMode === "unanswered" ? "primary" : "secondary"}
-                className="border-0 text-sm"
+                className="border-0 text-xs lg:text-sm"
                 onClick={() => setViewMode("unanswered")}
               >
                 Unanswered
               </Button>
               <Button
                 kind={viewMode === "my-questions" ? "primary" : "secondary"}
-                className="border-0 text-sm"
+                className="border-0 text-xs lg:text-sm"
                 onClick={() => setViewMode("my-questions")}
               >
                 My Questions
               </Button>
               <Button
                 kind={viewMode === "my-answers" ? "primary" : "secondary"}
-                className="border-0 text-sm"
+                className="border-0 text-xs lg:text-sm"
                 onClick={() => setViewMode("my-answers")}
               >
                 My Answers
               </Button>
             </div>
+            <select
+              className="ring-1 ring-gray-300 px-4 py-2 rounded-sm flex-auto block lg:hidden"
+              onSelect={(evt) => setViewMode(evt.target.value)}
+            >
+              <option value="trending">Trending</option>
+              <option value="latest">Latest</option>
+              <option value="unanswered">Unanswered</option>
+              <option value="my-questions">My Questions</option>
+              <option value="my-answers">My Answers</option>
+            </select>
           </div>
+          <Link to="new" className="block md:hidden my-5">
+            <Button className="w-full">Ask question</Button>
+          </Link>
 
           <section>
             {threadsLoading ? (
@@ -125,8 +139,8 @@ export default function Forum() {
           </section>
         </section>
 
-        <section className="border-l border-l-gray-300 pl-6 py-5 max-w-md">
-          <Link to="new">
+        <section className="border-t border-t-gray-300 md:border-l md:border-t-0 md:border-l-gray-300 pl-0 md:pl-6 py-5 max-w-max md:max-w-sm xl:max-w-md">
+          <Link to="new" className="hidden md:block">
             <Button className="w-full">Ask question</Button>
           </Link>
           <section>

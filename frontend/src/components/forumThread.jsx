@@ -18,7 +18,7 @@ export default function ForumThread(data) {
             ></ForumTag>
           ))}
         </div>
-        <div className="flex justify-between items-end mt-4">
+        <div className="flex justify-between items-end mt-4 flex-wrap gap-3">
           <div className="flex gap-4 items-center">
             <div className="flex gap-1 items-center text-sm text-gray-500">
               <ArrowBigUp className="size-5" />

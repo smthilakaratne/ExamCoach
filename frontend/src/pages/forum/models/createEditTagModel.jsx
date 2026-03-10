@@ -50,7 +50,7 @@ export default function CreateEditTagModel({
           <input
             id="tagname"
             type="text"
-            className="ring-1 ring-gray-300 px-4 py-2 my-2 rounded-sm flex-auto"
+            className="ring-1 ring-gray-300 px-4 py-2 my-2 rounded-sm flex-auto max-w-60 md:max-w-0"
             value={name}
             onChange={(evt) => setName(evt.target.value)}
             minLength={3}
@@ -62,7 +62,7 @@ export default function CreateEditTagModel({
           <label htmlFor="tagDescription">Description</label>
           <textarea
             cols={40}
-            className="ring-1 ring-gray-300 px-4 py-2 my-2 rounded-sm flex-auto"
+            className="ring-1 ring-gray-300 px-4 py-2 my-2 rounded-sm flex-auto max-w-60 md:max-w-0"
             value={description}
             onChange={(evt) => setDescription(evt.target.value)}
             minLength={10}
