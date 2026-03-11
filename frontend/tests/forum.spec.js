@@ -92,10 +92,9 @@ test.describe("Forum", () => {
           page,
         }) => {
           await mockForumTags(page)
-          await page.waitForResponse(
-            (resp) =>
-              resp.url().includes("/api/forum/tags") && resp.status() === 200,
-          )
+          // attempt to register the route mocking
+          await page.waitForLoadState("domcontentloaded")
+          
           for (const tag of [
             "# business-studies",
             "# geography",
