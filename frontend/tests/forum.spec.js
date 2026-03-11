@@ -105,7 +105,11 @@ test.describe("Forum", () => {
           ]) {
             await page.getByRole("textbox", { name: "Tags" }).click()
             await page.getByRole("textbox", { name: "Tags" }).fill("e")
-            await page.getByText(tag).click()
+            
+            const tagLocator = page.getByText(tag)
+            await tagLocator.waitFor({ state: "attached "})
+            await tagLocator.waitFor({ state: "visible "})
+            await tagLocator.click()
           }
           await page.getByRole("button", { name: "Create" }).click()
           // no way to detect custom validation messages as of now. Pass the test for now
