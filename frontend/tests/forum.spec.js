@@ -26,6 +26,8 @@ test.describe("Forum", () => {
     test.describe("Logged in behaviour", () => {
       test.beforeEach(async ({ page }) => {
         await mockUserLogin(page)
+        await mockForumTags(page)
+
         await page.goto("http://localhost:5173/login")
         await page.locator("input[type='email']").fill("user@gmail.com")
         await page.locator("input[type='password']").fill("Password123")
@@ -91,7 +93,6 @@ test.describe("Forum", () => {
         test("should fail when there are more than 5 tags selected", async ({
           page,
         }) => {
-          await mockForumTags(page)
           // attempt to register the route mocking
           await page.waitForLoadState("domcontentloaded")
 
