@@ -106,10 +106,6 @@ test.describe("Forum", () => {
           ]) {
             await page.getByRole("textbox", { name: "Tags" }).click()
             await page.getByRole("textbox", { name: "Tags" }).fill("e")
-            page.waitForResponse(
-              (resp) =>
-                resp.url().includes("/api/forum/tags") && resp.status() === 200,
-            )
 
             const tagLocator = page.getByText(tag)
             await tagLocator.click({ force: true })
