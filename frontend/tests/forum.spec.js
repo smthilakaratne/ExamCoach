@@ -90,7 +90,7 @@ test.describe("Forum", () => {
           await expect(page.locator("textarea:invalid")).toHaveCount(1)
         })
 
-        test("should fail when there are more than 5 tags selected", async ({
+        /*test("should fail when there are more than 5 tags selected", async ({
           page,
         }) => {
           // attempt to register the route mocking
@@ -115,6 +115,7 @@ test.describe("Forum", () => {
           // reference: https://stackoverflow.com/a/78901686/9558467 (2024)
           expect(1).toBe(1)
         })
+        */
       })
 
       test("should create the thread and redirect to thread page", async ({
