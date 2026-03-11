@@ -94,7 +94,7 @@ test.describe("Forum", () => {
           await mockForumTags(page)
           // attempt to register the route mocking
           await page.waitForLoadState("domcontentloaded")
-          
+
           for (const tag of [
             "# business-studies",
             "# geography",
@@ -105,10 +105,12 @@ test.describe("Forum", () => {
           ]) {
             await page.getByRole("textbox", { name: "Tags" }).click()
             await page.getByRole("textbox", { name: "Tags" }).fill("e")
-            
+            page.waitForResponse(
+              (resp) =>
+                resp.url().includes("/api/forum/tags") && resp.status() === 200,
+            )
+
             const tagLocator = page.getByText(tag)
-            await tagLocator.waitFor({ state: "attached "})
-            await tagLocator.waitFor({ state: "visible "})
             await tagLocator.click()
           }
           await page.getByRole("button", { name: "Create" }).click()
