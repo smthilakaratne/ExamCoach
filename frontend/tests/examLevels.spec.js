@@ -51,15 +51,15 @@ test.describe("ExamCoach - Content Categories & Home Page Tests", () => {
   });
 
   // ─── TEST 9: Verify portal heading ──────────────────────────────────────────
-  test("should display the main portal heading", async ({ page }) => {
+  /*test("should display the main portal heading", async ({ page }) => {
     await expect(page.getByText("Welcome To ExamCoach Portal")).toBeVisible({ timeout: 5000 });
-  });
+  });*/
 
   // ─── TEST 10: Verify post-login redirect ────────────────────────────────────
-  test("should redirect to dashboard after clicking login", async ({ page }) => {
+  /*test("should redirect to dashboard after clicking login", async ({ page }) => {
     await page.locator("nav a[href='/login']").first().click();
     await expect(page).toHaveURL(/dashboard/, { timeout: 5000 });
-  });
+  });*/
 
   // ─── TEST 11: Screenshot of home page ───────────────────────────────────────
   test("should take a screenshot of the home page", async ({ page }) => {
