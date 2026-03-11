@@ -92,6 +92,10 @@ test.describe("Forum", () => {
           page,
         }) => {
           await mockForumTags(page)
+          await page.waitForResponse(
+            (resp) =>
+              resp.url().includes("/api/forum/tags") && resp.status() === 200,
+          )
           for (const tag of [
             "# business-studies",
             "# geography",
@@ -126,7 +130,9 @@ test.describe("Forum", () => {
           "http://localhost:5173/community/forum/0000000000000",
         )
         await expect(page.locator("main h1").first()).toHaveText("Sample title")
-        await expect(page.locator("main p").first()).toHaveText("Sample description")
+        await expect(page.locator("main p").first()).toHaveText(
+          "Sample description",
+        )
       })
     })
   })
