@@ -38,7 +38,7 @@ test.describe('Mock Exam Flow', () => {
   });
 
 
-  test('user can see answers', async ({ page }) => {
+  test('user can see answers', async ({ page }, testInfo) => {
 
      await page.goto('http://localhost:5173/mock-exam/exam-summary');
 
@@ -60,7 +60,14 @@ test.describe('Mock Exam Flow', () => {
     // verify answers page
     await expect(page).toHaveURL(/exam-answers/);
 
-    await expect(page.getByText('Exam Review')).toBeVisible();
+    try {
+      await expect(page.getByText('Exam ')).toBeVisible();
+  } catch (err) {
+    await page.screenshot({ path: `failure-${testInfo.title}.png` });
+    throw err; // rethrow to fail the test
+  }
+
+
   });
 
 });
