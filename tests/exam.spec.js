@@ -4,7 +4,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Mock Exam Flow', () => {
 
   test('user can start exam', async ({ page }) => {
-
+//starting point of user flow (exam level page)
   await page.goto('http://localhost:5173/mock-exam/exam-summary');
 
   await page.locator('select').selectOption('Math');
