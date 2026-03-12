@@ -118,6 +118,10 @@ export default function MockExam() {
       ))}
 
       <Button kind="danger" onClick={handleSubmit}>Submit Exam</Button>
+      < br />
+      <br />
+      < br />
+      <br />
     </div>
   )
 }
