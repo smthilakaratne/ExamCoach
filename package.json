@@ -4,5 +4,27 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.58.2"
-  }
+  },
+  "name": "examcoach",
+  "version": "1.0.0",
+  "description": "Application Framework 3rd year project. Coded using Mern stack. For main crud parts as Study material, Mock quiz,  Progress tracking and feedback and Forum.",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/smthilakaratne/ExamCoach.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/smthilakaratne/ExamCoach/issues"
+  },
+  "homepage": "https://github.com/smthilakaratne/ExamCoach#readme"
 }

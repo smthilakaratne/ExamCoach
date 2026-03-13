@@ -1,0 +1,168 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - navigation [ref=e3]:
+    - generic [ref=e4]:
+      - link "ExamCoach" [ref=e5] [cursor=pointer]:
+        - /url: /
+        - img [ref=e6]
+        - heading "ExamCoach" [level=1] [ref=e9]
+      - generic [ref=e10]:
+        - link "Home" [ref=e11] [cursor=pointer]:
+          - /url: /
+        - link "Forum" [ref=e12] [cursor=pointer]:
+          - /url: /community/forum
+        - link "Mock Exam" [ref=e13] [cursor=pointer]:
+          - /url: /mock-exam/exam-summary
+        - link "Contact" [ref=e14] [cursor=pointer]:
+          - /url: /contact
+        - generic [ref=e15]:
+          - link "Login" [ref=e16] [cursor=pointer]:
+            - /url: /login
+          - link "Register" [ref=e17] [cursor=pointer]:
+            - /url: /register
+  - generic [ref=e18]:
+    - heading "Exam Review" [level=1] [ref=e19]
+    - generic [ref=e20]:
+      - heading "1. What is 13 + 7?" [level=3] [ref=e21]
+      - list [ref=e22]:
+        - listitem [ref=e23]: "18"
+        - listitem [ref=e24]: "19"
+        - listitem [ref=e25]: 20 (Correct Answer)
+        - listitem [ref=e26]: "21"
+    - generic [ref=e27]:
+      - heading "2. What is 3 × 4?" [level=3] [ref=e28]
+      - list [ref=e29]:
+        - listitem [ref=e30]: "7"
+        - listitem [ref=e31]: "10"
+        - listitem [ref=e32]: 12 (Correct Answer)
+        - listitem [ref=e33]: "14"
+    - generic [ref=e34]:
+      - heading "3. What is 7 + 6?" [level=3] [ref=e35]
+      - list [ref=e36]:
+        - listitem [ref=e37]: "12"
+        - listitem [ref=e38]: 13 (Correct Answer)
+        - listitem [ref=e39]: "14"
+        - listitem [ref=e40]: "15"
+    - generic [ref=e41]:
+      - heading "4. What is 14 - 6?" [level=3] [ref=e42]
+      - list [ref=e43]:
+        - listitem [ref=e44]: "6"
+        - listitem [ref=e45]: "7"
+        - listitem [ref=e46]: 8 (Correct Answer)
+        - listitem [ref=e47]: "9"
+    - generic [ref=e48]:
+      - heading "5. What is 18 ÷ 3?" [level=3] [ref=e49]
+      - list [ref=e50]:
+        - listitem [ref=e51]: "5"
+        - listitem [ref=e52]: 6 (Correct Answer)
+        - listitem [ref=e53]: "7"
+        - listitem [ref=e54]: "8"
+    - generic [ref=e55]:
+      - heading "6. What is 6 × 2?" [level=3] [ref=e56]
+      - list [ref=e57]:
+        - listitem [ref=e58]: "8"
+        - listitem [ref=e59]: "10"
+        - listitem [ref=e60]: 12 (Correct Answer)
+        - listitem [ref=e61]: "14"
+    - generic [ref=e62]:
+      - heading "7. What is 100 - 50?" [level=3] [ref=e63]
+      - list [ref=e64]:
+        - listitem [ref=e65]: "40"
+        - listitem [ref=e66]: "45"
+        - listitem [ref=e67]: 50 (Correct Answer)
+        - listitem [ref=e68]: "55"
+    - generic [ref=e69]:
+      - heading "8. What is 20 ÷ 5?" [level=3] [ref=e70]
+      - list [ref=e71]:
+        - listitem [ref=e72]: "2"
+        - listitem [ref=e73]: "3"
+        - listitem [ref=e74]: 4 (Correct Answer)
+        - listitem [ref=e75]: "5"
+    - generic [ref=e76]:
+      - heading "9. What is 4 × 3?" [level=3] [ref=e77]
+      - list [ref=e78]:
+        - listitem [ref=e79]: "10"
+        - listitem [ref=e80]: "11"
+        - listitem [ref=e81]: 12 (Correct Answer)
+        - listitem [ref=e82]: "13"
+    - generic [ref=e83]:
+      - heading "10. What is 8 ÷ 2?" [level=3] [ref=e84]
+      - list [ref=e85]:
+        - listitem [ref=e86]: "2"
+        - listitem [ref=e87]: "3"
+        - listitem [ref=e88]: 4 (Correct Answer)
+        - listitem [ref=e89]: "5"
+    - generic [ref=e90]:
+      - heading "11. What is 5 × 5?" [level=3] [ref=e91]
+      - list [ref=e92]:
+        - listitem [ref=e93]: "20"
+        - listitem [ref=e94]: 25 (Correct Answer)
+        - listitem [ref=e95]: "30"
+        - listitem [ref=e96]: "35"
+    - generic [ref=e97]:
+      - heading "12. What is 9 × 2?" [level=3] [ref=e98]
+      - list [ref=e99]:
+        - listitem [ref=e100]: "16"
+        - listitem [ref=e101]: "17"
+        - listitem [ref=e102]: 18 (Correct Answer)
+        - listitem [ref=e103]: "19"
+    - generic [ref=e104]:
+      - heading "13. What is 10 - 4?" [level=3] [ref=e105]
+      - list [ref=e106]:
+        - listitem [ref=e107]: "5"
+        - listitem [ref=e108]: 6 (Correct Answer)
+        - listitem [ref=e109]: "7"
+        - listitem [ref=e110]: "8"
+    - generic [ref=e111]:
+      - heading "14. What is 15 - 5?" [level=3] [ref=e112]
+      - list [ref=e113]:
+        - listitem [ref=e114]: "5"
+        - listitem [ref=e115]: 10 (Correct Answer)
+        - listitem [ref=e116]: "15"
+        - listitem [ref=e117]: "20"
+    - generic [ref=e118]:
+      - heading "15. What is 3 + 8?" [level=3] [ref=e119]
+      - list [ref=e120]:
+        - listitem [ref=e121]: "9"
+        - listitem [ref=e122]: "10"
+        - listitem [ref=e123]: 11 (Correct Answer)
+        - listitem [ref=e124]: "12"
+    - generic [ref=e125]:
+      - heading "16. What is 9 + 1?" [level=3] [ref=e126]
+      - list [ref=e127]:
+        - listitem [ref=e128]: "9"
+        - listitem [ref=e129]: 10 (Correct Answer)
+        - listitem [ref=e130]: "11"
+        - listitem [ref=e131]: "12"
+    - generic [ref=e132]:
+      - heading "17. What is 2 + 3?" [level=3] [ref=e133]
+      - list [ref=e134]:
+        - listitem [ref=e135]: "4"
+        - listitem [ref=e136]: 5 (Correct Answer)
+        - listitem [ref=e137]: "6"
+        - listitem [ref=e138]: "7"
+    - generic [ref=e139]:
+      - heading "18. What is 21 ÷ 7?" [level=3] [ref=e140]
+      - list [ref=e141]:
+        - listitem [ref=e142]: "2"
+        - listitem [ref=e143]: 3 (Correct Answer)
+        - listitem [ref=e144]: "4"
+        - listitem [ref=e145]: "5"
+    - generic [ref=e146]:
+      - heading "19. What is 11 + 9?" [level=3] [ref=e147]
+      - list [ref=e148]:
+        - listitem [ref=e149]: "18"
+        - listitem [ref=e150]: "19"
+        - listitem [ref=e151]: 20 (Correct Answer)
+        - listitem [ref=e152]: "21"
+    - generic [ref=e153]:
+      - heading "20. What is 16 ÷ 4?" [level=3] [ref=e154]
+      - list [ref=e155]:
+        - listitem [ref=e156]: "2"
+        - listitem [ref=e157]: "3"
+        - listitem [ref=e158]: 4 (Correct Answer)
+        - listitem [ref=e159]: "5"
+    - button "Back to Levels" [ref=e160] [cursor=pointer]
+```
