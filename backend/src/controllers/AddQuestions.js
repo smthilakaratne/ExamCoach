@@ -1,5 +1,6 @@
 const axios = require("axios");
 const Question = require("../models/Questions");
+const Subject = require("../models/Subject");
 
 // STEP 1 - Fetch Preview
 const fetchApiQuestions = async (req, res) => {
@@ -12,14 +13,19 @@ const fetchApiQuestions = async (req, res) => {
       advanced: "hard",
     };
 //subjects
-    const categoryMap = {
-  math: 19,
-  science: 17,
-  history: 23,
-};
+const subjectDoc = await Subject.findOne({
+      name: new RegExp(`^${subject}$`, "i"),
+      isActive: true,
+    })
 
-const normalizedSubject = subject.toLowerCase(); // ensure lowercase
-const category = categoryMap[normalizedSubject];
+    if (!subjectDoc) {
+      return res.status(404).json({ message: "Subject not found" })
+    }
+
+    const category = subjectDoc.opentdbCategory
+
+//const normalizedSubject = subject.toLowerCase(); // ensure lowercase
+//const category = categoryMap[normalizedSubject];
 
 if (!category) {
   return res.status(400).json({ message: "Invalid subject" });
@@ -40,7 +46,7 @@ if (!category) {
         options: options.map(decodeHTML),
         correctAnswer: decodeHTML(q.correct_answer),
         level,
-        subject,
+        subject: subjectDoc.name,
       };
     });
 
@@ -56,7 +62,7 @@ if (!category) {
 const importSelectedQuestions = async (req, res) => {
   try {
     const { questions } = req.body;
-    console.log("Received questions:", questions); // <-- log incoming payload
+    console.log("Received questions:", questions); // log incoming payload
 
     if (!questions || !Array.isArray(questions) || questions.length === 0) {
       return res.status(400).json({ message: "No questions provided" });
@@ -65,7 +71,7 @@ const importSelectedQuestions = async (req, res) => {
     const savedQuestions = [];
 
     for (let q of questions) {
-      console.log("Processing question:", q); // <-- log each question
+      console.log("Processing question:", q); //  log each question
       const exists = await Question.findOne({
         questionText: q.questionText,
         subject: q.subject,
@@ -84,7 +90,7 @@ const importSelectedQuestions = async (req, res) => {
       importedCount: savedQuestions.length,
     });
   } catch (error) {
-    console.error("Import error:", error); // <-- log full error
+    console.error("Import error:", error); // log full error
     res.status(500).json({ message: "Import failed", error: error.message });
   }
 };

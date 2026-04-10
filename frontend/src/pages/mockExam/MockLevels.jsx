@@ -2,20 +2,37 @@ import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { getProgress } from "../../services/mockExamApi"
 import Level from "../../components/LevelCard"
+import axios from "axios"
 
 export default function MockLevels() {
-  const [subject, setSubject] = useState("Math") // default subject
+  const [subjects, setSubjects] = useState([])
   const navigate = useNavigate()
+   const [subject, setSubject] = useState("")
   const fixedUserId = "64f1c5a2f9a0b123456789ab"
   const [progress, setProgress] = useState({
     easy: { attempted: false, bestScore: 0 },
     intermediate: { attempted: false, bestScore: 0 },
     advanced: { attempted: false, bestScore: 0 },
   })
+  useEffect(() => {
+  axios.get("http://localhost:8888/api/subjects/").then((res) => {
+    const subjectList = res.data?.body || []
+ console.log("FULL RESPONSE:", res.data)
+    setSubjects(Array.isArray(subjectList) ? subjectList : [])
+    console.log("Fetched subjects:", subjectList )
+    if (Array.isArray(subjectList) && subjectList.length > 0) {
+      setSubject(subjectList[0].name)
+    }
+  }).catch((err) => {
+    console.error("Failed to fetch subjects:", err)
+    setSubjects([])
+  })
+}, [])
 
   useEffect(() => {
+    if (!subject) return
+
     getProgress(fixedUserId, subject).then((res) => {
-      console.log(res.data)
       setProgress(res.data)
     })
   }, [subject])
@@ -32,11 +49,11 @@ export default function MockLevels() {
       <hr></hr>
       {/* Subject selector */}
       <select value={subject} onChange={(e) => setSubject(e.target.value)}>
-        <option value="Math">Math</option>
-        <option value="Science">Science</option>
-        <option value="English">English</option>
-        <option value="History">History</option>
-        <option value="Geography">Geography</option>
+        {subjects.map((sub) => (
+          <option key={sub._id} value={sub.name}>
+            {sub.name}
+          </option>
+        ))}
       </select>
     {/*Display level in level cards. If scored above 75%, it is unlocked */}
     {/*Error: Do not fetch data from db*/}

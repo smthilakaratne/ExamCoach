@@ -1,5 +1,14 @@
 const mongoose = require("mongoose")
 
+/**
+ * @typedef Exam
+ * @property {string} _id - Exam ID
+ * @property {string} userId.required - User ID
+ * @property {string} level.required - Exam difficulty level
+ * @property {number} score.required - Score achieved
+ * @property {string} submittedAt - Submission timestamp
+ */
+
 const examSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, required: true, unique: false },
     level: { type: String, required: true },

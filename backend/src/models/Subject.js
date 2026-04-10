@@ -28,6 +28,11 @@ const subjectSchema = new mongoose.Schema(
             type: Boolean,
             default: true,
         },
+        opentdbCategory: {
+        type: Number,
+         required: [true, "OpenTDB category is required"],
+         min: 1,
+        },
     },
     {
         timestamps: true,

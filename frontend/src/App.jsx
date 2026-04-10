@@ -23,6 +23,7 @@ import ExamLevels from "./pages/admin/ExamLevels";
 import Subjects from "./pages/admin/Subjects";
 import ContentManagement from "./pages/admin/ContentManagement";
 
+import SubjectManagementPage from "./pages/mockExam/subjectManagement";
 import Forum from "./pages/forum";
 import MockExam from "./pages/mockExam/MockExam";
 import ExamSummary from "./pages/mockExam/MockLevels";
@@ -60,6 +61,7 @@ function App() {
         {/* Student Browse Routes */}
         <Route path="browse">
           <Route path=":levelId" element={<BrowseSubjects />} />
+          <Route path="subject-management" element={<SubjectManagementPage />} />
           <Route
             path=":levelId/subject/:subjectId"
             element={<ContentCategories />}
@@ -77,7 +79,7 @@ function App() {
           <Route path="exam-answers" element={<ExamAnswers />} />
           <Route path="exam-result" element={<ExamResult />} />
           <Route path="add-questions" element={<AddQuestions />} />
-          <Route path="add-questions" element={<AddQuestions />} />
+          <Route path="subject-management" element={<SubjectManagementPage />} />
         </Route>
 
         {/* Protected - Any Auth */}
