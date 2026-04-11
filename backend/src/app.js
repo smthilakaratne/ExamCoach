@@ -119,7 +119,6 @@ const usersRoute = require("./routes/usersRoute")
 const authRoute = require("./routes/Authroute")
 const feedbackRoute = require("./routes/Feedbackroute")
 
-// Existing routes – uncomment as teammates complete them
 const examLevelRoute = require("./routes/examLevelRoute")
  const subjectRoute = require("./routes/subjectRoute")
  const contentRoute = require("./routes/contentRoute")

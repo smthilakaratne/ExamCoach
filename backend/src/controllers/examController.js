@@ -3,14 +3,17 @@ const Question = require("../models/Questions")
 
 async function startExam(req, res) {
     try {
-        const { level } = req.body
+        const { level, subject} = req.body
 
-        if (!level) {
-            return res.status(400).json({ message: "Level is required" })
+        if (!level || !subject) {
+            return res.status(400).json({ message: "Level and subject are required" })
         }
+console.log("Exam controller - startExam called with level:", level, "and subject:", subject)
 
         const questions = await Question.aggregate([
-            { $match: { level } },
+            { $match: { level,
+               subject: subject
+             } },
             { $sample: { size: 20 } },
             {
                 $project: {

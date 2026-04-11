@@ -3,16 +3,20 @@ import Question from "../../components/QuestionCard"
 import { useLocation, useNavigate } from "react-router-dom"
 import { startExam, submitExam } from "../../services/mockExamApi"
 import Button from "../../components/button"
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function MockExam() {
   const [questions, setQuestions] = useState([])
   const [answers, setAnswers] = useState({})
   const [loading, setLoading] = useState(true)
-  const fixedUserId = "64f1c5a2f9a0b123456789ab" // fixed userId
+  //const fixedUserId = "64f1c5a2f9a0b123456789ab" // fixed userId
+  const { user } = useAuth();
+const userId = user?._id;
 
   const location = useLocation()
   const navigate = useNavigate()
   const level = location.state?.level
+  const subject = location.state?.subject
   //var q_id=0;
 
   /* 
@@ -54,45 +58,78 @@ export default function MockExam() {
 */
 
   // Fetch questions for selected level
-  useEffect(() => {
-    if (level) {
-      startExam(level)
-        .then((res) => {
-          setQuestions(res.data.questions)
-          setLoading(false)
-        })
-        .catch((err) => {
-          console.error(err)
-          setLoading(false)
-        })
-    }
-  }, [level])
-
-  const selectAnswer = (qId, index) => {
-    setAnswers({ ...answers, [qId]: index })
+ useEffect(() => {
+  if (level && subject && user?._id) {
+    startExam(level, subject, user._id)
+      .then((res) => {
+        setQuestions(res.questions)
+        setLoading(false)
+      })
+      .catch((err) => {
+        console.error("API ERROR:", err)
+        setLoading(false)
+      })
   }
+}, [level, subject, user])
+
+ /* const selectAnswer = (qId, index) => {
+    setAnswers({ ...answers, [qId]: index })
+  }*/
+ const selectAnswer = (qId, index) => {
+  console.log("ANSWER CLICKED:", qId, index)
+
+  setAnswers(prev => {
+    const updated = { ...prev, [qId]: index }
+    console.log("UPDATED ANSWERS:", updated)
+    return updated
+  })
+}
 
   const handleSubmit = async () => {
     try {
+      console.log("SUBMIT PAYLOAD:", {
+  userId,
+  level,
+  subject,
+  answers,
+})
+if (!user?._id) {
+    alert("User not loaded yet")
+    return
+  }
+  console.log("mock exam-",submitExam )
       const res = await submitExam({
-        userId: fixedUserId,
+        userId: userId,
         level,
+        subject,
         answers,
       }) // backend calculates score
-      const score = res.data.score // backend returns score in percentage
-
+      const score = res.score // backend returns score in percentage
+   console.log("Exam with questions and answers", { questions: res.questions });
+   console.log("LEVEL:", level)
+console.log("SUBJECT:", subject)
+console.log("FOUND QUESTIONS:", questions.length)
       // Navigate to result page with score and answers
       navigate("/mock-exam/exam-result", {
         state: {
-          fixedUserId,
+          userId,
           level,
-          questions: res.data.questions,
+          subject,
+          questions: res.questions,
           answers,
           score,
         },
+        
       })
+      console.log("Exam submitted successfully with questions and answers", { questions: res.questions, answers });
     } catch (err) {
-      console.error(err)
+    console.error("SUBMIT EXAM ERROR:", err)
+    res.status(500).json({
+        success: false,
+        message: err.message,
+        error: err
+    })
+
       alert("Error submitting exam")
     }
   }
@@ -117,6 +154,10 @@ export default function MockExam() {
       ))}
 
       <Button kind="danger" onClick={handleSubmit}>Submit Exam</Button>
+      < br />
+      <br />
+      < br />
+      <br />
     </div>
   )
 }

@@ -5,4 +5,8 @@ async function findByLevel(level) {
   return await Question.find({ level });
 }
 
-module.exports = { findByLevel };
+async function findBySubject(subject) {
+  return await Question.find({ subject });
+}
+
+module.exports = { findByLevel, findBySubject };
