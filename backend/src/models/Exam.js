@@ -18,7 +18,7 @@ const examSchema = new mongoose.Schema({
 })
 
 // Ensure one latest record per user per level
-examSchema.index({ userId: 1, level: 1 }, { unique: true })
+examSchema.index({ userId: 1, level: 1, subject: 1 }, { unique: true })
 
 const Exam = mongoose.model("Exam", examSchema)
 

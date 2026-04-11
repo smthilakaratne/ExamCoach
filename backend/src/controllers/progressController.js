@@ -6,7 +6,7 @@ async function getUserProgress(req, res) {
     try {
         const userId = req.params.userId
         const subject = (req.query.subject || "math").toLowerCase()
-
+console.log("progressController - getUserProgress called with userId:", userId, "subject:", subject )
         // Validate ObjectId
         if (!mongoose.Types.ObjectId.isValid(userId)) {
             return res.status(400).json({

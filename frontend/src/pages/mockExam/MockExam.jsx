@@ -72,9 +72,18 @@ const userId = user?._id;
   }
 }, [level, subject, user])
 
-  const selectAnswer = (qId, index) => {
+ /* const selectAnswer = (qId, index) => {
     setAnswers({ ...answers, [qId]: index })
-  }
+  }*/
+ const selectAnswer = (qId, index) => {
+  console.log("ANSWER CLICKED:", qId, index)
+
+  setAnswers(prev => {
+    const updated = { ...prev, [qId]: index }
+    console.log("UPDATED ANSWERS:", updated)
+    return updated
+  })
+}
 
   const handleSubmit = async () => {
     try {
@@ -88,6 +97,7 @@ if (!user?._id) {
     alert("User not loaded yet")
     return
   }
+  console.log("mock exam-",submitExam )
       const res = await submitExam({
         userId: userId,
         level,
@@ -95,7 +105,10 @@ if (!user?._id) {
         answers,
       }) // backend calculates score
       const score = res.score // backend returns score in percentage
-
+   console.log("Exam with questions and answers", { questions: res.questions });
+   console.log("LEVEL:", level)
+console.log("SUBJECT:", subject)
+console.log("FOUND QUESTIONS:", questions.length)
       // Navigate to result page with score and answers
       navigate("/mock-exam/exam-result", {
         state: {
@@ -106,9 +119,17 @@ if (!user?._id) {
           answers,
           score,
         },
+        
       })
+      console.log("Exam submitted successfully with questions and answers", { questions: res.questions, answers });
     } catch (err) {
-      console.error(err)
+    console.error("SUBMIT EXAM ERROR:", err)
+    res.status(500).json({
+        success: false,
+        message: err.message,
+        error: err
+    })
+
       alert("Error submitting exam")
     }
   }

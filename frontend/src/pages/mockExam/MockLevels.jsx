@@ -9,24 +9,44 @@ import { useAuth } from "../../contexts/AuthContext";
 export default function MockLevels() {
   const [subjects, setSubjects] = useState([])
   const navigate = useNavigate()
-   const [subject, setSubject] = useState("")
+   const [subject, setSubject] = useState("math")
   //const fixedUserId = "64f1c5a2f9a0b123456789ab"
 
 const { user } = useAuth();
-const userId = user?.id;
-  const [progress, setProgress] = useState({
-    easy: { attempted: false, bestScore: 0 },
-    intermediate: { attempted: false, bestScore: 0 },
-    advanced: { attempted: false, bestScore: 0 },
-  })
+const userId = user?._id;
+const [progress, setProgress] = useState(null)
+  console.log("USER:", user);
+console.log("USER ID:", user?.id);
+console.log("USER _ID:", user?._id);
 
-  useEffect(() => {
+useEffect(() => {
   if (!subject || !userId) return
 
-  getProgress(userId, subject).then((res) => {
-    setProgress(res.data.data)
-    console.log("Fetched progress:", res.data.data)
-  })
+  getProgress(userId, subject)
+    .then((res) => {
+      console.log("RAW RESPONSE:", res.data)
+
+      const data = res.data?.data
+
+      if (data) {
+        setProgress(data)
+      } else {
+        setProgress({
+          easy: { attempted: false, bestScore: 0 },
+          intermediate: { attempted: false, bestScore: 0 },
+          advanced: { attempted: false, bestScore: 0 },
+        })
+      }
+    })
+    .catch((err) => {
+      console.error("Progress error:", err)
+
+      setProgress({
+        easy: { attempted: false, bestScore: 0 },
+        intermediate: { attempted: false, bestScore: 0 },
+        advanced: { attempted: false, bestScore: 0 },
+      })
+    })
 }, [subject, userId])
 
   useEffect(() => {

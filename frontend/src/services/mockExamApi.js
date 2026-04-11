@@ -18,8 +18,8 @@ export const importQuestions = (data) => {
   return axios.post(`${API}/questions/import`, data);
 };*/
 
-
-export const startExam = (level) => api.post(`/mock-exams/start`, { level });
+console.log("service");
+export const startExam = (level, subject) => api.post(`/mock-exams/start`, { level, subject });
 
 export const submitExam = (data) => api.post(`/mock-exams/submit`, data);
 
