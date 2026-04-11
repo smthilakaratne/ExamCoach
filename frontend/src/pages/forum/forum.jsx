@@ -13,6 +13,8 @@ import HotThreadSkeleton from "../../components/skeletons/hotThreadSkeleton"
 
 export default function Forum() {
   const [threads, setThreads] = useState([])
+  const [query, setQuery] = useState("")
+  const [searchQuery, setSearchQuery] = useState("")
   const [threadsLoading, setThreadsLoading] = useState(true)
   const [tags, setTags] = useState([])
   const [tagsLoading, setTagsLoading] = useState(true)
@@ -33,11 +35,14 @@ export default function Forum() {
   const filteredThreads = views[viewMode]()
 
   useEffect(() => {
+    const tags = query.match(/(#\w+)/g)
+    const normalizedQuery = query.replaceAll(/#\w+/g, "")
+    console.log(tags, normalizedQuery)
     setThreadsLoading(true)
-    getThreads()
+    getThreads(normalizedQuery, tags)
       .then(setThreads)
       .then(() => setThreadsLoading(false))
-  }, [])
+  }, [searchQuery])
 
   useEffect(() => {
     setTagsLoading(true)
@@ -46,16 +51,42 @@ export default function Forum() {
       .then(() => setTagsLoading(false))
   }, [])
 
+  // credits to this hero for this quick and hacky HTML escaper
+  // https://stackoverflow.com/a/22706073/9558467
+  // HTML should be escaped properly to prevent XSS attacks (and also to not break the UI accidentally)
+  const highlightQuery = (text) =>
+    new Option(text).innerHTML.replaceAll(
+      /(#\w+)/g,
+      '<span class="bg-gray-300 text-gray-600 py-0.5 rounded-md">$1</span>',
+    )
+
   return (
     <main className="m-4">
       <section className="flex gap-2 justify-between items-center">
-        <input
-          type="search"
-          className="ring-1 ring-gray-300 px-4 py-2 rounded-sm flex-auto w-0"
-        />
+        <div className="relative flex-auto w-0">
+          <input
+            type="search"
+            className="relative ring-1 ring-gray-300 px-4 py-2 rounded-sm flex-auto w-full bg-transparent"
+            value={query}
+            onChange={(evt) => setQuery(evt.target.value)}
+            onKeyDown={(evt) => {
+              if (evt.key === "Enter") setSearchQuery(query)
+            }}
+          />
+          <div
+            className="absolute inset-0 p-1.5 whitespace-pre pointer-events-none px-4 py-2"
+            dangerouslySetInnerHTML={{ __html: highlightQuery(query) }}
+          />
+        </div>
         <Button className="flex gap-2 items-center">
-          <Search className="size-5" />
-          <span>Search</span>
+          <Search
+            className="size-5"
+            onKeyDown={(evt) => {
+              console.log(evt.key)
+              if (evt.key === "Enter") setSearchQuery(query)
+            }}
+          />
+          <span onClick={() => setSearchQuery(query)}>Search</span>
         </Button>
       </section>
 

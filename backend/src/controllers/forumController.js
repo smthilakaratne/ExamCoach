@@ -5,7 +5,21 @@ const { StatusCodes } = require("http-status-codes")
 
 const getThreads = async (req, res, next) => {
     try {
-        const threads = await ForumThread.find({}).populate("createdBy", "_id name email avatar")
+        let { q, tags } = req.query
+        tags = tags?.replaceAll("#", "").split(",")
+
+        const filter = {
+            title: {
+                $regex: q || "",
+                $options: "i",
+            },
+        }
+
+        if (tags?.length > 0) filter.tags = { $all: tags }
+        const threads = await ForumThread.find(filter).populate(
+            "createdBy",
+            "_id name email avatar",
+        )
         return createResponse(res, StatusCodes.OK, threads)
     } catch (error) {
         next(error)

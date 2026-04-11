@@ -1,7 +1,12 @@
 import api from "./api"
 
-export const getThreads = async () => {
-  const response = await api.get("/forum")
+export const getThreads = async (query, tags) => {
+  const response = await api.get("/forum", {
+    params: {
+      q: query,
+      tags: tags?.join(",")
+    }
+  })
   if (!response.success)
     throw new Error(response?.body || response.statusMessage)
   return response?.body || []
