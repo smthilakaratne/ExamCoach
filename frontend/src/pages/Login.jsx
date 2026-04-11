@@ -11,16 +11,32 @@ export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
+  const getDashboardRoute = (role) => {
+  switch (role) {
+    case "admin":
+      return "/admin";
+    case "student":
+      return "/student/dashboard";
+    default:
+      return "/";
+  }
+};
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+
     try {
-      await login({ email, password });
-      const data = res.data.body 
-console.log("login", data);
-    localStorage.setItem("token", data.token)
-    localStorage.setItem("user", JSON.stringify(data.user))
-      navigate('/');
+      const res = await login({ email, password });
+
+      const data = res.data.body;
+
+      console.log("login", data);
+
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+
+      navigate(getDashboardRoute(data.user.role));
     } catch (error) {
       // error toast handled by interceptor
     } finally {
