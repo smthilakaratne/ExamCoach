@@ -3,16 +3,20 @@ import Question from "../../components/QuestionCard"
 import { useLocation, useNavigate } from "react-router-dom"
 import { startExam, submitExam } from "../../services/mockExamApi"
 import Button from "../../components/button"
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function MockExam() {
   const [questions, setQuestions] = useState([])
   const [answers, setAnswers] = useState({})
   const [loading, setLoading] = useState(true)
-  const fixedUserId = "64f1c5a2f9a0b123456789ab" // fixed userId
+  //const fixedUserId = "64f1c5a2f9a0b123456789ab" // fixed userId
+  const { user } = useAuth();
+const userId = user?._id;
 
   const location = useLocation()
   const navigate = useNavigate()
   const level = location.state?.level
+  const subject = location.state?.subject
   //var q_id=0;
 
   /* 
@@ -55,10 +59,9 @@ export default function MockExam() {
 
   // Fetch questions for selected level
  useEffect(() => {
-  if (level) {
-    startExam(level)
+  if (level && subject && user?._id) {
+    startExam(level, subject, user._id)
       .then((res) => {
-        console.log("API RESPONSE:", res)
         setQuestions(res.questions)
         setLoading(false)
       })
@@ -67,7 +70,7 @@ export default function MockExam() {
         setLoading(false)
       })
   }
-}, [level])
+}, [level, subject, user])
 
   const selectAnswer = (qId, index) => {
     setAnswers({ ...answers, [qId]: index })
@@ -75,9 +78,20 @@ export default function MockExam() {
 
   const handleSubmit = async () => {
     try {
+      console.log("SUBMIT PAYLOAD:", {
+  userId,
+  level,
+  subject,
+  answers,
+})
+if (!user?._id) {
+    alert("User not loaded yet")
+    return
+  }
       const res = await submitExam({
-        userId: fixedUserId,
+        userId: userId,
         level,
+        subject,
         answers,
       }) // backend calculates score
       const score = res.score // backend returns score in percentage
@@ -85,8 +99,9 @@ export default function MockExam() {
       // Navigate to result page with score and answers
       navigate("/mock-exam/exam-result", {
         state: {
-          fixedUserId,
+          userId,
           level,
+          subject,
           questions: res.questions,
           answers,
           score,

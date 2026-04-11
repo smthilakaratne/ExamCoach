@@ -3,19 +3,32 @@ import { useNavigate } from "react-router-dom"
 import { getProgress } from "../../services/mockExamApi"
 import Level from "../../components/LevelCard"
 import axios from "axios"
+import { useAuth } from "../../contexts/AuthContext";
+
 
 export default function MockLevels() {
   const [subjects, setSubjects] = useState([])
   const navigate = useNavigate()
    const [subject, setSubject] = useState("")
   //const fixedUserId = "64f1c5a2f9a0b123456789ab"
-  const user = getCurrentUser()
-  const userId = user.id
+
+const { user } = useAuth();
+const userId = user?.id;
   const [progress, setProgress] = useState({
     easy: { attempted: false, bestScore: 0 },
     intermediate: { attempted: false, bestScore: 0 },
     advanced: { attempted: false, bestScore: 0 },
   })
+
+  useEffect(() => {
+  if (!subject || !userId) return
+
+  getProgress(userId, subject).then((res) => {
+    setProgress(res.data.data)
+    console.log("Fetched progress:", res.data.data)
+  })
+}, [subject, userId])
+
   useEffect(() => {
   axios.get("http://localhost:8888/api/subjects/").then((res) => {
     const subjectList = res.data?.body || []
@@ -31,13 +44,7 @@ export default function MockLevels() {
   })
 }, [])
 
-  useEffect(() => {
-    if (!subject) return
 
-    getProgress(userId, subject).then((res) => {
-      setProgress(res.data)
-    })
-  }, [subject])
 
   if (!progress) return <p>Loading...</p>
 

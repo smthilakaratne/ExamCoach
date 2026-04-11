@@ -1,6 +1,6 @@
 // src/pages/student/StudentDashboard.jsx
 import { useEffect, useState } from 'react';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
 import { getMyFeedback } from '../../services/feedbackService';
 import StatCard from '../../components/common/StatCard';
 import { MessageSquare, CheckCircle, Clock } from 'lucide-react';

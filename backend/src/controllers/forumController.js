@@ -5,7 +5,21 @@ const { StatusCodes } = require("http-status-codes")
 
 const getThreads = async (req, res, next) => {
     try {
-        const threads = await ForumThread.find({})
+        let { q, tags } = req.query
+        tags = tags?.replaceAll("#", "").split(",")
+
+        const filter = {
+            title: {
+                $regex: q || "",
+                $options: "i",
+            },
+        }
+
+        if (tags?.length > 0) filter.tags = { $all: tags }
+        const threads = await ForumThread.find(filter).populate(
+            "createdBy",
+            "_id name email avatar",
+        )
         return createResponse(res, StatusCodes.OK, threads)
     } catch (error) {
         next(error)
@@ -16,7 +30,7 @@ const createThread = async (req, res, next) => {
     try {
         const thread = await ForumThread.create({
             ...req.body,
-            createdBy: { name: "Sample user" },
+            createdBy: req.user,
         })
         return createResponse(res, StatusCodes.CREATED, { thread })
     } catch (error) {
@@ -46,6 +60,8 @@ const getThread = async (req, res, next) => {
             },
             { new: true },
         )
+            .populate("createdBy", "_id name email avatar")
+            .populate("answers.createdBy", "_id name email avatar")
         if (!thread) return createResponse(res, StatusCodes.NOT_FOUND, "Thread not found")
         return createResponse(res, StatusCodes.OK, { thread })
     } catch (error) {
@@ -55,6 +71,7 @@ const getThread = async (req, res, next) => {
 
 const updateThread = async (req, res, next) => {
     try {
+        const user = req.user
         const threadId = req.params.id
         if (!mongoose.isValidObjectId(threadId))
             return createResponse(res, StatusCodes.BAD_REQUEST, "Invalid thread ID")
@@ -64,12 +81,13 @@ const updateThread = async (req, res, next) => {
         // In all honesty, I could just do the during the time I'm typing this
         // hehe
         // I mean there are plenty other places with this exact issue. So I guess this comment might make sense later
-        const thread = await ForumThread.findByIdAndUpdate(
-            threadId,
+        const thread = await ForumThread.findOneAndUpdate(
+            { _id: threadId, createdBy: user._id },
             { ...req.body },
             { new: true, runValidators: true },
         )
-        if (!thread) return createResponse(res, StatusCodes.NOT_FOUND, "Thread not found")
+        if (!thread)
+            return createResponse(res, StatusCodes.NOT_FOUND, "Thread not found for this user")
         return createResponse(res, StatusCodes.OK, { thread })
     } catch (error) {
         if (error instanceof mongoose.Error.ValidationError)
@@ -89,7 +107,7 @@ const voteThread = async (req, res, next) => {
     try {
         const { value } = req.body // 1 or -1
         // temporary user for testing till the user component is done
-        const user = { name: "Sample user" }
+        const user = req.user
         const threadId = req.params.id
 
         if (!mongoose.isValidObjectId(threadId))
@@ -101,12 +119,12 @@ const voteThread = async (req, res, next) => {
         const update =
             value === 1
                 ? {
-                      $addToSet: { "reactions.up": user },
-                      $pull: { "reactions.down": { name: user.name } },
+                      $addToSet: { "reactions.up": user._id },
+                      $pull: { "reactions.down": user._id },
                   }
                 : {
-                      $addToSet: { "reactions.down": user },
-                      $pull: { "reactions.up": { name: user.name } },
+                      $addToSet: { "reactions.down": user._id },
+                      $pull: { "reactions.up": user._id },
                   }
 
         const thread = await ForumThread.findByIdAndUpdate(threadId, update, { new: true })
@@ -119,7 +137,7 @@ const voteThread = async (req, res, next) => {
 
 const unvoteThread = async (req, res, next) => {
     try {
-        const user = { name: "Sample user" }
+        const user = req.user
         const threadId = req.params.id
 
         if (!mongoose.isValidObjectId(threadId))
@@ -129,8 +147,8 @@ const unvoteThread = async (req, res, next) => {
             threadId,
             {
                 $pull: {
-                    "reactions.up": user,
-                    "reactions.down": user,
+                    "reactions.up": user._id,
+                    "reactions.down": user._id,
                 },
             },
             { new: true },
@@ -145,11 +163,13 @@ const unvoteThread = async (req, res, next) => {
 
 const deleteThread = async (req, res, next) => {
     try {
+        const user = req.user
         const threadId = req.params.id
         if (!mongoose.isValidObjectId(threadId))
             return createResponse(res, StatusCodes.BAD_REQUEST, "Invalid thread ID")
-        const thread = await ForumThread.findByIdAndDelete(threadId)
-        if (!thread) return createResponse(res, StatusCodes.NOT_FOUND, "Thread not found")
+        const thread = await ForumThread.findOneAndDelete({ _id: threadId, createdBy: user._id })
+        if (!thread)
+            return createResponse(res, StatusCodes.NOT_FOUND, "Thread not found for this user")
         return createResponse(res, StatusCodes.OK, "Thread deleted")
     } catch (error) {
         next(error)
@@ -158,6 +178,7 @@ const deleteThread = async (req, res, next) => {
 
 const createThreadComment = async (req, res, next) => {
     try {
+        const user = req.user
         const threadId = req.params.id
         if (!mongoose.isValidObjectId(threadId))
             return createResponse(res, StatusCodes.BAD_REQUEST, "Invalid thread ID")
@@ -165,7 +186,10 @@ const createThreadComment = async (req, res, next) => {
             threadId,
             {
                 $push: {
-                    answers: { ...req.body, createdBy: { name: "Sample user" } },
+                    answers: {
+                        ...req.body,
+                        createdBy: user._id,
+                    },
                 },
             },
             { new: true, runValidators: true },
@@ -190,6 +214,7 @@ const editThreadComment = async (req, res, next) => {
     try {
         const threadId = req.params.id
         const commentId = req.params.comment
+        const user = req.user
 
         if (!mongoose.isValidObjectId(threadId))
             return createResponse(res, StatusCodes.BAD_REQUEST, "Invalid thread ID")
@@ -200,6 +225,7 @@ const editThreadComment = async (req, res, next) => {
             {
                 _id: threadId,
                 "answers._id": commentId,
+                "answers.createdBy": user._id,
             },
             {
                 $set: {
@@ -221,7 +247,7 @@ const voteThreadComment = async (req, res, next) => {
     try {
         const { value } = req.body // 1 or -1
         // temporary user for testing till the user component is done
-        const user = { name: "Sample user" }
+        const user = req.user
         const threadId = req.params.id
         const commentId = req.params.comment
 
@@ -236,12 +262,12 @@ const voteThreadComment = async (req, res, next) => {
         const update =
             value === 1
                 ? {
-                      $addToSet: { "answers.$.reactions.up": user },
-                      $pull: { "answers.$.reactions.down": { name: user.name } },
+                      $addToSet: { "answers.$.reactions.up": user._id },
+                      $pull: { "answers.$.reactions.down": user._id },
                   }
                 : {
-                      $addToSet: { "answers.$.reactions.down": user },
-                      $pull: { "answers.$.reactions.up": { name: user.name } },
+                      $addToSet: { "answers.$.reactions.down": user._id },
+                      $pull: { "answers.$.reactions.up": user._id },
                   }
 
         const thread = await ForumThread.findOneAndUpdate(
@@ -259,7 +285,7 @@ const voteThreadComment = async (req, res, next) => {
 
 const unvoteThreadComment = async (req, res, next) => {
     try {
-        const user = { name: "Sample user" }
+        const user = req.user
         const threadId = req.params.id
         const commentId = req.params.comment
 
@@ -275,8 +301,8 @@ const unvoteThreadComment = async (req, res, next) => {
             },
             {
                 $pull: {
-                    "answers.$.reactions.up": user,
-                    "answers.$.reactions.down": user,
+                    "answers.$.reactions.up": user._id,
+                    "answers.$.reactions.down": user._id,
                 },
             },
             { new: true },
@@ -293,6 +319,7 @@ const markThreadComment = async (req, res, next) => {
     try {
         const threadId = req.params.id
         const commentId = req.params.comment
+        const user = req.user
 
         if (!mongoose.isValidObjectId(threadId))
             return createResponse(res, StatusCodes.BAD_REQUEST, "Invalid thread ID")
@@ -300,7 +327,7 @@ const markThreadComment = async (req, res, next) => {
             return createResponse(res, StatusCodes.BAD_REQUEST, "Invalid comment ID")
 
         const thread = await ForumThread.findOneAndUpdate(
-            { _id: threadId, "answers._id": commentId },
+            { _id: threadId, "answers._id": commentId, createdBy: user._id },
             {
                 $set: {
                     "answers.$[correct].isCorrectAnswer": true,
@@ -312,7 +339,8 @@ const markThreadComment = async (req, res, next) => {
                 new: true,
             },
         )
-        if (!thread) return createResponse(res, StatusCodes.NOT_FOUND, "Thread not found")
+        if (!thread)
+            return createResponse(res, StatusCodes.NOT_FOUND, "Thread not found for this user")
         return createResponse(res, StatusCodes.OK, { thread })
     } catch (error) {
         next(error)
@@ -323,6 +351,7 @@ const unmarkThreadComment = async (req, res, next) => {
     try {
         const threadId = req.params.id
         const commentId = req.params.comment
+        const user = req.user
 
         if (!mongoose.isValidObjectId(threadId))
             return createResponse(res, StatusCodes.BAD_REQUEST, "Invalid thread ID")
@@ -330,7 +359,7 @@ const unmarkThreadComment = async (req, res, next) => {
             return createResponse(res, StatusCodes.BAD_REQUEST, "Invalid comment ID")
 
         const thread = await ForumThread.findOneAndUpdate(
-            { _id: threadId, "answers._id": commentId },
+            { _id: threadId, "answers._id": commentId, createdBy: user._id },
             {
                 $set: {
                     "answers.$[].isCorrectAnswer": false,
@@ -338,7 +367,8 @@ const unmarkThreadComment = async (req, res, next) => {
             },
             { new: true },
         )
-        if (!thread) return createResponse(res, StatusCodes.NOT_FOUND, { thread })
+        if (!thread)
+            return createResponse(res, StatusCodes.NOT_FOUND, "Thread not found for this user")
         return createResponse(res, StatusCodes.OK, { thread })
     } catch (error) {
         next(error)
@@ -349,6 +379,7 @@ const deleteThreadComment = async (req, res, next) => {
     try {
         const threadId = req.params.id
         const commentId = req.params.comment
+        const user = req.user
 
         if (!mongoose.isValidObjectId(threadId))
             return createResponse(res, StatusCodes.BAD_REQUEST, "Invalid thread ID")
@@ -358,12 +389,12 @@ const deleteThreadComment = async (req, res, next) => {
         const thread = await ForumThread.findById(threadId)
         if (!thread) return createResponse(res, StatusCodes.NOT_FOUND, "Thread not found")
         const result = await ForumThread.updateOne(
-            { _id: threadId, "answers._id": commentId },
+            { _id: threadId, "answers._id": commentId, "answers.createdBy": user._id },
             { $pull: { answers: { _id: commentId } } },
         )
 
         if (result.modifiedCount === 0)
-            return createResponse(res, StatusCodes.NOT_FOUND, "Comment not found")
+            return createResponse(res, StatusCodes.NOT_FOUND, "Comment not found for this user")
 
         return createResponse(res, StatusCodes.OK, "Comment deleted")
     } catch (error) {

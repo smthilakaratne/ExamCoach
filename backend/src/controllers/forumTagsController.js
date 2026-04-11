@@ -4,9 +4,31 @@ const ForumTag = require("../models/ForumTag")
 
 const getTags = async (req, res, next) => {
     try {
-        const tags = await ForumTag.find({
-            name: { $regex: req.query.q || "", $options: "i" },
-        })
+        const tags = await ForumTag.aggregate([
+            {
+                $match: {
+                    name: { $regex: req.query.q || "", $options: "i" },
+                },
+            },
+            {
+                $lookup: {
+                    from: "forumthreads",
+                    localField: "name",
+                    foreignField: "tags",
+                    as: "threads",
+                },
+            },
+            {
+                $addFields: {
+                    relatedTopics: { $size: "$threads" },
+                },
+            },
+            {
+                $project: {
+                    threads: 0,
+                },
+            },
+        ])
         return createResponse(res, StatusCodes.OK, { tags })
     } catch (error) {
         console.error(error)

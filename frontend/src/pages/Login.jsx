@@ -1,7 +1,7 @@
 // src/pages/Login.jsx
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 import { GraduationCap } from 'lucide-react';
 
 export default function Login() {
@@ -17,7 +17,7 @@ export default function Login() {
     try {
       await login({ email, password });
       const data = res.data.body 
-
+console.log("login", data);
     localStorage.setItem("token", data.token)
     localStorage.setItem("user", JSON.stringify(data.user))
       navigate('/');

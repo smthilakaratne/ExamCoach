@@ -3,6 +3,7 @@ import { relativeTime } from "../utils/relativeTime"
 import Container from "./container"
 import ForumTag from "./tag"
 import { Link } from "react-router-dom"
+import ProfileImage from "./common/ProfileImage"
 
 export default function ForumThread(data) {
   return (
@@ -17,7 +18,7 @@ export default function ForumThread(data) {
             ></ForumTag>
           ))}
         </div>
-        <div className="flex justify-between items-end mt-4">
+        <div className="flex justify-between items-end mt-4 flex-wrap gap-3">
           <div className="flex gap-4 items-center">
             <div className="flex gap-1 items-center text-sm text-gray-500">
               <ArrowBigUp className="size-5" />
@@ -37,9 +38,7 @@ export default function ForumThread(data) {
             </div>
           </div>
           <div className="flex gap-2 items-center text-sm text-gray-500">
-            <div className="w-4 h-4 grid content-center justify-center rounded-full bg-blue-500 text-white text-xs p-3">
-              SP
-            </div>
+            <ProfileImage user={data.createdBy || {}} size={5} />
             <div>
               <a>{data.createdBy.name}</a> asked{" "}
               <abbr title={new Date(data?.createdAt)?.toString()}>

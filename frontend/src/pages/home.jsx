@@ -240,13 +240,6 @@ export default function Home() {
           </div>
         )}
 
-        <Link to="/mock-exam/exam-summary" className="block p-6 m-4  text-white rounded-lg text-center ">
-          <Button kind="primary">Mock Exam</Button>
-        </Link>
-
-        <Link to="/mock-exam/exam-summary" className="block p-6 m-4  text-white rounded-lg text-center ">
-          <Button kind="primary">Mock Exam</Button>
-        </Link>
 
         {/* CTA Section */}
         <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl shadow-2xl p-12 text-center text-white">

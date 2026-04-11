@@ -14,27 +14,31 @@ import {
   unvoteThread,
   voteThread,
 } from "../../services/forumApi"
-import axios from "axios"
 import DeleteThreadModel from "./models/deleteThreadModel"
 import { GifProvider } from "../../contexts/gifProvider"
 import TextEditProvider from "../../contexts/textEditor"
 import TextEditorExtensions from "../../components/textEditorExtensions"
-
-// temporary user
-const user = "Sample user"
+import ProfileImage from "../../components/common/ProfileImage"
+import { useAuth } from "../../contexts/AuthContext"
+import BlockSkeleton from "../../components/skeletons/blockSkeleton"
+import CircleSkeleton from "../../components/skeletons/circleSkeleton"
+import ThreadReplySkeleton from "../../components/skeletons/threadReplySkeleton"
 
 export default function Thread() {
   const [thread, setThread] = useState({})
+  const [loading, setLoading] = useState(true)
   const [deleteThreadModelOpen, setDeleteThreadModelOpen] = useState(false)
   const [refreshThread, setRefreshThread] = useState(false)
   const [replyBody, setReplyBody] = useState("")
   const [sortMode, setSortMode] = useState("date")
   const params = useParams()
+  const { user } = useAuth()
+  const isMyThread = user && user._id === thread?.createdBy?._id
 
   const hasUpvoted =
-    thread?.reactions?.up?.some((u) => u.name === user) || false
+    thread?.reactions?.up?.some((u) => u === user?._id) || false
   const hasDownvoted =
-    thread?.reactions?.down?.some((u) => u.name === user) || false
+    thread?.reactions?.down?.some((u) => u === user?._id) || false
 
   const sortModes = {
     date: (a1, a2) => new Date(a1?.createdAt) - new Date(a2?.createdAt),
@@ -47,13 +51,16 @@ export default function Thread() {
   const sortedAnswers = (thread?.answers ?? []).sort(sortModes[sortMode])
 
   useEffect(() => {
-    getThread(params.id).then(setThread)
+    setLoading(true)
+    getThread(params.id)
+      .then(setThread)
+      .then(() => setLoading(false))
   }, [refreshThread])
 
   const handlePostComment = async (event) => {
     event.preventDefault()
     const result = await postComment(params.id, { body: replyBody })
-    if (result.status === axios.HttpStatusCode.Created) {
+    if (result.success) {
       setRefreshThread((prev) => !prev)
       setReplyBody("")
     }
@@ -83,37 +90,60 @@ export default function Thread() {
       />
       <main>
         <div className="flex justify-between items-center">
-          <h1 className="text-4xl font-bold my-5">{thread?.title}</h1>
-          <div className="flex gap-1 items-center">
-            <div
-              className="cursor-pointer p-2 rounded-full hover:bg-red-100 transition-all"
-              onClick={() => setDeleteThreadModelOpen(true)}
-            >
-              <Trash className="size-5 text-red-400 " />
+          {loading ? (
+            <BlockSkeleton className="w-full !h-5" />
+          ) : (
+            <h1 className="text-4xl font-bold my-5">{thread?.title}</h1>
+          )}
+
+          {isMyThread && (
+            <div className="flex gap-1 items-center">
+              <div
+                className="cursor-pointer p-2 rounded-full hover:bg-red-100 transition-all"
+                onClick={() => setDeleteThreadModelOpen(true)}
+              >
+                <Trash className="size-5 text-red-400 " />
+              </div>
+              <Link
+                to="./edit"
+                className="cursor-pointer p-2 rounded-full hover:bg-gray-100 transition-all"
+              >
+                <SquarePen className="size-5 text-gray-400" />
+              </Link>
             </div>
-            <Link
-              to="./edit"
-              className="cursor-pointer p-2 rounded-full hover:bg-gray-100 transition-all"
-            >
-              <SquarePen className="size-5 text-gray-400" />
-            </Link>
-          </div>
+          )}
         </div>
         <section className="flex gap-10 content-start my-8">
           <div>
             <div className="grid justify-center">
-              <div className="grid bg-gray-100 rounded-full p-2 cursor-pointer transition-all hover:bg-gray-200">
+              <div
+                className={
+                  "grid bg-gray-100 rounded-full p-2 transition-all hover:bg-gray-200 " +
+                  (loading ? "cursor-wait" : "cursor-pointer")
+                }
+              >
                 <ChevronUp
+                  pointerEvents={loading ? "none" : "auto"}
                   className={"size-6" + (hasUpvoted && " text-blue-500")}
                   onClick={() => handleVote(1)}
                 />
               </div>
-              <div className="text-xl text-center my-2">
-                {(thread?.reactions?.up?.length ?? 0) -
-                  (thread?.reactions?.down?.length ?? 0)}
-              </div>
-              <div className="grid bg-gray-100 rounded-full p-2 cursor-pointer transition-all hover:bg-gray-200">
+              {loading ? (
+                <BlockSkeleton className="w-5 mx-auto" />
+              ) : (
+                <div className="text-xl text-center my-2">
+                  {(thread?.reactions?.up?.length ?? 0) -
+                    (thread?.reactions?.down?.length ?? 0)}
+                </div>
+              )}
+              <div
+                className={
+                  "grid bg-gray-100 rounded-full p-2 cursor-pointer transition-all hover:bg-gray-200 " +
+                  (loading ? "cursor-wait" : "cursor-pointer")
+                }
+              >
                 <ChevronDown
+                  pointerEvents={loading ? "none" : "auto"}
                   className={"size-6" + (hasDownvoted && " text-blue-500")}
                   onClick={() => handleVote(-1)}
                 />
@@ -121,8 +151,24 @@ export default function Thread() {
             </div>
           </div>
           <div className="flex-auto">
-            <MarkdownContent content={thread?.body} />
-            <div className="flex content-center justify-between mt-10">
+            {loading ? (
+              <div>
+                <p className="my-4">
+                  <BlockSkeleton />
+                  <BlockSkeleton className="w-1/2" />
+                  <BlockSkeleton className="w-1/5" />
+                </p>
+                <BlockSkeleton className="w-1/2 !h-24" />
+                <p className="my-4">
+                  <BlockSkeleton />
+                  <BlockSkeleton className="w-1/2" />
+                </p>
+              </div>
+            ) : (
+              <MarkdownContent content={thread?.body} />
+            )}
+
+            <div className="flex content-center justify-between mt-10 flex-wrap gap-5">
               <div className="flex flex-wrap gap-2">
                 {(thread?.tags || []).map((tag, index) => (
                   <ForumTag
@@ -132,31 +178,41 @@ export default function Thread() {
                   />
                 ))}
               </div>
-              <div className="flex items-center gap-5">
-                <div className="flex justify-end gap-2 items-center text-sm text-gray-500">
-                  <div className="w-4 h-4 grid content-center justify-center rounded-full bg-blue-500 text-white text-xs p-3">
-                    SP
+              {loading ? (
+                <div className="flex items-center gap-5">
+                  <CircleSkeleton size={6} />
+                  <BlockSkeleton className="w-44" />
+                </div>
+              ) : (
+                <div className="flex items-center gap-5 flex-wrap">
+                  <div className="flex justify-end gap-2 items-center text-sm text-gray-500 flex-wrap">
+                    <ProfileImage user={thread?.createdBy || {}} size={5} />
+                    <div>
+                      <a>{thread?.createdBy?.name}</a> asked{" "}
+                      <abbr title={new Date(thread?.createdAt)?.toString()}>
+                        {relativeTime(new Date(thread?.createdAt).getTime())}
+                      </abbr>
+                    </div>
                   </div>
-                  <div>
-                    <a>{thread?.createdBy?.name}</a> asked{" "}
-                    <abbr title={new Date(thread?.createdAt)?.toString()}>
-                      {relativeTime(new Date(thread?.createdAt).getTime())}
-                    </abbr>
+                  <div className="flex gap-1 items-center text-sm text-gray-400 flex-wrap">
+                    <Eye className="size-5" />
+                    Viewed <b>{thread?.views ?? 0}</b> times
                   </div>
                 </div>
-                <div className="flex gap-1 items-center text-sm text-gray-400 ">
-                  <Eye className="size-5" />
-                  Viewed <b>{thread?.views ?? 0}</b> times
-                </div>
-              </div>
+              )}
             </div>
           </div>
         </section>
         <hr />
         <section className="flex justify-between items-center">
-          <h3 className="text-xl my-3">
-            {thread?.answers?.length ?? 0} Answers
-          </h3>
+          {loading ? (
+            <BlockSkeleton className="w-40 my-8" />
+          ) : (
+            <h3 className="text-xl my-3">
+              {thread?.answers?.length ?? 0} Answers
+            </h3>
+          )}
+
           <div className="flex gap-2 items-center">
             <select
               className="ring-1 ring-gray-300 px-4 py-2 rounded-sm flex-auto"
@@ -169,7 +225,9 @@ export default function Thread() {
           </div>
         </section>
         <section>
-          {(thread?.answers?.length ?? 0) === 0 ? (
+          {loading ? (
+            <ThreadReplySkeleton />
+          ) : (thread?.answers?.length ?? 0) === 0 ? (
             <p className="font-light text-sm text-gray-500 my-5">
               This thread hasn’t been answered yet. Be the first to reply!
             </p>

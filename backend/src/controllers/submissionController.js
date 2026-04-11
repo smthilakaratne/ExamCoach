@@ -3,7 +3,7 @@ const Exam = require("../models/Exam")
 const Question = require("../models/Questions")
 
 async function submitExam(req, res) {
-    const { userId, level, answers } = req.body
+    const { userId, level, subject, answers } = req.body
 
     if (!userId || !level || !answers) {
         return res.status(400).json({
@@ -30,7 +30,7 @@ async function submitExam(req, res) {
         const score = Math.round((totalCorrect / questions.length) * 100)
 
         const exam = await Exam.findOneAndUpdate(
-            { userId, level },
+            { userId, subject, level },
             { score, submittedAt: new Date() },
             { upsert: true, new: true },
         )

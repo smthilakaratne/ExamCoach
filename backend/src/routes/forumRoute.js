@@ -17,12 +17,15 @@ const {
     markThreadComment,
     unmarkThreadComment,
 } = require("../controllers/forumController")
+const { protect } = require("../app")
 const ForumThread = require("../models/ForumThread")
 
 /**
  * GET /api/forum
  * @summary Get all forum threads
  * @tags forum
+ * @param {string} q.query - Query string
+ * @param {string} tags.query - List of comma-separated tags
  * @return {ForumThread[]} 200 - Forum threads - application/json
  * @return {object} 500 - Internal Server Error - application/json
  */
@@ -31,21 +34,15 @@ router.get("/", getThreads)
 /**
  * POST /api/forum
  * @summary Create a forum thread
+ * @description Create a forum thread. Optionally specify tags as an array
  * @tags forum
  * @param {ForumThread} request.body
  * @return {object} 201 - Created - application/json
  * @return {object} 400 - Bad Request - application/json
+ * @return {object} 401 - Unauthorized - application/json
  * @return {object} 500 - Internal Server Error - application/json
- * @example response - 201 - success response example
- * [
- *   {
- *     "title": "Sample title",
- *     "body": "Sample body",
- *     "tags": []
- *   }
- * ]
- */
-router.post("/", createThread)
+*/
+router.post("/", protect, createThread)
 
 /**
  * GET /api/forum/{id}
@@ -66,28 +63,39 @@ router.get("/:id", getThread)
  * @param {ForumThread} request.body
  * @return {ForumThread} 200 - Forum thread - application/json
  * @return {object} 400 - Bad Request - application/json
+ * @return {object} 401 - Unauthorized - application/json
+ * @return {object} 404 - Thread not found for this user - application/json
  * @return {object} 500 - Internal Server Error - application/json
  */
-router.put("/:id", updateThread)
+router.put("/:id", protect, updateThread)
+
+/**
+ * Vote request body
+ * @typedef {object} Vote
+ * @property {number} value.required - 1 (upvote) or -1 (downvote)
+ */
 
 /**
  * POST /api/forum/{id}/vote
  * @summary Cast an upvote/downvote on a thread by id
  * @tags forum
- * @param {object} request.body
+ * @param {Vote} request.body.required Request body - application/json
  * @return {ForumThread} 200 - OK - application/json
  * @return {object} 500 - Internal Server Error - application/json
  */
-router.post("/:id/vote", voteThread)
+router.post("/:id/vote", protect, voteThread)
 
 /**
  * DELETE /api/forum/{id}/vote
  * @summary Remove an upvote/downvote from a thread
  * @tags forum
  * @return {ForumThread} 200 - OK - application/json
+ * @return {object} 400 - Bad Request - application/json
+ * @return {object} 401 - Unauthorized - application/json
+ * @return {object} 404 - Not Found - application/json
  * @return {object} 500 - Internal Server Error - application/json
  */
-router.delete("/:id/vote", unvoteThread)
+router.delete("/:id/vote", protect, unvoteThread)
 
 /**
  * DELETE /api/forum/{id}
@@ -96,9 +104,11 @@ router.delete("/:id/vote", unvoteThread)
  * @param {string} id.path Thread id
  * @return {object} 200 - Thread deleted - application/json
  * @return {object} 400 - Bad Request - application/json
+ * @return {object} 401 - Unauthorized - application/json
+ * @return {object} 404 - Thread not found for this user - application/json
  * @return {object} 500 - Internal Server Error - application/json
  */
-router.delete("/:id", deleteThread)
+router.delete("/:id", protect, deleteThread)
 
 /**
  * POST /api/forum/{id}/comments
@@ -108,9 +118,11 @@ router.delete("/:id", deleteThread)
  * @param {ForumThreadAnswer} request.body
  * @return {ForumThread} 201 - OK - application/json
  * @return {object} 400 - Bad Request - application/json
+ * @return {object} 401 - Unauthorized - application/json
+ * @return {object} 404 - Not Found - application/json
  * @return {object} 500 - Internal Server Error - applicatiosn/json
  */
-router.post("/:id/comments", createThreadComment)
+router.post("/:id/comments", protect, createThreadComment)
 
 /**
  * PATCH /api/forum/{id}/comments/{comment}
@@ -121,9 +133,11 @@ router.post("/:id/comments", createThreadComment)
  * @param {ForumThreadAnswer} request.body
  * @return {ForumThreadAnswer} 200 - OK - application/json
  * @return {object} 400 - Bad Request - application/json
+ * @return {object} 401 - Unauthorized - application/json
+ * @return {object} 404 - Thread or comment not found - application/json
  * @return {object} 500 - Internal Server Error - applicatiosn/json
  */
-router.patch("/:id/comments/:comment", editThreadComment)
+router.patch("/:id/comments/:comment", protect, editThreadComment)
 
 /**
  * POST /api/forum/{id}/comments/{comment}/vote
@@ -131,39 +145,50 @@ router.patch("/:id/comments/:comment", editThreadComment)
  * @tags forum
  * @param {string} id.path.required Thread id
  * @param {string} comment.path.required Comment id
- * @param {object} request.body
+ * @param {Vote} request.body.required Vote - application/json
  * @return {ForumThreadAnswer} 200 - OK - application/json
  * @return {object} 400 - Bad Request - application/json
+ * @return {object} 401 - Unauthorized - application/json
+ * @return {object} 404 - Thread or comment not found - application/json
  * @return {object} 500 - Internal Server Error - applicatiosn/json
  */
-router.post("/:id/comments/:comment/vote", voteThreadComment)
+router.post("/:id/comments/:comment/vote", protect, voteThreadComment)
 
 /**
  * DELETE /api/forum/{id}/comments/{comment}/vote
  * @summary Remove an upvote/downvote from a thread comment
  * @tags forum
  * @return {ForumThread} 200 - OK - application/json
+ * @return {object} 400 - Bad Request - application/json
+ * @return {object} 401 - Unauthorized - application/json
+ * @return {object} 404 - Not found - application/json
  * @return {object} 500 - Internal Server Error - application/json
  */
-router.delete("/:id/comments/:comment/vote", unvoteThreadComment)
+router.delete("/:id/comments/:comment/vote", protect, unvoteThreadComment)
 
 /**
  * PATCH /api/forum/{id}/comments/{comment}/mark
  * @summary Mark a thread comment as the correct answer
  * @tags forum
  * @return {ForumThread} 200 - OK - application/json
+ * @return {object} 400 - Bad Request - application/json
+ * @return {object} 401 - Unauthorized - appllication/json
+ * @return {object} 404 - Thread not found for this user - application/json
  * @return {object} 500 - Internal Server Error - application/json
  */
-router.patch("/:id/comments/:comment/mark", markThreadComment)
+router.patch("/:id/comments/:comment/mark", protect, markThreadComment)
 
 /**
  * DELETE /api/forum/{id}/comments/{comment}/mark
  * @summary Unmark a comment as the correct answer
  * @tags forum
  * @return {ForumThread} 200 - OK - application/json
+ * @return {object} 400 - Bad Request - application/json
+ * @return {object} 401 - Unauthorized - appllication/json
+ * @return {object} 404 - Thread not found for this user - application/json
  * @return {object} 500 - Internal Server Error - application/json
  */
-router.delete("/:id/comments/:comment/mark", unmarkThreadComment)
+router.delete("/:id/comments/:comment/mark", protect, unmarkThreadComment)
 
 /**
  * DELETE /api/forum/{id}/comments/{comment}
@@ -173,8 +198,10 @@ router.delete("/:id/comments/:comment/mark", unmarkThreadComment)
  * @param {number} comment.path.required Comment id
  * @return {object} 200 - OK - application/json
  * @return {object} 400 - Bad Request - application/json
+ * @return {object} 401 - Unauthorized - application/json
+ * @return {object} 404 - Not found - application/json
  * @return {object} 500 - Internal Server Error - applicatiosn/json
  */
-router.delete("/:id/comments/:comment", deleteThreadComment)
+router.delete("/:id/comments/:comment", protect, deleteThreadComment)
 
 module.exports = router

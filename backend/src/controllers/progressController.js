@@ -5,7 +5,7 @@ const Exam = require("../models/Exam")
 async function getUserProgress(req, res) {
     try {
         const userId = req.params.userId
-        const subject = req.query.subject || "Math" || "math"
+        const subject = (req.query.subject || "math").toLowerCase()
 
         // Validate ObjectId
         if (!mongoose.Types.ObjectId.isValid(userId)) {

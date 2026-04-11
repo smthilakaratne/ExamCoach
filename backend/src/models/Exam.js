@@ -12,6 +12,7 @@ const mongoose = require("mongoose")
 const examSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, required: true, unique: false },
     level: { type: String, required: true },
+    subject: { type: String, required: true },
     score: { type: Number, required: true },
     submittedAt: { type: Date, default: Date.now },
 })
