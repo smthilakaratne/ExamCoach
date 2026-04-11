@@ -1,5 +1,5 @@
 import { Flame, MessageSquare, Search, Tag } from "lucide-react"
-import { Link } from "react-router-dom"
+import { Link, useSearchParams } from "react-router-dom"
 import Button from "../../components/button"
 import ForumThread from "../../components/forumThread"
 import ForumTag from "../../components/tag"
@@ -19,6 +19,7 @@ export default function Forum() {
   const [tags, setTags] = useState([])
   const [tagsLoading, setTagsLoading] = useState(true)
   const [viewMode, setViewMode] = useState("trending")
+  const [searchParams, setSearchParams] = useSearchParams()
 
   const views = {
     trending: () => threads, // return all for now
@@ -35,14 +36,31 @@ export default function Forum() {
   const filteredThreads = views[viewMode]()
 
   useEffect(() => {
-    const tags = query.match(/(#\w+)/g)
-    const normalizedQuery = query.replaceAll(/#\w+/g, "")
-    console.log(tags, normalizedQuery)
+    const tags = query.match(/(?<=#)\w+/g)
+    const normalizedQuery = encodeURIComponent(
+      query.replaceAll(/#\w+/g, "").trim(),
+    )
+    const params = {}
+    if (tags) params.tags = tags.join(",")
+    if (normalizedQuery) params.q = normalizedQuery
+    setSearchParams(params)
+  }, [searchQuery])
+
+  useEffect(() => {
     setThreadsLoading(true)
-    getThreads(normalizedQuery, tags)
+    let q = searchParams.get("q")
+    let tags = searchParams.get("tags")?.split(",")
+
+    if (!searchQuery) {
+      const searchVal =
+        (q || "") + (tags?.map((tag) => "#" + tag).join(",") || "")
+      setQuery(searchVal)
+      setSearchQuery(searchVal)
+    }
+    getThreads(q, tags)
       .then(setThreads)
       .then(() => setThreadsLoading(false))
-  }, [searchQuery])
+  }, [searchParams])
 
   useEffect(() => {
     setTagsLoading(true)
@@ -82,7 +100,6 @@ export default function Forum() {
           <Search
             className="size-5"
             onKeyDown={(evt) => {
-              console.log(evt.key)
               if (evt.key === "Enter") setSearchQuery(query)
             }}
           />
