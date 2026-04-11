@@ -8,7 +8,9 @@ export default function MockLevels() {
   const [subjects, setSubjects] = useState([])
   const navigate = useNavigate()
    const [subject, setSubject] = useState("")
-  const fixedUserId = "64f1c5a2f9a0b123456789ab"
+  //const fixedUserId = "64f1c5a2f9a0b123456789ab"
+  const user = getCurrentUser()
+  const userId = user.id
   const [progress, setProgress] = useState({
     easy: { attempted: false, bestScore: 0 },
     intermediate: { attempted: false, bestScore: 0 },
@@ -32,7 +34,7 @@ export default function MockLevels() {
   useEffect(() => {
     if (!subject) return
 
-    getProgress(fixedUserId, subject).then((res) => {
+    getProgress(userId, subject).then((res) => {
       setProgress(res.data)
     })
   }, [subject])

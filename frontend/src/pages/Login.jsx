@@ -16,6 +16,10 @@ export default function Login() {
     setLoading(true);
     try {
       await login({ email, password });
+      const data = res.data.body 
+
+    localStorage.setItem("token", data.token)
+    localStorage.setItem("user", JSON.stringify(data.user))
       navigate('/');
     } catch (error) {
       // error toast handled by interceptor
