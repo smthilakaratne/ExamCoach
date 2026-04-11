@@ -242,6 +242,7 @@ export default function Forum() {
                         key={`tag-${index}`}
                         name={tag}
                         className="cursor-pointer hover:bg-gray-400"
+                        allowNavigate={true}
                       />
                     ))}
             </div>

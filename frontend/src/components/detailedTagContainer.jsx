@@ -6,6 +6,7 @@ import Button from "./button"
 import { deleteForumTag } from "../services/forumApi"
 import CreateEditTagModel from "../pages/forum/models/createEditTagModel"
 import { useAuth } from "../contexts/AuthContext"
+import { Link } from "react-router-dom"
 
 export default function DetailedTagContainer(props) {
   const [deleteModelOpen, setDeleteModelOpen] = useState(false)
@@ -71,7 +72,7 @@ export default function DetailedTagContainer(props) {
         </div>
         <p>{props.description}</p>
         <div className="mt-5 text-sm text-gray-500">
-          <b>{props.relatedTopics ?? 0}</b> related topics
+          <Link to={`/community/forum?tags=${props.name}`}><b>{props.relatedTopics ?? 0}</b> related topics</Link>
         </div>
       </Container>
     </>
