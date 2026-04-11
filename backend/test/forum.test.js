@@ -25,6 +25,10 @@ const mockThreads = [
 
 beforeAll(async () => {
     await db()
+
+    await User.deleteMany({})
+    await ForumThread.deleteMany({})
+
     const usersWithHashedPasswords = await Promise.all(
         mockUsers.map(async (u) => ({
             ...u,
