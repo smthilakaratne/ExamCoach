@@ -25,14 +25,14 @@ app.use(express.urlencoded({ extended: true }))
 if (process.env.NODE_ENV === "development") app.use(morgan("dev"))
 
 // ── Rate limiting ─────────────────────────────────────────────────────────────
-const apiLimiter = rateLimit({
+/*const apiLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 200,
     message: { success: false, body: { message: "Too many requests. Please try again later." } },
     standardHeaders: true,
     legacyHeaders: false,
 })
-app.use("/api", apiLimiter)
+app.use("/api", apiLimiter)*/
 
 const rootRoute = require("./routes/rootRoute")
 const usersRoute = require("./routes/usersRoute")
