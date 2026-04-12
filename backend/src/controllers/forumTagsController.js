@@ -1,5 +1,6 @@
 const { StatusCodes } = require("http-status-codes")
 const createResponse = require("../lib/createResponse")
+const mongoose = require("mongoose")
 const ForumTag = require("../models/ForumTag")
 
 const getTags = async (req, res, next) => {
