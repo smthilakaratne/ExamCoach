@@ -1,3 +1,8 @@
+const { StatusCodes } = require("http-status-codes")
+const createResponse = require("../lib/createResponse")
+const jwt = require("jsonwebtoken")
+const User = require("../models/User")
+
 /**
  * protect – Verifies JWT Bearer token and attaches req.user
  */
@@ -14,7 +19,6 @@ const protect = async (req, res, next) => {
         }
 
         // Inline require avoids top-level circular dependency with User model
-        const User = require("./models/User")
         const decoded = jwt.verify(token, process.env.JWT_SECRET)
         const user = await User.findById(decoded.id)
 
