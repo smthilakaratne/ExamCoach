@@ -20,6 +20,7 @@ Application Framework 3rd year project. Coded using MERN stack for CRUD operatio
 * Email (Brevo SMTP)
 * GIF API (Klipy)
 * Open Trivia Database (Quiz Questions)
+* Gridfs
 
 ---
 
@@ -180,8 +181,12 @@ Authorization: Bearer <JWT_TOKEN>
 
 ---
 
-# 🧩 1. Exam Level API
+# 🧩 API Docs : 
+Start backend and navigate to http://localhost:8888/api/docs/
 
+# 1. Example request Responses
+
+## Exam Level API
 ## ➤ Create Exam Level
 
 **POST** `/api/exam-levels`
