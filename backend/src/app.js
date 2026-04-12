@@ -103,6 +103,28 @@ const connectDB = async () => {
         console.log(" MongoDB connected")
     }
 }
+
+const start = async () => {
+    const PORT = process.env.PORT || 8888
+    //const { MONGO_URI } = process.env
+    // const SERVER_PORT = process.env.SERVER_PORT || 8888
+    initGridFS()
+
+    app.listen(PORT, () => {
+        let networkInterfaces = os.networkInterfaces()
+        let address = networkInterfaces.wlo1 && networkInterfaces.wlo1[0].address
+        console.log("Server listening on")
+        console.log(`\tLocal:\thttp://127.0.0.1:${PORT}`)
+        console.log("Connected to DB:", mongoose.connection.name)
+        console.log("ENV URI:", process.env.MONGO_URI)
+        address && console.log(`\tIP:\thttp://${address}:${PORT}`)
+    })
+}
+
+if (require.main === module) {
+    connectDB().then(start)
+}
+
 module.exports = async (req, res) => {
     await connectDB()
     return app(req, res)
