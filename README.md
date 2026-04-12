@@ -42,3 +42,30 @@ npm start
 ## backend
 cd backend
 npm install
+
+##environmental Variables
+-**frontend**
+VITE_API_URL
+-**backend**
+# ─── Server ────────────────────────────────────────────────────
+PORT
+
+# ─── MongoDB ───────────────────────────────────────────────────
+MONGO_URI
+# ─── JWT ───────────────────────────────────────────────────────
+JWT_SECRET
+JWT_EXPIRES_IN
+
+# ─── Email via Brevo SMTP ──────────────────────────────────────
+SMTP_HOST
+SMTP_PORT
+SMTP_USER
+SMTP_PASS
+SENDER_EMAIL
+SENDER_NAME
+
+# ─── Client URL (for reset-password links in emails) ──────────
+CLIENT_URL
+
+# ─── Environment ───────────────────────────────────────────────
+NODE_ENV
