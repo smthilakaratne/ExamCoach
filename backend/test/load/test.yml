@@ -1,0 +1,204 @@
+config:
+  target: "http://localhost:8888"
+  phases:
+    - name: "Ramp up"
+      duration: 20
+      arrivalRate: 1
+      rampTo: 3
+      maxVusers: 10
+    - name: "Sustained load"
+      duration: 30
+      arrivalRate: 5
+  defaults:
+    headers:
+      Content-Type: "application/json"
+  plugins:
+    expect: {}
+
+# ── Reusable login flow ───────────────────────────────────────────────────────
+# Captures a JWT into `token`, used by all protected scenarios below.
+# Set TEST_EMAIL / TEST_PASSWORD in your environment before running.
+
+scenarios:
+
+  # ── Public routes (no auth needed) ─────────────────────────────────────────
+
+  - name: "API root"
+    weight: 5
+    flow:
+      - get:
+          url: "/api"
+          expect:
+            - statusCode: 200
+
+  - name: "Browse exam levels"
+    weight: 10
+    flow:
+      - get:
+          url: "/api/exam-levels"
+          capture:
+            - json: "$[0]._id"
+              as: examLevelId
+          expect:
+            - statusCode: 200
+      - get:
+          url: "/api/exam-levels/{{ examLevelId }}"
+          ifTrue: "examLevelId"
+          expect:
+            - statusCode: 200
+
+  - name: "Browse subjects"
+    weight: 10
+    flow:
+      - get:
+          url: "/api/subjects"
+          capture:
+            - json: "$[0]._id"
+              as: subjectId
+          expect:
+            - statusCode: 200
+      - get:
+          url: "/api/subjects/{{ subjectId }}"
+          ifTrue: "subjectId"
+          expect:
+            - statusCode: 200
+
+  - name: "Browse contents"
+    weight: 15
+    flow:
+      - get:
+          url: "/api/contents"
+          capture:
+            - json: "$[0]._id"
+              as: contentId
+          expect:
+            - statusCode: 200
+      - get:
+          url: "/api/contents/{{ contentId }}"
+          ifTrue: "contentId"
+          expect:
+            - statusCode: 200
+
+  - name: "Browse forum"
+    weight: 20
+    flow:
+      - get:
+          url: "/api/forum"
+          capture:
+            - json: "$[0]._id"
+              as: threadId
+          expect:
+            - statusCode: 200
+      - get:
+          url: "/api/forum/{{ threadId }}"
+          ifTrue: "threadId"
+          expect:
+            - statusCode: 200
+
+  - name: "Browse forum tags"
+    weight: 5
+    flow:
+      - get:
+          url: "/api/forum/tags"
+          expect:
+            - statusCode: 200
+
+  # ── Protected routes (login first, then hit endpoint) ──────────────────────
+
+  - name: "Auth me"
+    weight: 10
+    flow:
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "{{ $env.TEST_EMAIL }}"
+            password: "{{ $env.TEST_PASSWORD }}"
+          capture:
+            - json: "$.body.token"
+              as: token
+          expect:
+            - statusCode: 200
+      - get:
+          url: "/api/auth/me"
+          headers:
+            Authorization: "Bearer {{ token }}"
+          expect:
+            - statusCode: 200
+
+  - name: "User profile"
+    weight: 10
+    flow:
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "{{ $env.TEST_EMAIL }}"
+            password: "{{ $env.TEST_PASSWORD }}"
+          capture:
+            - json: "$.body.token"
+              as: token
+            - json: "$.body.user._id"
+              as: userId
+          expect:
+            - statusCode: 200
+      - get:
+          url: "/api/user/profile"
+          headers:
+            Authorization: "Bearer {{ token }}"
+          expect:
+            - statusCode: 200
+      - get:
+          url: "/api/mock-exams/progress/{{ userId }}"
+          headers:
+            Authorization: "Bearer {{ token }}"
+          ifTrue: "userId"
+          expect:
+            - statusCode: 200
+
+  - name: "Browse feedback"
+    weight: 5
+    flow:
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "{{ $env.TEST_EMAIL }}"
+            password: "{{ $env.TEST_PASSWORD }}"
+          capture:
+            - json: "$.body.token"
+              as: token
+          expect:
+            - statusCode: 200
+      - get:
+          url: "/api/feedback"
+          headers:
+            Authorization: "Bearer {{ token }}"
+          expect:
+            - statusCode: 200
+      - get:
+          url: "/api/feedback/my"
+          headers:
+            Authorization: "Bearer {{ token }}"
+          expect:
+            - statusCode: 200
+
+  - name: "Start mock exam"
+    weight: 5
+    flow:
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "{{ $env.TEST_EMAIL }}"
+            password: "{{ $env.TEST_PASSWORD }}"
+          capture:
+            - json: "$.body.token"
+              as: token
+          expect:
+            - statusCode: 200
+      - post:
+          url: "/api/mock-exams/start"
+          headers:
+            Authorization: "Bearer {{ token }}"
+          json:
+            level: "Easy"
+            subject: "Maths"
+          expect:
+            - statusCode: 200

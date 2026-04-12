@@ -112,7 +112,8 @@ export default function ContentManagement() {
     } else {
       // For past_paper, lesson, short_notes => require a PDF file on create,
       // and allow no new file on edit if an existing file is already present.
-      const hasExistingFile = !!(editingContent && editingContent.fileId)
+      // Support both GridFS (fileId) and Cloudinary (fileUrl) stored files
+      const hasExistingFile = !!(editingContent && (editingContent.fileId || editingContent.fileUrl))
       const hasNewFile = !!questionFile
 
       if (!hasNewFile && !hasExistingFile) {
@@ -268,12 +269,24 @@ export default function ContentManagement() {
     setAnswerFile(null)
   }
 
-  const handleDownload = (fileId, fileName) => {
-    window.open(`${API_URL}/api/files/download/${fileId}`, "_blank")
+  const handleDownload = (content) => {
+    if (content.fileStorage === "cloudinary" || content.fileUrl) {
+      // Cloudinary: direct URL, browser handles it
+      window.open(content.fileUrl, "_blank")
+    } else {
+      // GridFS: stream via backend
+      window.open(`${API_URL}/api/files/download/${content.fileId}`, "_blank")
+    }
   }
 
-  const handleView = (fileId) => {
-    window.open(`${API_URL}/api/files/view/${fileId}`, "_blank")
+  const handleView = (content) => {
+    if (content.fileStorage === "cloudinary" || content.fileUrl) {
+      // Cloudinary: open direct URL
+      window.open(content.fileUrl, "_blank")
+    } else {
+      // GridFS: stream via backend
+      window.open(`${API_URL}/api/files/view/${content.fileId}`, "_blank")
+    }
   }
 
   // ✅ File change handlers with validation (added)
@@ -756,18 +769,18 @@ export default function ContentManagement() {
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex justify-end gap-2">
-                          {/* ✅ Works for lessons & notes too if backend returns fileId/fileName */}
-                          {content.fileId && (
+                          {/* Show view/download for both GridFS (fileId) and Cloudinary (fileUrl) files */}
+                          {(content.fileId || content.fileUrl) && (
                             <>
                               <button
-                                onClick={() => handleView(content.fileId)}
+                                onClick={() => handleView(content)}
                                 className="text-blue-600 hover:text-blue-800"
                                 title="View"
                               >
                                 <Eye className="w-5 h-5" />
                               </button>
                               <button
-                                onClick={() => handleDownload(content.fileId, content.fileName)}
+                                onClick={() => handleDownload(content)}
                                 className="text-green-600 hover:text-green-800"
                                 title="Download"
                               >

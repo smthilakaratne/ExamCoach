@@ -16,7 +16,6 @@ const contentSchema = new mongoose.Schema(
             type: String,
             required: [true, "Content type is required"],
             enum: ["past_paper", "lesson", "short_notes", "lecture_video"],
-            // past_paper, lesson, short_notes, lecture_video
         },
         description: {
             type: String,
@@ -26,7 +25,6 @@ const contentSchema = new mongoose.Schema(
         // Metadata fields
         year: {
             type: Number,
-            // e.g., 2023, 2024
         },
         term: {
             type: String,
@@ -36,7 +34,6 @@ const contentSchema = new mongoose.Schema(
         unit: {
             type: String,
             trim: true,
-            // e.g., "Mechanics", "Electricity", "Thermodynamics"
         },
         tags: [
             {
@@ -45,50 +42,80 @@ const contentSchema = new mongoose.Schema(
             },
         ],
 
-        // File storage (GridFS or Cloudinary URL)
-        // For GridFS: store fileId
-        // For Cloudinary: store fileUrl (we'll use this field for both)
+        // ─── File Storage ────────────────────────────────────────────────────
+        // Tracks WHERE the file lives so the app knows how to serve it.
+        fileStorage: {
+            type: String,
+            enum: ["gridfs", "cloudinary", ""],
+            default: "",
+            // "gridfs"    → use fileId to stream from GridFS
+            // "cloudinary" → use fileUrl to redirect/proxy to Cloudinary
+        },
+
+        // GridFS fields (used when fileStorage === "gridfs")
         fileId: {
             type: mongoose.Schema.Types.ObjectId,
-            // Reference to GridFS file
         },
+
+        // Shared fields (populated regardless of storage backend)
         fileName: {
             type: String,
         },
         fileType: {
             type: String,
-            // e.g., "application/pdf", "image/png"
         },
         fileSize: {
             type: Number,
-            // Size in bytes
         },
 
-        // For Past Papers - Answer Sheet
+        // Cloudinary fields (used when fileStorage === "cloudinary")
+        fileUrl: {
+            type: String,
+            trim: true,
+            // Cloudinary secure_url
+        },
+        cloudinaryPublicId: {
+            type: String,
+            trim: true,
+            // Needed for deletion / transformation
+        },
+
+        // ─── Answer Sheet ─────────────────────────────────────────────────────
         hasAnswerSheet: {
             type: Boolean,
             default: false,
         },
+
+        // GridFS answer sheet
         answerSheetFileId: {
             type: mongoose.Schema.Types.ObjectId,
-            // Reference to GridFS file for answer sheet
         },
         answerSheetFileName: {
             type: String,
         },
 
-        // For Videos - External URL
+        // Cloudinary answer sheet
+        answerSheetFileUrl: {
+            type: String,
+            trim: true,
+        },
+        answerSheetCloudinaryPublicId: {
+            type: String,
+            trim: true,
+        },
+
+        // ─── Videos ───────────────────────────────────────────────────────────
         videoUrl: {
             type: String,
             trim: true,
-            // YouTube, Google Drive, or other video platform URL
+            // YouTube, Google Drive, or other external video platform URL
         },
         thumbnailUrl: {
             type: String,
             trim: true,
         },
 
-        // Analytics
+        // ─── Analytics ────────────────────────────────────────────────────────
         views: {
             type: Number,
             default: 0,
