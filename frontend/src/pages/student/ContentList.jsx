@@ -4,6 +4,7 @@ import Navbar from "../../components/common/Navbar"
 import { FileText, Download, Eye, ArrowLeft, Calendar, Tag } from "lucide-react"
 import Spinner from "../../components/common/Spinner"
 
+const API_URL = import.meta.env.VITE_API_URL
 export default function ContentList() {
   const { levelId, subjectId, contentType } = useParams()
   const navigate = useNavigate()
@@ -18,8 +19,8 @@ export default function ContentList() {
   const fetchData = async () => {
     try {
       const [subjectRes, contentsRes] = await Promise.all([
-        fetch(`http://localhost:8888/api/subjects/${subjectId}`),
-        fetch(`http://localhost:8888/api/contents?subject=${subjectId}&contentType=${contentType}`),
+        fetch(`${API_URL}/api/subjects/${subjectId}`),
+        fetch(`${API_URL}/api/contents?subject=${subjectId}&contentType=${contentType}`),
       ])
       const sd = await subjectRes.json(); const cd = await contentsRes.json()
       if (sd.success) setSubject(sd.body)
@@ -30,8 +31,8 @@ export default function ContentList() {
 
   const handleDownload = async (contentId, fileId) => {
     try {
-      await fetch(`http://localhost:8888/api/contents/${contentId}/download`, { method: "POST" })
-      window.open(`http://localhost:8888/api/files/download/${fileId}`, "_blank")
+      await fetch(`${API_URL}/api/contents/${contentId}/download`, { method: "POST" })
+      window.open(`${API_URL}/api/files/download/${fileId}`, "_blank")
     } catch (error) { console.error(error) }
   }
 
@@ -121,7 +122,7 @@ export default function ContentList() {
                       className="flex-1 btn-primary text-sm py-2">Watch Video</a>
                   ) : content.fileId ? (
                     <>
-                      <button onClick={() => window.open(`http://localhost:8888/api/files/view/${content.fileId}`, "_blank")}
+                      <button onClick={() => window.open(`${API_URL}/api/files/view/${content.fileId}`, "_blank")}
                         className="flex-1 btn-secondary text-sm py-2 gap-1.5">
                         <Eye className="w-3.5 h-3.5" /> View
                       </button>

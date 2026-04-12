@@ -4,6 +4,8 @@ import Navbar from "../../components/common/Navbar"
 import { FileText, BookOpen, Video, StickyNote, ArrowLeft } from "lucide-react"
 import Spinner from "../../components/common/Spinner"
 
+const API_URL = import.meta.env.VITE_API_URL
+
 export default function ContentCategories() {
   const { levelId, subjectId } = useParams()
   const navigate = useNavigate()
@@ -16,8 +18,8 @@ export default function ContentCategories() {
   const fetchData = async () => {
     try {
       const [subjectRes, contentsRes] = await Promise.all([
-        fetch(`http://localhost:8888/api/subjects/${subjectId}`),
-        fetch(`http://localhost:8888/api/contents?subject=${subjectId}`),
+        fetch(`${API_URL}/api/subjects/${subjectId}`),
+        fetch(`${API_URL}/api/contents?subject=${subjectId}`),
       ])
       const subjectData = await subjectRes.json()
       const contentsData = await contentsRes.json()

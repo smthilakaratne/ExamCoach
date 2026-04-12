@@ -4,6 +4,8 @@ import axios from "axios";
 import PreviewQuestionCard from "../../components/PreviewQuestionCard";
 import Button from "../../components/button";
 
+const API_URL = import.meta.env.VITE_API_URL
+
 export default function PreviewQuestions() {
   const [questions, setQuestions] = useState([]);
   const [level, setLevel] = useState("easy");
@@ -16,7 +18,7 @@ export default function PreviewQuestions() {
   const fetchQuestions = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8888/api/mock-exams/questions?level=${level}&subject=${subject}`
+        `${API_URL}/api/mock-exams/questions?level=${level}&subject=${subject}`
       );
       setQuestions(response.data);
     } catch (error) {
@@ -33,7 +35,7 @@ export default function PreviewQuestions() {
 const handleImport = async () => {
   try {
      const response = await axios.post(
-      "http://localhost:8888/api/mock-exams/questions/import",
+      `${API_URL}/api/mock-exams/questions/import`,
       {
         questions: selectedQuestions,
       }

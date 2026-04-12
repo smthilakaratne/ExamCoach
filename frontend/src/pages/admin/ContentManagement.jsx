@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react"
 import { Plus, Edit2, Trash2, Download, Eye, FileText } from "lucide-react"
 
+const API_URL = import.meta.env.VITE_API_URL
+
 export default function ContentManagement() {
   const [contents, setContents] = useState([])
   const [examLevels, setExamLevels] = useState([])
@@ -54,9 +56,9 @@ export default function ContentManagement() {
     try {
       // Fetch all data
       const [levelsRes, subjectsRes, contentsRes] = await Promise.all([
-        fetch("http://localhost:8888/api/exam-levels"),
-        fetch("http://localhost:8888/api/subjects"),
-        fetch("http://localhost:8888/api/contents"),
+        fetch(`${API_URL}/api/exam-levels`),
+        fetch(`${API_URL}/api/subjects`),
+        fetch(`${API_URL}/api/contents`),
       ])
 
       const levelsData = await levelsRes.json()
@@ -181,8 +183,8 @@ export default function ContentManagement() {
       }
 
       const url = editingContent
-        ? `http://localhost:8888/api/contents/${editingContent._id}`
-        : "http://localhost:8888/api/contents"
+        ? `${API_URL}/api/contents/${editingContent._id}`
+        : `${API_URL}/api/contents`
 
       const method = editingContent ? "PUT" : "POST"
 
@@ -228,7 +230,7 @@ export default function ContentManagement() {
     if (!confirm("Are you sure you want to delete this content?")) return
 
     try {
-      const response = await fetch(`http://localhost:8888/api/contents/${id}`, {
+      const response = await fetch(`${API_URL}/api/contents/${id}`, {
         method: "DELETE",
       })
 
@@ -267,11 +269,11 @@ export default function ContentManagement() {
   }
 
   const handleDownload = (fileId, fileName) => {
-    window.open(`http://localhost:8888/api/files/download/${fileId}`, "_blank")
+    window.open(`${API_URL}/api/files/download/${fileId}`, "_blank")
   }
 
   const handleView = (fileId) => {
-    window.open(`http://localhost:8888/api/files/view/${fileId}`, "_blank")
+    window.open(`${API_URL}/api/files/view/${fileId}`, "_blank")
   }
 
   // ✅ File change handlers with validation (added)

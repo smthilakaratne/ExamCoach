@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { Plus, Edit2, Trash2 } from "lucide-react"
 
+const API_URL = import.meta.env.VITE_API_URL
 export default function Subjects() {
   const [subjects, setSubjects] = useState([])
   const [examLevels, setExamLevels] = useState([])
@@ -22,14 +23,14 @@ export default function Subjects() {
   const fetchData = async () => {
     try {
       // Fetch exam levels
-      const levelsRes = await fetch("http://localhost:8888/api/exam-levels")
+      const levelsRes = await fetch(`${API_URL}/api/exam-levels`)
       const levelsData = await levelsRes.json()
       if (levelsData.success) {
         setExamLevels(levelsData.body)
       }
 
       // Fetch subjects
-      const subjectsRes = await fetch("http://localhost:8888/api/subjects")
+      const subjectsRes = await fetch(`${API_URL}/api/subjects`)
       const subjectsData = await subjectsRes.json()
       if (subjectsData.success) {
         setSubjects(subjectsData.body)
@@ -47,8 +48,8 @@ export default function Subjects() {
 
     try {
       const url = editingSubject
-        ? `http://localhost:8888/api/subjects/${editingSubject._id}`
-        : "http://localhost:8888/api/subjects"
+        ? `${API_URL}/api/subjects/${editingSubject._id}`
+        : `${API_URL}/api/subjects`
 
       const method = editingSubject ? "PUT" : "POST"
 
@@ -94,7 +95,7 @@ export default function Subjects() {
     if (!confirm("Are you sure you want to delete this subject?")) return
 
     try {
-      const response = await fetch(`http://localhost:8888/api/subjects/${id}`, {
+      const response = await fetch(`${API_URL}/api/subjects/${id}`, {
         method: "DELETE",
       })
 
