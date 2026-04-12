@@ -1,6 +1,6 @@
 const express = require("express")
 const { getTags, createTag, deleteTag, editTag } = require("../controllers/forumTagsController")
-const { protect, restrictTo } = require("../app")
+const { protect, restrictTo } = require("../middlewares/auth")
 
 const router = express.Router()
 

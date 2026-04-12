@@ -17,7 +17,7 @@ const {
     markThreadComment,
     unmarkThreadComment,
 } = require("../controllers/forumController")
-const { protect } = require("../app")
+const { protect } = require("../middlewares/auth")
 const ForumThread = require("../models/ForumThread")
 
 /**
