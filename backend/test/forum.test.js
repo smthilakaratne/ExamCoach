@@ -2,6 +2,7 @@
 const { beforeAll, afterAll, describe, expect, it } = require("@jest/globals")
 
 const request = require("supertest")
+const mongoose = require("mongoose")
 
 const app = require("../src/app")
 const db = require("./db")

@@ -1,5 +1,6 @@
 const { beforeAll, afterAll, describe, expect, it } = require("@jest/globals")
 const request = require("supertest")
+const mongoose = require("mongoose")
 
 // ─── Mock GridFS ──────────────────────────────────────────────────────────────
 jest.mock("../src/config/gridfs", () => ({

@@ -7,6 +7,7 @@ const db = require("./db")
 const User = require("../src/models/User")
 const bcrypt = require("bcryptjs")
 const ForumTag = require("../src/models/ForumTag")
+const mongoose = require("mongoose")
 
 let authTokenAdminUser = ""
 let authTokenUser = ""
