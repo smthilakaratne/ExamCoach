@@ -1,6 +1,6 @@
 const axios = require("axios");
 const Question = require("../models/Questions");
-const Subject = require("../models/Subject");
+//const Subject = require("../models/Subject");
 
 // STEP 1 - Fetch Preview
 const fetchApiQuestions = async (req, res) => {
@@ -12,20 +12,26 @@ const fetchApiQuestions = async (req, res) => {
       intermediate: "medium",
       advanced: "hard",
     };
+
+    const categoryMap = {
+  math: 19,
+  science: 17,
+  history: 23,
+};
 //subjects
-const subjectDoc = await Subject.findOne({
+/*const subjectDoc = await Subject.findOne({
       name: new RegExp(`^${subject}$`, "i"),
       isActive: true,
     })
 
     if (!subjectDoc) {
       return res.status(404).json({ message: "Subject not found" })
-    }
+    }*/
 
-    const category = subjectDoc.opentdbCategory
+    //const category = subjectDoc.opentdbCategory
 
-//const normalizedSubject = subject.toLowerCase(); // ensure lowercase
-//const category = categoryMap[normalizedSubject];
+const normalizedSubject = subject.toLowerCase(); // ensure lowercase
+const category = categoryMap[normalizedSubject];
 
 if (!category) {
   return res.status(400).json({ message: "Invalid subject" });
@@ -46,7 +52,8 @@ if (!category) {
         options: options.map(decodeHTML),
         correctAnswer: decodeHTML(q.correct_answer),
         level,
-        subject: subjectDoc.name,
+        subject,
+        //subject: subjectDoc.name,
       };
     });
 

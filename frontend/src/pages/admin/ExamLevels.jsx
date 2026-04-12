@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { Plus, Edit2, Trash2 } from "lucide-react"
 import Navbar from "../../components/common/Navbar"
 import AdminSidebar from "../../components/common/AdminSidebar"
+const API_URL = import.meta.env.VITE_API_URL
 
 export default function ExamLevels() {
   const [examLevels, setExamLevels] = useState([])
@@ -20,7 +21,7 @@ export default function ExamLevels() {
 
   const fetchExamLevels = async () => {
     try {
-      const response = await fetch("http://localhost:8888/api/exam-levels")
+      const response = await fetch(`${API_URL}/api/exam-levels`)
       const data = await response.json()
       if (data.success) {
         setExamLevels(data.body)
@@ -37,8 +38,8 @@ export default function ExamLevels() {
 
     try {
       const url = editingLevel
-        ? `http://localhost:8888/api/exam-levels/${editingLevel._id}`
-        : "http://localhost:8888/api/exam-levels"
+        ? `${API_URL}/api/exam-levels/${editingLevel._id}`
+        : `${API_URL}/api/exam-levels`
 
       const method = editingLevel ? "PUT" : "POST"
 
@@ -84,7 +85,7 @@ export default function ExamLevels() {
 
     try {
       const response = await fetch(
-        `http://localhost:8888/api/exam-levels/${id}`,
+        `${API_URL}/api/exam-levels/${id}`,
         {
           method: "DELETE",
         },

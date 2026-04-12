@@ -5,6 +5,8 @@ import Footer from "../components/footer"
 import Button from "../components/button"
 import Navbar from "../components/navbar"
 
+const API_URL = import.meta.env.VITE_API_URL
+
 export default function Home() {
   const [examLevels, setExamLevels] = useState([])
   const [recentContent, setRecentContent] = useState([])
@@ -17,14 +19,14 @@ export default function Home() {
   const fetchData = async () => {
     try {
       // Fetch exam levels
-      const levelsRes = await fetch("http://localhost:8888/api/exam-levels")
+      const levelsRes = await fetch(`${API_URL}/api/exam-levels`)
       const levelsData = await levelsRes.json()
       if (levelsData.success) {
         setExamLevels(levelsData.body)
       }
 
       // Fetch recent content (for "Recently Added" section)
-      const contentsRes = await fetch("http://localhost:8888/api/contents")
+      const contentsRes = await fetch(`${API_URL}/api/contents`)
       const contentsData = await contentsRes.json()
       if (contentsData.success) {
         setRecentContent(contentsData.body.slice(0, 6))

@@ -4,6 +4,7 @@ import Navbar from "../../components/common/Navbar"
 import { BookOpen, ArrowLeft } from "lucide-react"
 import Spinner from "../../components/common/Spinner"
 
+const API_URL = import.meta.env.VITE_API_URL
 export default function BrowseSubjects() {
   const { levelId } = useParams()
   const navigate = useNavigate()
@@ -16,8 +17,8 @@ export default function BrowseSubjects() {
   const fetchData = async () => {
     try {
       const [levelRes, subjectsRes] = await Promise.all([
-        fetch(`http://localhost:8888/api/exam-levels/${levelId}`),
-        fetch(`http://localhost:8888/api/subjects?examLevel=${levelId}`),
+        fetch(`${API_URL}/api/exam-levels/${levelId}`),
+        fetch(`${API_URL}/api/subjects?examLevel=${levelId}`),
       ])
       const levelData = await levelRes.json()
       const subjectsData = await subjectsRes.json()

@@ -9,6 +9,8 @@ import Button from "../../components/button"
 import Spinner from "../../components/common/Spinner"
 import { Link } from "react-router-dom"
 
+const API_URL = import.meta.env.VITE_API_URL
+
 export default function AdminDashboard() {
   const [uStats, setUStats] = useState(null)
   const [fStats, setFStats] = useState(null)
@@ -21,9 +23,9 @@ export default function AdminDashboard() {
         const [u, f, levelsRes, subjectsRes, contentsRes] = await Promise.all([
           getUserStats(),
           getFeedbackStats(),
-          window.fetch("http://localhost:8888/api/exam-levels"),
-          window.fetch("http://localhost:8888/api/subjects"),
-          window.fetch("http://localhost:8888/api/contents"),
+          window.fetch(`${API_URL}/api/exam-levels`),
+          window.fetch(`${API_URL}/api/subjects`),
+          window.fetch(`${API_URL}/api/contents`),
         ])
         setUStats(u.body)
         setFStats(f.body)

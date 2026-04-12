@@ -2,11 +2,12 @@ import { GraduationCap } from "lucide-react"
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 
+const API_URL = import.meta.env.VITE_API_URL
 export default function Footer() {
   const [examLevels, setExamLevels] = useState([])
   useEffect(() => {
     ;(async () => {
-      const levelsRes = await fetch("http://localhost:8888/api/exam-levels")
+      const levelsRes = await fetch(`${API_URL}/api/exam-levels`)
       const levelsData = await levelsRes.json()
       if (levelsData.success) {
         setExamLevels(levelsData.body)

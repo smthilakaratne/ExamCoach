@@ -30,7 +30,8 @@ const swaggerOptions = {
     info: {
         version: "1.0.0",
         title: "ExamCoach API",
-        description: "ExamCoach – Exam coaching platform API. Covers User Management, Feedback, Forum, Mock Exams, Study Content.",
+        description:
+            "ExamCoach – Exam coaching platform API. Covers User Management, Feedback, Forum, Mock Exams, Study Content.",
         license: {
             name: "MIT",
         },
@@ -44,17 +45,16 @@ const swaggerOptions = {
     },
     baseDir: __dirname,
     // Picks up JSDoc comments from all route files
-    filesPattern: [
-        "../routes/*.js",
-        "../models/*.js",
-    ],
+    filesPattern: ["../routes/*.js", "../models/*.js"],
     swaggerUIPath: "/api/docs",
     exposeSwaggerUI: true,
     exposeApiDocs: false,
     apiDocsPath: "/api/docs.json",
     notRequiredAsNullable: false,
-    swaggerUiOptions: {},
     multiple: true,
+    swaggerUiOptions: {
+        customCssUrl: "https://unpkg.com/swagger-ui-dist/swagger-ui.css",
+    },
 }
 
 module.exports = swaggerOptions

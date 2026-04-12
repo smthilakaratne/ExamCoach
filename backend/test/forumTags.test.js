@@ -1,4 +1,5 @@
-const { beforeAll, describe, expect, it } = require("@jest/globals")
+
+const { beforeAll, afterAll, describe, expect, it } = require("@jest/globals")
 const request = require("supertest")
 
 const app = require("../src/app")
@@ -191,3 +192,8 @@ describe("Forum Thread Tags", () => {
         })
     })
 })
+
+afterAll(async () => {
+    await mongoose.connection.close()
+})
+

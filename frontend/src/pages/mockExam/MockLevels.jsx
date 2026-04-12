@@ -5,6 +5,7 @@ import Level from "../../components/LevelCard"
 import axios from "axios"
 import { useAuth } from "../../contexts/AuthContext";
 
+const API_URL = import.meta.env.VITE_API_URL
 
 export default function MockLevels() {
   const [subjects, setSubjects] = useState([])
@@ -50,7 +51,7 @@ useEffect(() => {
 }, [subject, userId])
 
   useEffect(() => {
-  axios.get("http://localhost:8888/api/subjects/").then((res) => {
+  axios.get(`${VITE_API_URL}/api/subjects/`).then((res) => {
     const subjectList = res.data?.body || []
  console.log("FULL RESPONSE:", res.data)
     setSubjects(Array.isArray(subjectList) ? subjectList : [])
@@ -65,7 +66,7 @@ useEffect(() => {
 }, [])
 
 
-
+if (!userId) return <p>Loading user...</p>
   if (!progress) return <p>Loading...</p>
 
   const handleStart = (level) => {

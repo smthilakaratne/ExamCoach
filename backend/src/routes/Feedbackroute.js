@@ -1,7 +1,7 @@
 const express = require("express")
 const router = express.Router()
 const { body } = require("express-validator")
-const { protect, restrictTo } = require("../app")
+const { protect, restrictTo } = require("../middlewares/auth")
 const feedbackController = require("../controllers/Feedbackcontroller")
 
 // ── Validation rules ──────────────────────────────────────────────────────────
