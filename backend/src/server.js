@@ -8,11 +8,6 @@ const start = async () => {
     const PORT = process.env.PORT || 8888
     //const { MONGO_URI } = process.env
    // const SERVER_PORT = process.env.SERVER_PORT || 8888
-    if (process.env.NODE_ENV != "test") {
-        await mongoose.connect(process.env.MONGO_URI, { dbName: "ExamCoach" })
-        console.log(" MongoDB connected")
-    }
-
     initGridFS()
 
     app.listen(PORT, () => {

@@ -40,12 +40,12 @@ const authRoute = require("./routes/Authroute")
 const feedbackRoute = require("./routes/Feedbackroute")
 
 const examLevelRoute = require("./routes/examLevelRoute")
- const subjectRoute = require("./routes/subjectRoute")
- const contentRoute = require("./routes/contentRoute")
- const fileRoute = require("./routes/fileRoute")
- const forumRoute = require("./routes/forumRoute")
- const forumTagsRoute = require("./routes/forumTagRoute")
- const mockExamRoute = require("./routes/mockExamRoute")
+const subjectRoute = require("./routes/subjectRoute")
+const contentRoute = require("./routes/contentRoute")
+const fileRoute = require("./routes/fileRoute")
+const forumRoute = require("./routes/forumRoute")
+const forumTagsRoute = require("./routes/forumTagRoute")
+const mockExamRoute = require("./routes/mockExamRoute")
 
 // ── Swagger ───────────────────────────────────────────────────────────────────
 expressJSDocSwagger(app)(swaggerOptions)
@@ -55,19 +55,19 @@ app.use("/api/auth", authRoute)
 app.use("/api/feedback", feedbackRoute)
 app.use("/api/user", usersRoute)
 
- app.use("/api/exam-levels", examLevelRoute)
- app.use("/api/subjects", subjectRoute)
- app.use("/api/contents", contentRoute)
- app.use("/api/files", fileRoute)
- app.use("/api/forum/tags", forumTagsRoute)
- app.use("/api/forum", forumRoute)
- app.use("/api/mock-exams", mockExamRoute)
+app.use("/api/exam-levels", examLevelRoute)
+app.use("/api/subjects", subjectRoute)
+app.use("/api/contents", contentRoute)
+app.use("/api/files", fileRoute)
+app.use("/api/forum/tags", forumTagsRoute)
+app.use("/api/forum", forumRoute)
+app.use("/api/mock-exams", mockExamRoute)
 
 app.use("/api", rootRoute)
 
 // ── 404 ───────────────────────────────────────────────────────────────────────
 app.use((req, res) =>
-    createResponse(res, StatusCodes.NOT_FOUND, { message: "Requested route not found" })
+    createResponse(res, StatusCodes.NOT_FOUND, { message: "Requested route not found" }),
 )
 
 // ── Global error handler ──────────────────────────────────────────────────────
@@ -92,7 +92,18 @@ app.use((err, req, res, next) => {
         })
     }
 
-    return createResponse(res, StatusCodes.INTERNAL_SERVER_ERROR, { message: "Internal server error" })
+    return createResponse(res, StatusCodes.INTERNAL_SERVER_ERROR, {
+        message: "Internal server error",
+    })
 })
 
-module.exports = app
+const connectDB = async () => {
+    if (process.env.NODE_ENV != "test") {
+        await mongoose.connect(process.env.MONGO_URI, { dbName: "ExamCoach" })
+        console.log(" MongoDB connected")
+    }
+}
+module.exports = async (req, res) => {
+    await connectDB()
+    return app(req, res)
+}
